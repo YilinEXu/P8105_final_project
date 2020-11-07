@@ -14,7 +14,9 @@ According to the CDC website, obesity prevalence was 13.9% among 2- to
 19-year-olds. Childhood obesity is also more common among certain
 populations.
 
-Our project title is *Student Weight Status in New York State*. In the
+### Tittle & Questions
+
+Our project title is **Student Weight Status in New York State**. In the
 final project, we intend to answer the following questions:
 
 1.  How student weight changes in New York state by location?
@@ -30,6 +32,7 @@ final project, we intend to answer the following questions:
 
 5.  How has the student’s weight changed over time in New York?
 
+<<<<<<< HEAD
 During the project, we may meet several coding challenges:
 
 1.  The location code in the original dataset is not consistent, thus we
@@ -43,12 +46,13 @@ During the project, we may meet several coding challenges:
 3.  Grade level in the original dataset is in text format, in order to
     see the association with obesity, we need to convert it to factor
     format first.
+=======
+### Anticipated Data Source
+>>>>>>> 0ebe0e39f14d5ef11822cd1746cf044b90fda92a
 
 Our major data source is from health.data.ny.gov. We also used data from
 ODS to find the longitude and latitude for each city in NY. We will add
 additional data as we go along with the project.
-
-### Anticipated Data Source
 
 [Student weight
 status](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus)

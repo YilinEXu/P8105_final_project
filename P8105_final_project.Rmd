@@ -9,7 +9,8 @@ output: github_document
 
 Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-olds, 18.4% among 6- to 11-year-olds, and 20.6% among 12- to 19-year-olds. Childhood obesity is also more common among certain populations.
 
-Our project title is _Student Weight Status in New York State_. In the final project, we intend to answer the following questions:
+### Tittle & Questions
+Our project title is __Student Weight Status in New York State__. In the final project, we intend to answer the following questions:
 
 1.  How student weight changes in New York state by location?
 
@@ -21,6 +22,7 @@ Our project title is _Student Weight Status in New York State_. In the final pro
 
 5.  How has the student's weight changed over time in New York?
 
+<<<<<<< HEAD
 During the project, we may meet several coding challenges:
 
 1.  The location code in the original dataset is not consistent, thus we need to include another dataset with coordinates in order to visualize the association between obesity trend and location.
@@ -30,9 +32,11 @@ During the project, we may meet several coding challenges:
 3.  Grade level in the original dataset is in text format, in order to see the association with obesity, we need to convert it to factor format first.
 
 
+=======
+### Anticipated Data Source 
+>>>>>>> 0ebe0e39f14d5ef11822cd1746cf044b90fda92a
 Our major data source is from health.data.ny.gov. We also used data from ODS to find the longitude and latitude for each city in NY. We will add additional data as we go along with the project.
 
-### Anticipated Data Source 
 
 [Student weight status](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus)
 
