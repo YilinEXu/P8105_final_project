@@ -28,6 +28,16 @@ final project, we intend to answer the following questions:
 
 5.  How has the student’s weight changed over time in New York?
 
+Our major data source is from health.data.ny.gov. We also used data from
+ODS to find the longitude and latitude for each city in NY. We will add
+additional data as we go along with the project.
+
+[Student weight
+status](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus)
+
+[US zip
+code](https://public.opendatasoft.com/explore/dataset/us-zip-code-latitude-and-longitude/table/?refine.state=NY)
+
 ### Timeline:
 
 <img src = "image/timeline.jpg" style = "width:75%">
