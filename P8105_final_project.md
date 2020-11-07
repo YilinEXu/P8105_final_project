@@ -12,9 +12,22 @@ According to the CDC website, obesity prevalence was 13.9% among 2- to
 19-year-olds. Childhood obesity is also more common among certain
 populations.
 
-\<\<\<\<\<\<\< HEAD
+Our project title is *Student Weight Status in New York State*. In the
+final project, we intend to answer the following questions:
 
-\======= Timeline: ======= \#\#\# Timeline: \>\>\>\>\>\>\>
-c3a538ebf555e3339fac9520ef8f5fbf809b7184
+1.  How student weight changes in New York state by location?
+
+2.  What is the relationship between the student’s weight and school
+    year?
+
+3.  Is the student’s obesity status related to the adult’s obesity
+    status?how?
+
+4.  The association between student weight and their race and
+    socioeconomic status.
+
+5.  How has the student’s weight changed over time in New York?
+
+### Timeline:
 
 <img src = "image/timeline.jpg" style = "width:75%">
