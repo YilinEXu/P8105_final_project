@@ -4,6 +4,8 @@ Elaine Xu (yx2640), Jiayi Zhou(jz3336), Rio Yan(xy2476), Ximeng
 Zhao(xz3032)
 11/6/2020
 
+## Motivation
+
 Childhood obesity is a major concern in the United States. In nowadays,
 obesity is putting children and adolescents at risk for poor health.
 Obesity prevalence among children and adolescents is very high.
@@ -12,7 +14,9 @@ According to the CDC website, obesity prevalence was 13.9% among 2- to
 19-year-olds. Childhood obesity is also more common among certain
 populations.
 
-Our project title is *Student Weight Status in New York State*. In the
+## Tittle & Questions
+
+Our project title is **Student Weight Status in New York State**. In the
 final project, we intend to answer the following questions:
 
 1.  How student weight changes in New York state by location?
@@ -27,6 +31,8 @@ final project, we intend to answer the following questions:
     socioeconomic status.
 
 5.  How has the student’s weight changed over time in New York?
+
+## Data
 
 Our major data source is from health.data.ny.gov. We also used data from
 ODS to find the longitude and latitude for each city in NY. We will add
