@@ -4,6 +4,8 @@ Elaine Xu (yx2640), Jiayi Zhou(jz3336), Rio Yan(xy2476), Ximeng
 Zhao(xz3032)
 11/6/2020
 
+### Motivation
+
 Childhood obesity is a major concern in the United States. In nowadays,
 obesity is putting children and adolescents at risk for poor health.
 Obesity prevalence among children and adolescents is very high.
@@ -32,12 +34,14 @@ Our major data source is from health.data.ny.gov. We also used data from
 ODS to find the longitude and latitude for each city in NY. We will add
 additional data as we go along with the project.
 
+### Anticipated Data Source
+
 [Student weight
 status](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus)
 
 [US zip
 code](https://public.opendatasoft.com/explore/dataset/us-zip-code-latitude-and-longitude/table/?refine.state=NY)
 
-### Timeline:
+### Planned Timeline:
 
 <img src = "image/timeline.jpg" style = "width:75%">
