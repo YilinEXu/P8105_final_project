@@ -11,6 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-Timeline:
+### Timeline:
 
 <img src = "image/timeline.jpg" style = "width:75%">
