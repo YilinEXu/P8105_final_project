@@ -4,7 +4,7 @@ Elaine Xu (yx2640), Jiayi Zhou(jz3336), Rio Yan(xy2476), Ximeng
 Zhao(xz3032)
 11/6/2020
 
-## Motivation
+### Motivation
 
 Childhood obesity is a major concern in the United States. In nowadays,
 obesity is putting children and adolescents at risk for poor health.
@@ -14,7 +14,7 @@ According to the CDC website, obesity prevalence was 13.9% among 2- to
 19-year-olds. Childhood obesity is also more common among certain
 populations.
 
-## Tittle & Questions
+### Tittle & Questions
 
 Our project title is **Student Weight Status in New York State**. In the
 final project, we intend to answer the following questions:
@@ -32,7 +32,7 @@ final project, we intend to answer the following questions:
 
 5.  How has the student’s weight changed over time in New York?
 
-## Data
+### Anticipated Data Source
 
 Our major data source is from health.data.ny.gov. We also used data from
 ODS to find the longitude and latitude for each city in NY. We will add
@@ -44,6 +44,6 @@ status](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporti
 [US zip
 code](https://public.opendatasoft.com/explore/dataset/us-zip-code-latitude-and-longitude/table/?refine.state=NY)
 
-### Timeline:
+### Planned Timeline:
 
 <img src = "image/timeline.jpg" style = "width:75%">
