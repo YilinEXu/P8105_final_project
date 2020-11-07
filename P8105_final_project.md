@@ -4,7 +4,7 @@ Elaine Xu (yx2640), Jiayi Zhou(jz3336), Rio Yan(xy2476), Ximeng
 Zhao(xz3032)
 11/6/2020
 
-## Introduction
+\<\<\<\<\<\<\< HEAD \#\# Introduction ======= \#\#\# Motivation
 
 Childhood obesity is a major concern in the United States. In nowadays,
 obesity is putting children and adolescents at risk for poor health.
@@ -14,6 +14,36 @@ According to the CDC website, obesity prevalence was 13.9% among 2- to
 19-year-olds. Childhood obesity is also more common among certain
 populations.
 
-### Timeline:
+### Tittle & Questions
+
+Our project title is **Student Weight Status in New York State**. In the
+final project, we intend to answer the following questions:
+
+1.  How student weight changes in New York state by location?
+
+2.  What is the relationship between the student’s weight and school
+    year?
+
+3.  Is the student’s obesity status related to the adult’s obesity
+    status?how?
+
+4.  The association between student weight and their race and
+    socioeconomic status.
+
+5.  How has the student’s weight changed over time in New York?
+
+### Anticipated Data Source
+
+Our major data source is from health.data.ny.gov. We also used data from
+ODS to find the longitude and latitude for each city in NY. We will add
+additional data as we go along with the project.
+
+[Student weight
+status](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus)
+
+[US zip
+code](https://public.opendatasoft.com/explore/dataset/us-zip-code-latitude-and-longitude/table/?refine.state=NY)
+
+### Planned Timeline:
 
 <img src = "image/timeline.jpg" style = "width:75%">
