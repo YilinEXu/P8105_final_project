@@ -32,6 +32,27 @@ final project, we intend to answer the following questions:
 
 5.  How has the student’s weight changed over time in New York?
 
+### Planned analyses & coding challenges
+
+During the project, we may meet several coding challenges:
+
+1.  The location code in the original dataset is not consistent, thus we
+    need to include another dataset with coordinates in order to
+    visualize the association between obesity trend and location.
+
+2.  We also want to know whether obesity has correlation with economic
+    status so we need another dataset with economic information to
+    create the association.
+
+3.  Grade level in the original dataset is in text format, in order to
+    see the association with obesity, we need to convert it to factor
+    format first.
+
+4.  We planned to use linear regression model to analysis the
+    association between obesity rate and other variables like sex, grade
+    level, economic status, etc. The resulting model can give us a sense
+    of which factor influences obesity rate the most.
+
 ### Anticipated Data Source
 
 Our major data source is from health.data.ny.gov. We also used data from
