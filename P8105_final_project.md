@@ -14,7 +14,7 @@ According to the CDC website, obesity prevalence was 13.9% among 2- to
 19-year-olds. Childhood obesity is also more common among certain
 populations.
 
-### Tittle & Questions
+### Intended Final Prodcut
 
 Our project title is **Student Weight Status in New York State**. In the
 final project, we intend to answer the following questions:
