@@ -19,7 +19,7 @@ original = tibble(
 
 # Clean dataset with geolocation information
 ```{r} 
-#import cordinates dataset 
+#import coordinates data set 
 coordinates = tibble(
   read.csv("./dataset/Geocodes_USA_with_Counties.csv")
 ) %>%
