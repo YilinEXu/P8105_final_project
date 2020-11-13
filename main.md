@@ -49,4 +49,12 @@ coordinates = tibble(
 
 ``` r
 weight_df = left_join(original, coordinates, by = "county")
+
+average_percent = 
+  weight_df %>% 
+  group_by(county) %>% 
+  drop_na(percent_overweight_or_obese) %>%
+  summarize(average = mean(percent_overweight_or_obese), .groups = "keep")
+
+sum_df = left_join(weight_df, average_percent, by = "county")
 ```
