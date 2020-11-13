@@ -14,7 +14,6 @@ original = tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
   janitor::clean_names() %>%
-  filter(year_reported %in% c("2010-2011", "2018-2019")) %>% #only need data in year 2010-2011 or 2018-2019
   select(-location_code, -region, -area_name)  # the only location information we need is county name
 ```
 
