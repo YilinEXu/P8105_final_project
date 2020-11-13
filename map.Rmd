@@ -1,12 +1,12 @@
 ---
-title: "Midterm Project"
-author: Jiayi Zhou
-output: github_document
+title: "Map"
+output: html_document
 ---
 
 ```{r setup, include = FALSE}
 library(tidyverse)
-library(readxl)
+library(leaflet)
+library(plotly)
 
 knitr::opts_chunk$set(
   message = FALSE,
@@ -28,134 +28,67 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ```
 
-## Problem 1: Data
 
-**Description on the raw dataset:**
-The dog weights raw dataset has six variables. The first column contains the date of each weighing from August 12nd, 2018 to September 7th, 2020, while some dates in this period were not recorded. The second to fifth columns contain information about the weights of three dogs and a standard object: Raisin, Simon, Gagne, and std. All weights were recorded in the combination of Lbs and Oz. The last column contains occasional notes. My goal is to clean and preserve valuable data of the dataset, then report summarizations and trends.
-
-**First dataframe about dog weights**
+# Clean the orginal weight dataset
 ```{r}
-dogweights_df =
-  read_excel("./data/dogweights_07sept2020.xlsx", skip = 1) %>% 
+original = tibble(
+  read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
+) %>%
   janitor::clean_names() %>%
-  mutate(date = as.numeric(date),
-         date = janitor::excel_numeric_to_date(date)) %>% 
-  select(-x6) %>% 
-  pivot_longer(
-    raisin:std,
-    names_to = "dognames_and_std",
-    values_to = "weights"
-  ) %>% 
-  separate(weights, into = c("Lbs", "Oz"), sep = " ") %>% 
+  filter(year_reported %in% c("2010-2011", "2018-2019")) %>% #only need data in year 2010-2011 or 2018-2019
+  select(-location_code, -region, -area_name)  # the only location information we need is county name
+```
+
+# Clean dataset with geolocation information
+```{r} 
+#import coordinates data set 
+coordinates = tibble(
+  read.csv("./dataset/Geocodes_USA_with_Counties.csv")
+) %>%
+  filter(state == "NY") %>%  # filter out counties outside NY state
+  select(county, latitude, longitude) %>% # only information we need is county name and geolocation
+  drop_na() %>%
+  group_by(county) %>%
+  summarise(latitude = mean(latitude), longitude = mean(longitude)) %>% #different location in each county variaed slightly, so we take the mean of each county's geolocation
+  filter(!county == "") %>% # one county's name input is blank
+  mutate(county = toupper(county)) # to swith county name to uppercase
+```
+
+# combine two data set
+```{r}
+weight_df = left_join(original, coordinates, by = "county")
+
+average_percent = 
+  weight_df %>% 
+  group_by(county) %>% 
+  drop_na(percent_overweight_or_obese) %>%
+  summarize(average = mean(percent_overweight_or_obese), .groups = "keep")
+
+sum_df = left_join(weight_df, average_percent, by = "county")
+```
+
+
+```{r}
+sum_df
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = sum_df$average)
+
+sum_df %>% 
   mutate(
-    Lbs = as.numeric(Lbs),
-    Oz = as.numeric(Oz),
-    weights_in_lbs = Lbs + Oz * 0.0625
-    ) %>% 
-  #drop_na(weights_in_lbs, date) %>% 
-  select(-Lbs, -Oz)
-
-dogweights_df
-```
-
-**Descriptions of the steps for tidying:**
-The observations in "date" were shown as serial numbers after importation. Thus, I first transfered "date" to numeric variable, then the excel_numeric_to_date from the janitor package was used to convert the serial numbers to date class. Next, I put all dog names and the "std" into the "dognames_and_std" columns using pivot_longer since they can all be categorized as names. All weights were organized into "weights_in_lbs" columns. To convert the weight unit, separation of the Lbs and Oz in the same cell was done first. Then, (weights(Oz)*0.0625) was added back to weights(Lbs) to get the whole weight in single unit Lbs.
-
-**About NAs:**
-I chose to drop NAs in the tidied dataset. After pivoting, dropping the NAs in weight will only delete the observations that have no weight recorded for one specific name (dogs or std) on the specific date. I chose to drop the NAs in “date” too, even though there is weight information associated with the NAs in “date”. This is because weight records without date, as well as dates without weight records, may not be useful for data analysis and plot generation.
-
-**Second dataframe about notes**
-```{r}
-notes_df =
-  read_excel("./data/dogweights_07sept2020.xlsx", skip = 1) %>% 
-  janitor::clean_names() %>%
-  mutate(date = as.numeric(date),
-         date = janitor::excel_numeric_to_date(date)) %>% 
-  rename(note = x6) %>% 
-  select(date, note) %>% 
-  drop_na(date, note)
-
-notes_df
-```
-
-**Export the two dataframes as CSVs**
-```{r}
-write.csv(dogweights_df, "./data/dogweights.csv")
-write.csv(notes_df, "./data/notes.csv")
-```
-
-## Problem 2: EDA
-
-**Description of the cleaned dogweights_df dataset:**
-The tidy dataset is a tibble: `r ncol(dogweights_df)` x `r nrow(dogweights_df)`. The 3 variables are "date", "dognames_and_std", and "weights_in_lbs". 
-
-**Unique dates:**
-```{r}
-unique_dates=
-  dogweights_df %>% 
-  distinct(date) %>% 
-  nrow()
-
-unique_dates
-```
-There are `r unique_dates` unique dates in the tidy dog-weights dataset.
-
-**Table showing the dog names with their associate number of observation, average weight, and the standard deviation:**
-```{r}
-dogweights_df %>% 
-  filter(dognames_and_std %in% c("raisin", "simone", "gagne")) %>% 
-  group_by(dognames_and_std) %>%
-  rename(dognames = dognames_and_std) %>% 
-  summarize(
-    number_of_obs = n(),
-    average_weight = mean(weights_in_lbs),
-    sd_of_weight = sd(weights_in_lbs)
-  ) %>% 
-   knitr::kable()
-```
-
-
-## Problem 3: Visualization
-```{r}
-library(patchwork)
+    click_label = 
+      str_c("<b>year-window:", year_reported, "</b><br>", average, "percent is overweight or obses<br>", grade_level, " grade")) %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(~longitude, ~latitude, radius = 5, color = ~pal(average), popup = ~click_label)
 ```
 
 ```{r}
-distribution_of_weight = 
-  dogweights_df %>% 
-  filter(dognames_and_std %in% c("raisin", "simone", "gagne")) %>% 
-  group_by(dognames_and_std) %>% 
-  rename(dognames = dognames_and_std) %>% 
+weight_df %>%
   mutate(
-    dognames = factor(dognames, levels = c("gagne", "simone", "raisin"))
-    ) %>% 
-  ggplot(aes(x = dognames, y = weights_in_lbs)) +
-  geom_boxplot(aes(color = dognames)) +
-  labs(x = "Dog name",
-       y = "Weight (Lbs)",
-       title = "Weight distribution for each dog")
-
-weight_over_time = 
-  dogweights_df %>% 
-  filter(dognames_and_std %in% c("raisin", "simone", "gagne")) %>% 
-  group_by(dognames_and_std) %>% 
-  rename(dognames = dognames_and_std) %>% 
-  mutate(
-    dognames = factor(dognames, levels = c("gagne", "simone", "raisin"))
-    ) %>% 
-  ggplot(aes(x = date, y = weights_in_lbs, color = dognames)) +
-  geom_point(size = 0.5, alpha = 0.5) +
-  geom_smooth() +
-  labs(x = "Date",
-       y = "Weight (Lbs)",
-       title = "Weight change for each dog over time")
-
-distribution_of_weight + weight_over_time
+    text_label = str_c("Year-window: ", year_reported, "\nSchool grade: ", grade_level,"\n Obisity percentage: ", percent_obese)) %>%
+  plot_ly(x = ~longitude, y = ~latitude, type = "scatter", mode = "markers",
+          color = ~percent_obese, text = ~text_label, alpha = 0.5)
 ```
-
-**Weight Distribution:** The weight distributions of Gagne is relatively left-skewed with more lower bound outliers compare to Simone's normally distributed weight, while they have similar distribution ranges and medians around 10. The distribution of Raisin's weight is close to normal with several extreme outliers. It also has a much larger median, around 18, compare to the other two dogs.
-
-**Weight Change:** Raisin's weight has been on a decreasing trend and started to increase gradually since October 2019. Simone's weight did not vary too much over the three-years period. Gagne's weight started to decrease rapidly since April 2019. He died on September 8th, 2019 according to the note.
-
-
 
