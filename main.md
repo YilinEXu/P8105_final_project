@@ -1,14 +1,24 @@
----
-title: "Final Project"
-output: github_document
----
+Final Project
+================
 
-```{r}
+``` r
 library(tidyverse)
 ```
 
+    ## ── Attaching packages ────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+
+    ## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+    ## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+    ## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+    ## ✓ readr   1.3.1     ✓ forcats 0.5.0
+
+    ## ── Conflicts ───────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
+
 # Clean the orginal weight dataset
-```{r}
+
+``` r
 original = tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
@@ -18,7 +28,8 @@ original = tibble(
 ```
 
 # Clean dataset with geolocation information
-```{r} 
+
+``` r
 #import coordinates data set 
 coordinates = tibble(
   read.csv("./dataset/Geocodes_USA_with_Counties.csv")
@@ -32,7 +43,10 @@ coordinates = tibble(
   mutate(county = toupper(county)) # to swith county name to uppercase
 ```
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
 # combine two data set
-```{r}
+
+``` r
 weight_df = left_join(original, coordinates, by = "county")
 ```
