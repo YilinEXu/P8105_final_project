@@ -16,6 +16,17 @@ library(tidyverse)
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
+``` r
+library(maps)
+```
+
+    ## 
+    ## Attaching package: 'maps'
+
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     map
+
 # Clean the orginal weight dataset
 
 ``` r
@@ -57,4 +68,12 @@ average_percent =
   summarize(average = mean(percent_overweight_or_obese), .groups = "keep")
 
 sum_df = left_join(weight_df, average_percent, by = "county")
+```
+
+``` r
+counties <- map_data("county")
+ny_county <- subset(counties, region == "new york") %>% 
+  rename(county = "region")
+
+leafmap = merge(ny_county, sum_df, by = "county" )
 ```

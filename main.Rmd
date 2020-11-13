@@ -5,6 +5,7 @@ output: github_document
 
 ```{r}
 library(tidyverse)
+library(maps)
 ```
 
 # Clean the orginal weight dataset
@@ -44,3 +45,16 @@ average_percent =
 
 sum_df = left_join(weight_df, average_percent, by = "county")
 ```
+
+```{r}
+counties <- map_data("county")
+ny_county <- subset(counties, region == "new york") %>% 
+  rename(county = "region")
+
+leafmap = merge(ny_county, sum_df, by = "county" )
+```
+
+
+
+
+
