@@ -1,0 +1,65 @@
+---
+title: "Regression - Statistical Analysis"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(patchwork)
+```
+
+# Clean the orginal weight dataset
+```{r}
+original = tibble(
+  read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
+) %>%
+  janitor::clean_names() %>%
+  select(-location_code, -region, -area_name)  # the only location information we need is county name
+```
+
+# Clean dataset with geolocation information
+```{r} 
+#import coordinates data set 
+coordinates = tibble(
+  read.csv("./dataset/Geocodes_USA_with_Counties.csv")
+) %>%
+  filter(state == "NY") %>%  # filter out counties outside NY state
+  select(county, latitude, longitude) %>% # only information we need is county name and geolocation
+  drop_na() %>%
+  group_by(county) %>%
+  summarise(latitude = mean(latitude), longitude = mean(longitude)) %>% #different location in each county variaed slightly, so we take the mean of each county's geolocation
+  filter(!county == "") %>% # one county's name input is blank
+  mutate(county = toupper(county)) # to swith county name to uppercase
+```
+
+# combine two data set
+```{r}
+weight_df = left_join(original, coordinates, by = "county")
+```
+
+# Further orginal dataset cleanning for linea regression analysis
+```{r}
+linear_df = weight_df %>%
+  filter(!sex == "ALL") %>%
+  filter(!grade_level == "DISTRICT TOTAL") %>%
+  mutate(
+    sex = if_else(sex == "MALE", 0, 1),
+    grade_level = if_else(grade_level == "ELEMENTARY", 0, 1)
+  ) %>%
+  drop_na() %>%
+  filter(year_reported %in% c("2018-2019")) #only analyzing data in year 2018-2019
+```
+
+# Normality check
+```{r}
+qqnorm(linear_df$percent_overweight_or_obese)
+hist(linear_df$percent_overweight_or_obese)
+
+```
+
+# regression model
+```{r}
+lm_1 = lm(percent_overweight_or_obese ~ sex + grade_level, data = linear_df)
+
+summary(lm_1)
+```
