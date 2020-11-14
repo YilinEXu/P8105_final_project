@@ -1,0 +1,11 @@
+---
+title: "Raw Regression"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most. 
+
