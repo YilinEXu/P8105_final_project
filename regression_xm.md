@@ -13,9 +13,25 @@ log transformation. Q-Q plot is perfectly linear distributed, histogram
 is normally distributed with a little left skewness. Overall, the
 normality assumption is satisfied.
 
+In the beginning we used included 4 independent variables, grade level,
+median income, food insecurity and gender, however the model summary
+showed there is a very weak correlation between gender and our dependent
+variable - percent overweight and obese, so we took gender factor out,
+model is furthurly improved, left four variables all significantly
+influenced the percent overweight and obese.
+
+## Statistics Model
+
+## log(y) = 4.54 + 0.16x1 - 0.01x2 - 0.03x3
+
+y = percent overweight or obese  
+x1 = grade level  
+x2 = median income (kilodollar)  
+x3 = food insecurity percentage
+
 ``` r
 # regression model
-lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level + median_income + food_insecurity_p, data = linear_df3)
+lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level + median_income + food_insecurity_p, data = linear_df3) 
 summary(lm_1)
 ```
 

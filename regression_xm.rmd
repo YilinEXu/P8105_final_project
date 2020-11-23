@@ -59,7 +59,7 @@ linear_df = weight_df %>%
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
-  mutate(median_income = median_income*0.001,
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
          county = toupper(county))
 
 food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
@@ -73,7 +73,7 @@ linear_df3 = left_join(linear_df2, food_insecurity, by = "county")
 ```
 
 Before doing the linear regression model, I used two types of transformation to improve the adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log tansformation has improved data's normality.  
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE}
 # Normality check
 qqnorm(log(linear_df$percent_overweight_or_obese))
 
@@ -81,12 +81,21 @@ hist(log(linear_df$percent_overweight_or_obese))
 ```
 Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is perfectly linear distributed, histogram is normally distributed with a little left skewness.  Overall, the normality assumption is satisfied.  
 
+In the beginning we used included 4 independent variables, grade level, median income, food insecurity and gender, however the model summary showed there is a very weak correlation between gender and our dependent variable - percent overweight and obese, so we took gender factor out, model is furthurly improved, left four variables all significantly influenced the percent overweight and obese.
+
+## Statistics Model
+## log(y) = 4.54 + 0.16x1 - 0.01x2 - 0.03x3
+y = percent overweight or obese  
+x1 = grade level  
+x2 = median income (kilodollar)  
+x3 = food insecurity percentage
 
 ```{r}
 # regression model
-lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level + median_income + food_insecurity_p, data = linear_df3)
+lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level + median_income + food_insecurity_p, data = linear_df3) 
 summary(lm_1)
 
 par(mfrow = c(2, 2))
 plot(lm_1)
 ```
+
