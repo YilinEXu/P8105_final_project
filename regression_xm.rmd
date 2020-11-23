@@ -11,7 +11,7 @@ library(readxl)
 
 
 ```{r echo=FALSE} 
-original = tibble(        ## Clean the orginal weight dataset
+original = tibble(        ## Clean the original weight data
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
   janitor::clean_names() %>%
