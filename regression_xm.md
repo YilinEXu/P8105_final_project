@@ -3,15 +3,20 @@ Regression - Statistical Analysis
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
-Before doing the linear regression model, I used two types of
-transformation to improve the adequacy, a. y’ = log(y), b. y’= y^0.5,
+## Normality Check and Data Transformation
+
+Before fitting the linear regression model, I used two types of
+transformation to improve model adequacy, a. y’ = log(y), b. y’= y^0.5,
 Q\_Q plot showed that the log tansformation has improved data’s
 normality.  
 ![](regression_xm_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->![](regression_xm_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+
 Above are the Q-Q plot and histogram of overweight/obesity data after
-log transformation. Q-Q plot is perfectly linear distributed, histogram
+log transformation. Q-Q plot is perfectly in a straight line, histogram
 is normally distributed with a little left skewness. Overall, the
 normality assumption is satisfied.
+
+## Statistics Model
 
 In the beginning we used included 4 independent variables, grade level,
 median income, food insecurity and gender, however the model summary
@@ -19,8 +24,6 @@ showed there is a very weak correlation between gender and our dependent
 variable - percent overweight and obese, so we took gender factor out,
 model is furthurly improved, left four variables all significantly
 influenced the percent overweight and obese.
-
-## Statistics Model
 
 ## log(y) = 4.54 + 0.16x1 - 0.01x2 - 0.03x3
 
@@ -59,7 +62,7 @@ summary(lm_1)
 
 ``` r
 par(mfrow = c(2, 2))
-plot(lm_1)
+plot(lm_1, col = ("blueviolet"))
 ```
 
 ![](regression_xm_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
