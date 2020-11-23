@@ -6,6 +6,7 @@ output: github_document
 ```{r}
 library(tidyverse)
 library(patchwork)
+library(readxl)
 ```
 
 # Clean the orginal weight dataset
@@ -50,16 +51,35 @@ linear_df = weight_df %>%
   filter(year_reported %in% c("2018-2019")) #only analyzing data in year 2018-2019
 ```
 
+# Import tidy and join the median income and food insecurity data
+```{r}
+income = read_xlsx("./dataset/median_income.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(county = region_county) %>%
+  mutate(median_income = median_income*0.001,
+         county = toupper(county))
+
+food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
+  janitor::clean_names() %>%
+    rename(county = region_county) %>%
+  rename(food_insecurity_p = percentage) %>%
+  mutate(county = toupper(county))
+
+linear_df2 = left_join(linear_df, income, by = "county")
+linear_df3 = left_join(linear_df2, food_insecurity, by = "county")
+```
 # Normality check
 ```{r}
-qqnorm(linear_df$percent_overweight_or_obese)
-hist(linear_df$percent_overweight_or_obese)
+qqnorm(log(linear_df$percent_overweight_or_obese))
 
+hist(log(linear_df$percent_overweight_or_obese))
 ```
 
 # regression model
 ```{r}
-lm_1 = lm(percent_overweight_or_obese ~ sex + grade_level, data = linear_df)
-
+lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level + median_income + food_insecurity_p, data = linear_df3)
 summary(lm_1)
+
+par(mfrow = c(2, 2))
+plot(lm_1)
 ```
