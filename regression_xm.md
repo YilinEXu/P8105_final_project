@@ -3,7 +3,15 @@ Regression - Statistical Analysis
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
+Before doing the linear regression model, I used two types of
+transformation to improve the adequacy, a. y’ = log(y), b. y’= y^0.5,
+Q\_Q plot showed that the log tansformation has improved data’s
+normality.  
 ![](regression_xm_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->![](regression_xm_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+Above are the Q-Q plot and histogram of overweight/obesity data after
+log transformation. Q-Q plot is perfectly linear distributed, histogram
+is normally distributed with a little left skewness. Overall, the
+normality assumption is satisfied.
 
 ``` r
 # regression model

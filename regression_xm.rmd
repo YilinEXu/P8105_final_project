@@ -20,17 +20,17 @@ original = tibble(        ## Clean the original weight data
 
 
 ```{r echo=FALSE} 
-# Clean dataset with geolocation information
+# Clean data set with geo location information
 coordinates = tibble(
   read.csv("./dataset/Geocodes_USA_with_Counties.csv")
 ) %>%
   filter(state == "NY") %>%  # filter out counties outside NY state
-  select(county, latitude, longitude) %>% # only information we need is county name and geolocation
+  select(county, latitude, longitude) %>% # only information we need is county name and geo location
   drop_na() %>%
   group_by(county) %>%
-  summarise(latitude = mean(latitude), longitude = mean(longitude)) %>% #different location in each county variaed slightly, so we take the mean of each county's geolocation
+  summarise(latitude = mean(latitude), longitude = mean(longitude)) %>% #different location in each county variaed slightly, so we take the mean of each county's geo location
   filter(!county == "") %>% # one county's name input is blank
-  mutate(county = toupper(county)) # to swith county name to uppercase
+  mutate(county = toupper(county)) # to switch county name to uppercase
 ```
 
 
@@ -41,7 +41,7 @@ weight_df = left_join(original, coordinates, by = "county")
 
 
 ```{r echo=FALSE}
-# Further orginal dataset cleanning for linea regression analysis
+# Further original data cleaning for linear regression analysis
 linear_df = weight_df %>%
   filter(!sex == "ALL") %>%
   filter(!grade_level == "DISTRICT TOTAL") %>%
@@ -72,12 +72,14 @@ linear_df2 = left_join(linear_df, income, by = "county")
 linear_df3 = left_join(linear_df2, food_insecurity, by = "county")
 ```
 
-```{r echo=FALSE}
+Before doing the linear regression model, I used two types of transformation to improve the adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log tansformation has improved data's normality.  
+```{r echo=FALSE, warning=FALSE}
 # Normality check
 qqnorm(log(linear_df$percent_overweight_or_obese))
 
 hist(log(linear_df$percent_overweight_or_obese))
 ```
+Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is perfectly linear distributed, histogram is normally distributed with a little left skewness.  Overall, the normality assumption is satisfied.  
 
 
 ```{r}
