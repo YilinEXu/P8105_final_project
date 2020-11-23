@@ -3,24 +3,24 @@ title: "Regression - Statistical Analysis"
 output: github_document
 ---
 
-```{r}
+```{r setup, include=FALSE}
 library(tidyverse)
 library(patchwork)
 library(readxl)
 ```
 
-# Clean the orginal weight dataset
-```{r}
-original = tibble(
+
+```{r echo=FALSE} 
+original = tibble(        ## Clean the orginal weight dataset
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
   janitor::clean_names() %>%
   select(-location_code, -region, -area_name)  # the only location information we need is county name
 ```
 
+
+```{r echo=FALSE} 
 # Clean dataset with geolocation information
-```{r} 
-#import coordinates data set 
 coordinates = tibble(
   read.csv("./dataset/Geocodes_USA_with_Counties.csv")
 ) %>%
@@ -33,13 +33,15 @@ coordinates = tibble(
   mutate(county = toupper(county)) # to swith county name to uppercase
 ```
 
+
+```{r echo=FALSE}
 # combine two data set
-```{r}
 weight_df = left_join(original, coordinates, by = "county")
 ```
 
+
+```{r echo=FALSE}
 # Further orginal dataset cleanning for linea regression analysis
-```{r}
 linear_df = weight_df %>%
   filter(!sex == "ALL") %>%
   filter(!grade_level == "DISTRICT TOTAL") %>%
@@ -51,8 +53,9 @@ linear_df = weight_df %>%
   filter(year_reported %in% c("2018-2019")) #only analyzing data in year 2018-2019
 ```
 
+
+```{r echo=FALSE}
 # Import tidy and join the median income and food insecurity data
-```{r}
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
@@ -68,15 +71,17 @@ food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
 linear_df2 = left_join(linear_df, income, by = "county")
 linear_df3 = left_join(linear_df2, food_insecurity, by = "county")
 ```
+
+```{r echo=FALSE}
 # Normality check
-```{r}
 qqnorm(log(linear_df$percent_overweight_or_obese))
 
 hist(log(linear_df$percent_overweight_or_obese))
 ```
 
-# regression model
+
 ```{r}
+# regression model
 lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level + median_income + food_insecurity_p, data = linear_df3)
 summary(lm_1)
 
