@@ -1,5 +1,5 @@
 ---
-title: "Map"
+title: "Mapping and Visualization"
 output: html_document
 ---
 
@@ -102,16 +102,17 @@ label_popup = paste0(
 )
 
 # get jenks natural break for average
-getJenksBreaks(fips_map$average, 8)
+getJenksBreaks(fips_map$average, 5)
 
 # set bins
-average_bins <- c(26,30,32,34,36,38,40,43)
+average_bins <- c(26,30,34,38,43)
 
 # set pals
-average_pal <- colorBin('Greens', bins = average_bins, na.color = '#aaff56')
+average_pal <- colorBin('Blues', bins = average_bins, na.color = '#9fabab')
 ```
 
-## The Average Percentage of Overweight or Obesity in Each County
+### The Spacial Trend of the Average Percentage of Overweight or Obese Student population by Counties in New York State:
+
 ```{r, echo = FALSE}
 # choropleth map
 leaflet::leaflet(data = fips_map_crs) %>% 
@@ -129,3 +130,4 @@ leaflet::leaflet(data = fips_map_crs) %>%
             title = "The Average Percentage of Overweight or Obisity in New York",
             opacity = 1)
 ```
+_The darker the blue color, the larger percentage of overweight or obesity can be found in the corresponding county_
