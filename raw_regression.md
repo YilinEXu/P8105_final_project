@@ -3,6 +3,7 @@ Raw Regression
 
 ``` r
 library(tidyverse)
+<<<<<<< HEAD
 ```
 
     ## ── Attaching packages ───────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
@@ -17,6 +18,9 @@ library(tidyverse)
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
+=======
+
+>>>>>>> 8d1ce10e06e42859bbc9ec1451d3a2493cf9187a
 knitr::opts_chunk$set(
   fig.width = 9,
   fig.asp = .6,
