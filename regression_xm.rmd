@@ -73,34 +73,44 @@ linear_df2 = left_join(linear_df, income, by = "county")  # combine income data 
 linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
 ```
 
-## Normality Check and Data Transformation
+# Normality Check and Data Transformation
 
 Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log tansformation has improved data's normality.  
+
 ```{r echo=FALSE}
 # Normality check
-qqnorm(log(linear_df$percent_overweight_or_obese), col = c("deepskyblue"))
+qqnorm(log(linear_df$percent_overweight_or_obese), col = c("darkorchid3"))
 
-hist(log(linear_df$percent_overweight_or_obese), main = "Histogram for log(percent overweight ot obese)", xlab = "log(percent overweight ot obese)", col = c("deepskyblue3"))
+linear_df3 %>%
+  ggplot(aes(x = log(percent_overweight_or_obese))) + geom_histogram(color = "purple",
+    fill = "#69b3a2", size = 2) + labs(x = "log (percent overweight and obese)", title = "Histogram of log (percent overweight and obese)") 
 ```
 
-Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is perfectly in a straight line, histogram is normally distributed with a little left skewness.  Overall, the normality assumption is satisfied.  
+Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is in a perfect straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
 
-## Statistics Model
+# Statistics Model
 
-In the beginning we used included 4 independent variables, grade level, median income, food insecurity and gender, however the model summary showed there is a very weak correlation between gender and our dependent variable - percent overweight and obese, so we took gender factor out, model is furthurly improved, left four variables all significantly influenced the percent overweight and obese.
+In the beginning we included 4 independent variables, grade level, median income, food insecurity and gender, however the model summary showed there is a very weak correlation between gender (p-value = 0.168) and dependent variable, so we took gender out from the model, left four variables all significantly influenced the percentage overweight and obese.
 
-## log(y) = 4.54 + 0.16x1 - 0.01x2 - 0.03x3
-y = percent overweight or obese  
-x1 = grade level  
-x2 = median income (kilodollar)  
+# Final Model: log(y) = 4.54 + 0.16x1 - 0.01x2 - 0.03x3
+y = percentage overweight or obese  
+x1 = grade level  (0 = elementary, 1 = middle/high school)  
+x2 = median income (k dollars)  
 x3 = food insecurity percentage
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 # regression model
 lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level + median_income + food_insecurity_p, data = linear_df3) 
+```
+# Model Summary
+```{r}
 summary(lm_1)
-
-par(mfrow = c(2, 2))
-plot(lm_1, col = ("blueviolet"))
 ```
 
+```{r echo=FALSE, warning=FALSE}
+par(mfrow = c(2, 2))
+plot(lm_1, col = "darkorchid2", alpha = 0.5)
+```
+
+# Conclusion
+There is no strange pattern about Residusl vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid.  Three variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the models' R-squared is equal to 0.2526, which means only 25% of the data is explained by the model.  Other important factors have not been included in the model.  We will make improvement on this model when more data is available. 
