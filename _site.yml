@@ -1,0 +1,13 @@
+name: "P8105 Final Project"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "Trend Graphs"
+      href: trend_plot.html
+    - icon: fa-github fa-lg
+      href: https://github.com/YilinEXu/P8105_final_project.git
+
+output:
+  html_document:
+    theme: paper
