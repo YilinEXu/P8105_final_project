@@ -61,7 +61,7 @@ anim_save("gif1.gif",gif1)
 
 ## Overweight and obsesity percentage trend for students by gender from 2010 to 2019 in NY
 
-
+percentage
 ```{r,echo=FALSE,fig.align='center'}
 genderperc <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
@@ -87,6 +87,7 @@ anim_save("gif2.gif", gif2)
 
 ![](gif2.gif)
 
+number 
 ```{r,echo=FALSE,fig.align='center'}
 gender_num <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
