@@ -50,7 +50,8 @@ linear_df = weight_df %>%
     grade_level = if_else(grade_level == "ELEMENTARY", 0, 1)
   ) %>%
   drop_na() %>%
-  filter(year_reported %in% c("2018-2019")) #only analyzing data in year 2018-2019
+  filter(year_reported %in% c("2018-2019")) %>% #only analyzing data in year 2018-2019
+  select(county, percent_overweight_or_obese, grade_level, sex)
 ```
 
 
@@ -68,8 +69,8 @@ food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
   rename(food_insecurity_p = percentage) %>%
   mutate(county = toupper(county))
 
-linear_df2 = left_join(linear_df, income, by = "county")
-linear_df3 = left_join(linear_df2, food_insecurity, by = "county")
+linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
+linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
 ```
 
 ## Normality Check and Data Transformation

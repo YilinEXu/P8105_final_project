@@ -1,12 +1,19 @@
 ---
-title: "Map"
+title: "Mapping and Visualization"
 output: html_document
 ---
 
 ```{r setup, include = FALSE}
 library(tidyverse)
-library(leaflet)
 library(plotly)
+library(rgdal)
+library(plotly)
+library(maps)
+library(devtools)
+library(leaflet)
+library(BAMMtools)
+library(spdep)
+library(maptools)
 
 knitr::opts_chunk$set(
   message = FALSE,
@@ -28,67 +35,99 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ```
 
-
+```{r, include = FALSE}
 # Clean the orginal weight dataset
-```{r}
 original = tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
   janitor::clean_names() %>%
-  filter(year_reported %in% c("2010-2011", "2018-2019")) %>% #only need data in year 2010-2011 or 2018-2019
   select(-location_code, -region, -area_name)  # the only location information we need is county name
 ```
 
+```{r, echo = FALSE} 
 # Clean dataset with geolocation information
-```{r} 
-#import coordinates data set 
-coordinates = tibble(
-  read.csv("./dataset/Geocodes_USA_with_Counties.csv")
+fips_code = tibble(
+  read.csv("./dataset/New_York_State_ZIP_Codes-County_FIPS_Cross-Reference.csv")
 ) %>%
-  filter(state == "NY") %>%  # filter out counties outside NY state
-  select(county, latitude, longitude) %>% # only information we need is county name and geolocation
-  drop_na() %>%
-  group_by(county) %>%
-  summarise(latitude = mean(latitude), longitude = mean(longitude)) %>% #different location in each county variaed slightly, so we take the mean of each county's geolocation
-  filter(!county == "") %>% # one county's name input is blank
+  janitor::clean_names() %>% 
+  rename("county" = county_name, "fips" = county_fips) %>% 
+  select(county, fips) %>% # only information we need is county name and geolocation
+  distinct() %>% 
   mutate(county = toupper(county)) # to swith county name to uppercase
 ```
 
-# combine two data set
-```{r}
-weight_df = left_join(original, coordinates, by = "county")
-
+```{r, echo = FALSE}
+weight_df = 
+  left_join(original, fips_code, by = "county") %>% 
+  filter(county != "STATEWIDE (EXCLUDING NYC)")
+  
 average_percent = 
   weight_df %>% 
   group_by(county) %>% 
   drop_na(percent_overweight_or_obese) %>%
   summarize(average = mean(percent_overweight_or_obese), .groups = "keep")
 
-sum_df = left_join(weight_df, average_percent, by = "county")
+sum_df = 
+  left_join(average_percent, fips_code, by = "county") %>% 
+  mutate(fips_code = as.character(fips))
 ```
 
 
-```{r}
-sum_df
+```{r, include = FALSE}
+#zip code tabulation area
+fips_map = readOGR(dsn = "./dataset/NYS_Civil_Boundaries_SHP/Counties.shp", encoding = "UTF-8")
 
-pal <- colorNumeric(
-  palette = "viridis",
-  domain = sum_df$average)
+fips_map@data<- left_join(fips_map@data, sum_df, by = c("FIPS_CODE" = "fips_code"))
 
-sum_df %>% 
-  mutate(
-    click_label = 
-      str_c("<b>year-window:", year_reported, "</b><br>", average, "percent is overweight or obses<br>", grade_level, " grade")) %>% 
-  leaflet() %>% 
-  addProviderTiles(providers$CartoDB.Positron) %>% 
-  addCircleMarkers(~longitude, ~latitude, radius = 5, color = ~pal(average), popup = ~click_label)
+fips_map$average[is.na(fips_map$average)] <- 0
 ```
 
-```{r}
-weight_df %>%
-  mutate(
-    text_label = str_c("Year-window: ", year_reported, "\nSchool grade: ", grade_level,"\n Obisity percentage: ", percent_obese)) %>%
-  plot_ly(x = ~longitude, y = ~latitude, type = "scatter", mode = "markers",
-          color = ~percent_obese, text = ~text_label, alpha = 0.5)
+```{r, echo = FALSE}
+# CRS setting
+fips_map_crs = spTransform(fips_map, CRS("+init=epsg:4326"))
+# export the json file
+writeOGR(fips_map_crs, './dataset/fips_map_geojson', layer = 'fips_map', driver = 'GeoJSON')
 ```
 
+```{r, include = FALSE}
+# Layout 
+# format of the label that pops up for each polygon
+label_popup = paste0(
+  "<strong>FIPS code: </strong>",
+  fips_map$FIPS_CODE,
+  "<br><strong>County Name: </strong>",
+  fips_map$NAME,
+  "<br><strong>Percent of overweight or obses children: </strong>",
+  fips_map$average
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$average, 5)
+
+# set bins
+average_bins <- c(26,30,34,38,43)
+
+# set pals
+average_pal <- colorBin('Blues', bins = average_bins, na.color = '#9fabab')
+```
+
+### The Spacial Trend of the Average Percentage of Overweight or Obese Student population by Counties in New York State:
+
+```{r, echo = FALSE}
+# choropleth map
+leaflet::leaflet(data = fips_map_crs) %>% 
+  addProviderTiles('CartoDB.Positron') %>% 
+  addPolygons(fillColor = ~average_pal(average),
+              fillOpacity = 0.8,
+              color = "#BDBDC3",
+              weight = 1,
+              popup = label_popup,
+              highlightOptions = highlightOptions(color = "black", weight = 2,
+      bringToFront = TRUE)) %>% 
+  addLegend('bottomleft',
+            pal = average_pal,
+            values = ~average,
+            title = "The Average Percentage of Overweight or Obisity in New York",
+            opacity = 1)
+```
+_The darker the blue color, the larger percentage of overweight or obesity can be found in the corresponding county_
