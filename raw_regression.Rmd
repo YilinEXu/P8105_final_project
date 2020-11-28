@@ -127,10 +127,10 @@ weight_df = left_join(original, coordinates, by = "county")
 # Further original data cleaning for graph of poverty and obesity
 obesity_geo_df = 
   weight_df %>% 
-  filter(sex %in% "ALL") %>% 
+  #filter(sex %in% "ALL") %>% 
   filter(!county == "STATEWIDE (EXCLUDING NYC)") %>% 
   filter(grade_level %in% "DISTRICT TOTAL") %>% 
-  filter(!county == "N/A") %>% 
+  #filter(!county == "N/A") %>% 
   select(county, percent_overweight_or_obese, latitude, longitude)
   
 
@@ -146,7 +146,22 @@ income_geo_df = left_join(coordinates, income, by = "county")  # combine income 
 ```
 
 ```{r}
+obesity_geo_plot = 
+  obesity_geo_df %>% 
+  plot_ly(
+    x = ~latitude, y = ~ longitude, type = "scatter", mode = "markers",
+    color = ~percent_overweight_or_obese, alpha = 0.5
+  )
 
+income_geo_plot = 
+  income_geo_df %>% 
+  plot_ly(
+    x = ~latitude, y = ~ longitude, type = "scatter", mode = "markers",
+    color = ~median_income, alpha = 0.5
+  )
+
+
+fig1 = subplot(obesity_geo_plot, income_geo_plot)
 ```
 
 
