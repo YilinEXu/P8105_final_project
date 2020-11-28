@@ -2,6 +2,13 @@
 title: "Mapping and Visualization"
 output: html_document
 ---
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
 
 ```{r setup, include = FALSE}
 library(tidyverse)
@@ -14,6 +21,7 @@ library(leaflet)
 library(BAMMtools)
 library(spdep)
 library(maptools)
+library(leafsync)
 
 knitr::opts_chunk$set(
   message = FALSE,
@@ -61,14 +69,22 @@ weight_df =
   left_join(original, fips_code, by = "county") %>% 
   filter(county != "STATEWIDE (EXCLUDING NYC)")
   
-average_percent = 
+average_percent_oo = 
   weight_df %>% 
   group_by(county) %>% 
   drop_na(percent_overweight_or_obese) %>%
-  summarize(average = mean(percent_overweight_or_obese), .groups = "keep")
+  summarize(percent_oo = mean(percent_overweight_or_obese), .groups = "keep")
+
+average_percent_healthy = 
+  weight_df %>% 
+  group_by(county) %>% 
+  drop_na(percent_healthy_weight) %>%
+  summarize(percent_healthy = mean(percent_healthy_weight), .groups = "keep") %>%
+  mutate(percent_healthy = percent_healthy*100)
 
 sum_df = 
-  left_join(average_percent, fips_code, by = "county") %>% 
+  left_join(average_percent_oo,average_percent_healthy, by = "county") %>% 
+  left_join(fips_code, by = "county") %>% 
   mutate(fips_code = as.character(fips))
 ```
 
@@ -79,55 +95,121 @@ fips_map = readOGR(dsn = "./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp",
 
 fips_map@data<- left_join(fips_map@data, sum_df, by = c("FIPS_CODE" = "fips_code"))
 
-fips_map$average[is.na(fips_map$average)] <- 0
+fips_map$percent_healthy[is.na(fips_map$percent_healthy)] <- 0
+fips_map$percent_oo[is.na(fips_map$percent_oo)] <- 0
 ```
 
 ```{r, echo = FALSE}
 # CRS setting
 fips_map_crs = spTransform(fips_map, CRS("+init=epsg:4326"))
 # export the json file
-writeOGR(fips_map_crs, './dataset/fips_map_geojson', layer = 'fips_map', driver = 'GeoJSON')
+writeOGR(fips_map_crs, './map_data_jyz/fips_map_geojson', layer = 'fips_map', driver = 'GeoJSON', overwrite_layer = TRUE)
 ```
 
 ```{r, include = FALSE}
 # Layout 
 # format of the label that pops up for each polygon
-label_popup = paste0(
+label_popup_oo = paste0(
   "<strong>FIPS code: </strong>",
   fips_map$FIPS_CODE,
   "<br><strong>County Name: </strong>",
   fips_map$NAME,
-  "<br><strong>Percent of overweight or obses children: </strong>",
-  fips_map$average
+  "<br><strong>Percent of Overweight or Obese: </strong>",
+  fips_map$percent_oo
 )
 
 # get jenks natural break for average
-getJenksBreaks(fips_map$average, 5)
+getJenksBreaks(fips_map$percent_oo, 5)
 
 # set bins
-average_bins <- c(26,30,34,38,43)
+percent_oo_bins <- c(26,30,34,38,43)
 
 # set pals
-average_pal <- colorBin('Blues', bins = average_bins, na.color = '#9fabab')
+percent_oo_pal <- colorBin('Reds', bins = percent_oo_bins, na.color = '#d9d9d9')
 ```
 
-### The Spacial Trend of the Average Percentage of Overweight or Obese Student population by Counties in New York State:
+```{r, include = FALSE}
+# Layout 
+# format of the label that pops up for each polygon
+label_popup_healthy = paste0(
+  "<strong>FIPS code: </strong>",
+  fips_map$FIPS_CODE,
+  "<br><strong>County Name: </strong>",
+  fips_map$NAME,
+  "<br><strong>Percent of Healthy Weight: </strong>",
+  fips_map$percent_healthy
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$percent_healthy, 5)
+
+# set bins
+percent_healthy_bins <- c(55,60,65,70,81)
+
+# set pals
+percent_healthy_pal <- colorBin('Blues', bins = percent_healthy_bins, na.color = '#d9d9d9')
+```
 
 ```{r, echo = FALSE}
 # choropleth map
-leaflet::leaflet(data = fips_map_crs) %>% 
+oo_map = leaflet::leaflet(data = fips_map_crs) %>% 
   addProviderTiles('CartoDB.Positron') %>% 
-  addPolygons(fillColor = ~average_pal(average),
+  addPolygons(fillColor = ~percent_oo_pal(percent_oo),
               fillOpacity = 0.8,
               color = "#BDBDC3",
               weight = 1,
-              popup = label_popup,
+              popup = label_popup_oo,
               highlightOptions = highlightOptions(color = "black", weight = 2,
       bringToFront = TRUE)) %>% 
   addLegend('bottomleft',
-            pal = average_pal,
-            values = ~average,
-            title = "The Average Percentage of Overweight or Obisity in New York",
+            pal = percent_oo_pal,
+            values = ~percent_oo,
+            title = "The Average Percentage of Students Who were Overweight or Obese (2010-2019)",
             opacity = 1)
 ```
-_The darker the blue color, the larger percentage of overweight or obesity can be found in the corresponding county_
+
+
+```{r, echo = FALSE}
+# choropleth map
+healthy_map = leaflet::leaflet(data = fips_map_crs) %>% 
+  addProviderTiles('CartoDB.Positron') %>% 
+  addPolygons(fillColor = ~percent_healthy_pal(percent_healthy),
+              fillOpacity = 0.8,
+              color = "#BDBDC3",
+              weight = 1,
+              popup = label_popup_healthy,
+              highlightOptions = highlightOptions(color = "black", weight = 2,
+      bringToFront = TRUE)) %>% 
+  addLegend('bottomleft',
+            pal = percent_healthy_pal,
+            values = ~percent_healthy,
+            title = "The Average Percentage of Students Who Maintained Healthy Weight (2010-2019)",
+            opacity = 1)
+```
+
+### Overweight or Obese vs. Healthy Weight:
+This map includes weight information collected from students who were in two grade levels: `ELEMENTARY` or `MIDDLE/HIGH`. They came from __`r nrow(average_percent_oo)`__ counties in the New York State, while New York City was excluded from the data. The percent of students who were overweight or obese and the percent of students who maintained a healthy weight were selected as indicator variables to represent the student's weight situation in the corresponding counties. Since data was collected over a __9-years-period__, an average of the selected percentages was taken and mapped. 
+<br>
+The Average Percentage of Students Who were Overweight or Obese across 9 years and `r nrow(average_percent_oo)` New York counties were mapped in __red__. The darker the red color, the larger percentage of overweight or obese students can be found in the county. The Average Percentage of Students Who Maintained Healthy Weight were mapped in __blue__, where the darker the blue color, the larger percentage of students in the county maintained a healthy weight. 
+```{r echo = FALSE}
+#putting maps side by side
+sync(oo_map, healthy_map, ncol = 2, sync = "all", sync.cursor = TRUE, no.initial.sync = TRUE)
+```
+<br>
+Overall, on average, there were higher percentage of students who maintained a healthy weight across the `r nrow(average_percent_oo)`counties, and the two maps echo each other nicely. However, there are a few exceptions. Take `HAMILTON` as an example, it is colored as deep red and deep blue at the same time, which means it not only exhibits high average percentage of overweight or obesity but also has high average percentage of students with healthy weight.
+
+```{r, include=FALSE}
+hamilton_df = 
+  weight_df %>% 
+  filter(county == "HAMILTON") %>% 
+  select(county, year_reported, grade_level, 
+         percent_overweight_or_obese, percent_healthy_weight, sex) %>% 
+  mutate(percent_healthy_weight = percent_healthy_weight *100)
+
+
+tidy_hamilton = 
+  hamilton_df[!with(hamilton_df,is.na(percent_overweight_or_obese)& is.na(percent_healthy_weight)),]
+
+  
+```
+
