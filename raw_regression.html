@@ -1,646 +1,482 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
-<meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Raw Regression</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
 
 <style type="text/css">
-@font-face {
-font-family: octicons-link;
-src: url(data:font/woff;charset=utf-8;base64,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) format('woff');
-}
-body {
--webkit-text-size-adjust: 100%;
-text-size-adjust: 100%;
-color: #333;
-font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-font-size: 16px;
-line-height: 1.6;
-word-wrap: break-word;
-}
-a {
-background-color: transparent;
-}
-a:active,
-a:hover {
-outline: 0;
-}
-strong {
-font-weight: bold;
-}
 h1 {
-font-size: 2em;
-margin: 0.67em 0;
+  font-size: 34px;
 }
-img {
-border: 0;
-}
-hr {
-box-sizing: content-box;
-height: 0;
-}
-pre {
-overflow: auto;
-}
-code,
-kbd,
-pre {
-font-family: monospace, monospace;
-font-size: 1em;
-}
-input {
-color: inherit;
-font: inherit;
-margin: 0;
-}
-html input[disabled] {
-cursor: default;
-}
-input {
-line-height: normal;
-}
-input[type="checkbox"] {
-box-sizing: border-box;
-padding: 0;
-}
-table {
-border-collapse: collapse;
-border-spacing: 0;
-}
-td,
-th {
-padding: 0;
-}
-* {
-box-sizing: border-box;
-}
-input {
-font: 13px / 1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-}
-a {
-color: #4078c0;
-text-decoration: none;
-}
-a:hover,
-a:active {
-text-decoration: underline;
-}
-hr {
-height: 0;
-margin: 15px 0;
-overflow: hidden;
-background: transparent;
-border: 0;
-border-bottom: 1px solid #ddd;
-}
-hr:before {
-display: table;
-content: "";
-}
-hr:after {
-display: table;
-clear: both;
-content: "";
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-margin-top: 15px;
-margin-bottom: 15px;
-line-height: 1.1;
-}
-h1 {
-font-size: 30px;
+h1.title {
+  font-size: 38px;
 }
 h2 {
-font-size: 21px;
+  font-size: 30px;
 }
 h3 {
-font-size: 16px;
+  font-size: 24px;
 }
 h4 {
-font-size: 14px;
+  font-size: 18px;
 }
 h5 {
-font-size: 12px;
+  font-size: 16px;
 }
 h6 {
-font-size: 11px;
+  font-size: 12px;
 }
-blockquote {
-margin: 0;
+.table th:not([align]) {
+  text-align: left;
 }
-ul,
-ol {
-padding: 0;
-margin-top: 0;
-margin-bottom: 0;
-}
-ol ol,
-ul ol {
-list-style-type: lower-roman;
-}
-ul ul ol,
-ul ol ol,
-ol ul ol,
-ol ol ol {
-list-style-type: lower-alpha;
-}
-dd {
-margin-left: 0;
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
 }
 code {
-font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-font-size: 12px;
-}
-pre {
-margin-top: 0;
-margin-bottom: 0;
-font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
-}
-.select::-ms-expand {
-opacity: 0;
-}
-.octicon {
-font: normal normal normal 16px/1 octicons-link;
-display: inline-block;
-text-decoration: none;
-text-rendering: auto;
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
--webkit-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
-user-select: none;
-}
-.octicon-link:before {
-content: '\f05c';
-}
-.markdown-body:before {
-display: table;
-content: "";
-}
-.markdown-body:after {
-display: table;
-clear: both;
-content: "";
-}
-.markdown-body>*:first-child {
-margin-top: 0 !important;
-}
-.markdown-body>*:last-child {
-margin-bottom: 0 !important;
-}
-a:not([href]) {
-color: inherit;
-text-decoration: none;
-}
-.anchor {
-display: inline-block;
-padding-right: 2px;
-margin-left: -18px;
-}
-.anchor:focus {
-outline: none;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-margin-top: 1em;
-margin-bottom: 16px;
-font-weight: bold;
-line-height: 1.4;
-}
-h1 .octicon-link,
-h2 .octicon-link,
-h3 .octicon-link,
-h4 .octicon-link,
-h5 .octicon-link,
-h6 .octicon-link {
-color: #000;
-vertical-align: middle;
-visibility: hidden;
-}
-h1:hover .anchor,
-h2:hover .anchor,
-h3:hover .anchor,
-h4:hover .anchor,
-h5:hover .anchor,
-h6:hover .anchor {
-text-decoration: none;
-}
-h1:hover .anchor .octicon-link,
-h2:hover .anchor .octicon-link,
-h3:hover .anchor .octicon-link,
-h4:hover .anchor .octicon-link,
-h5:hover .anchor .octicon-link,
-h6:hover .anchor .octicon-link {
-visibility: visible;
-}
-h1 {
-padding-bottom: 0.3em;
-font-size: 2.25em;
-line-height: 1.2;
-border-bottom: 1px solid #eee;
-}
-h1 .anchor {
-line-height: 1;
-}
-h2 {
-padding-bottom: 0.3em;
-font-size: 1.75em;
-line-height: 1.225;
-border-bottom: 1px solid #eee;
-}
-h2 .anchor {
-line-height: 1;
-}
-h3 {
-font-size: 1.5em;
-line-height: 1.43;
-}
-h3 .anchor {
-line-height: 1.2;
-}
-h4 {
-font-size: 1.25em;
-}
-h4 .anchor {
-line-height: 1.2;
-}
-h5 {
-font-size: 1em;
-}
-h5 .anchor {
-line-height: 1.1;
-}
-h6 {
-font-size: 1em;
-color: #777;
-}
-h6 .anchor {
-line-height: 1.1;
-}
-p,
-blockquote,
-ul,
-ol,
-dl,
-table,
-pre {
-margin-top: 0;
-margin-bottom: 16px;
-}
-hr {
-height: 4px;
-padding: 0;
-margin: 16px 0;
-background-color: #e7e7e7;
-border: 0 none;
-}
-ul,
-ol {
-padding-left: 2em;
-}
-ul ul,
-ul ol,
-ol ol,
-ol ul {
-margin-top: 0;
-margin-bottom: 0;
-}
-li>p {
-margin-top: 16px;
-}
-dl {
-padding: 0;
-}
-dl dt {
-padding: 0;
-margin-top: 16px;
-font-size: 1em;
-font-style: italic;
-font-weight: bold;
-}
-dl dd {
-padding: 0 16px;
-margin-bottom: 16px;
-}
-blockquote {
-padding: 0 15px;
-color: #777;
-border-left: 4px solid #ddd;
-}
-blockquote>:first-child {
-margin-top: 0;
-}
-blockquote>:last-child {
-margin-bottom: 0;
-}
-table {
-display: block;
-width: 100%;
-overflow: auto;
-word-break: normal;
-word-break: keep-all;
-}
-table th {
-font-weight: bold;
-}
-table th,
-table td {
-padding: 6px 13px;
-border: 1px solid #ddd;
-}
-table tr {
-background-color: #fff;
-border-top: 1px solid #ccc;
-}
-table tr:nth-child(2n) {
-background-color: #f8f8f8;
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
-max-width: 100%;
-box-sizing: content-box;
-background-color: #fff;
+  max-width:100%;
 }
-code {
-padding: 0;
-padding-top: 0.2em;
-padding-bottom: 0.2em;
-margin: 0;
-font-size: 85%;
-background-color: rgba(0,0,0,0.04);
-border-radius: 3px;
+.tabbed-pane {
+  padding-top: 12px;
 }
-code:before,
-code:after {
-letter-spacing: -0.2em;
-content: "\00a0";
+.html-widget {
+  margin-bottom: 20px;
 }
-pre>code {
-padding: 0;
-margin: 0;
-font-size: 100%;
-word-break: normal;
-white-space: pre;
-background: transparent;
-border: 0;
+button.code-folding-btn:focus {
+  outline: none;
 }
-.highlight {
-margin-bottom: 16px;
+summary {
+  display: list-item;
 }
-.highlight pre,
-pre {
-padding: 16px;
-overflow: auto;
-font-size: 85%;
-line-height: 1.45;
-background-color: #f7f7f7;
-border-radius: 3px;
-}
-.highlight pre {
-margin-bottom: 0;
-word-break: normal;
-}
-pre {
-word-wrap: normal;
-}
-pre code {
-display: inline;
-max-width: initial;
-padding: 0;
-margin: 0;
-overflow: initial;
-line-height: inherit;
-word-wrap: normal;
-background-color: transparent;
-border: 0;
-}
-pre code:before,
-pre code:after {
-content: normal;
-}
-kbd {
-display: inline-block;
-padding: 3px 5px;
-font-size: 11px;
-line-height: 10px;
-color: #555;
-vertical-align: middle;
-background-color: #fcfcfc;
-border: solid 1px #ccc;
-border-bottom-color: #bbb;
-border-radius: 3px;
-box-shadow: inset 0 -1px 0 #bbb;
-}
-.pl-c {
-color: #969896;
-}
-.pl-c1,
-.pl-s .pl-v {
-color: #0086b3;
-}
-.pl-e,
-.pl-en {
-color: #795da3;
-}
-.pl-s .pl-s1,
-.pl-smi {
-color: #333;
-}
-.pl-ent {
-color: #63a35c;
-}
-.pl-k {
-color: #a71d5d;
-}
-.pl-pds,
-.pl-s,
-.pl-s .pl-pse .pl-s1,
-.pl-sr,
-.pl-sr .pl-cce,
-.pl-sr .pl-sra,
-.pl-sr .pl-sre {
-color: #183691;
-}
-.pl-v {
-color: #ed6a43;
-}
-.pl-id {
-color: #b52a1d;
-}
-.pl-ii {
-background-color: #b52a1d;
-color: #f8f8f8;
-}
-.pl-sr .pl-cce {
-color: #63a35c;
-font-weight: bold;
-}
-.pl-ml {
-color: #693a17;
-}
-.pl-mh,
-.pl-mh .pl-en,
-.pl-ms {
-color: #1d3e81;
-font-weight: bold;
-}
-.pl-mq {
-color: #008080;
-}
-.pl-mi {
-color: #333;
-font-style: italic;
-}
-.pl-mb {
-color: #333;
-font-weight: bold;
-}
-.pl-md {
-background-color: #ffecec;
-color: #bd2c00;
-}
-.pl-mi1 {
-background-color: #eaffea;
-color: #55a532;
-}
-.pl-mdr {
-color: #795da3;
-font-weight: bold;
-}
-.pl-mo {
-color: #1d3e81;
-}
-kbd {
-display: inline-block;
-padding: 3px 5px;
-font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
-line-height: 10px;
-color: #555;
-vertical-align: middle;
-background-color: #fcfcfc;
-border: solid 1px #ccc;
-border-bottom-color: #bbb;
-border-radius: 3px;
-box-shadow: inset 0 -1px 0 #bbb;
-}
-.task-list-item {
-list-style-type: none;
-}
-.task-list-item+.task-list-item {
-margin-top: 3px;
-}
-.task-list-item input {
-margin: 0 0.35em 0.25em -1.6em;
-vertical-align: middle;
-}
-:checked+.radio-label {
-z-index: 1;
-position: relative;
-border-color: #4078c0;
-}
-.sourceLine {
-display: inline-block;
-}
-code .kw { color: #000000; }
-code .dt { color: #ed6a43; }
-code .dv { color: #009999; }
-code .bn { color: #009999; }
-code .fl { color: #009999; }
-code .ch { color: #009999; }
-code .st { color: #183691; }
-code .co { color: #969896; }
-code .ot { color: #0086b3; }
-code .al { color: #a61717; }
-code .fu { color: #63a35c; }
-code .er { color: #a61717; background-color: #e3d2d2; }
-code .wa { color: #000000; }
-code .cn { color: #008080; }
-code .sc { color: #008080; }
-code .vs { color: #183691; }
-code .ss { color: #183691; }
-code .im { color: #000000; }
-code .va {color: #008080; }
-code .cf { color: #000000; }
-code .op { color: #000000; }
-code .bu { color: #000000; }
-code .ex { color: #000000; }
-code .pp { color: #999999; }
-code .at { color: #008080; }
-code .do { color: #969896; }
-code .an { color: #008080; }
-code .cv { color: #008080; }
-code .in { color: #008080; }
 </style>
-<style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
 body {
-  box-sizing: border-box;
-  min-width: 200px;
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 45px;
-  padding-top: 0px;
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
 
 </head>
 
 <body>
 
-<h1 id="raw-regression">Raw Regression</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a>knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(</span>
-<span id="cb1-4"><a href="#cb1-4"></a>  <span class="dt">fig.width =</span> <span class="dv">9</span>,</span>
-<span id="cb1-5"><a href="#cb1-5"></a>  <span class="dt">fig.asp =</span> <span class="fl">.6</span>,</span>
-<span id="cb1-6"><a href="#cb1-6"></a>  <span class="dt">out.width =</span> <span class="st">&quot;90%&quot;</span>)</span></code></pre></div>
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="trend_plot.html">Trend Graphs</a>
+</li>
+<li>
+  <a href="https://github.com/YilinEXu/P8105_final_project.git">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Raw Regression</h1>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(readxl)
+library(plotly)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>knitr::opts_chunk$set(
+  fig.width = 9,
+  fig.asp = .6,
+  out.width = &quot;90%&quot;)
+
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d</code></pre>
 <p>We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most.</p>
 <p>Basic variables that we are interested in:</p>
 <p><strong>Sex</strong> <strong>Grade Level</strong> <strong>Economic Status</strong> <strong>Food Access Ability</strong></p>
-<h1 id="exploratory-data-analysis">Exploratory data analysis</h1>
-<h2 id="sex">Sex</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>original =<span class="st"> </span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="st">  </span><span class="kw">tibble</span>(</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="kw">read.csv</span>(<span class="st">&quot;./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv&quot;</span>)</span>
-<span id="cb2-4"><a href="#cb2-4"></a>) <span class="op">%&gt;%</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="st">  </span>janitor<span class="op">::</span><span class="kw">clean_names</span>()</span>
-<span id="cb2-6"><a href="#cb2-6"></a></span>
-<span id="cb2-7"><a href="#cb2-7"></a>sex_df =<span class="st"> </span></span>
-<span id="cb2-8"><a href="#cb2-8"></a><span class="st">  </span>original <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-9"><a href="#cb2-9"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
-<span id="cb2-10"><a href="#cb2-10"></a>    <span class="dt">percent_healthy_weight =</span> percent_healthy_weight <span class="op">*</span><span class="st"> </span><span class="dv">100</span></span>
-<span id="cb2-11"><a href="#cb2-11"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="st">  </span><span class="kw">select</span>(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-13"><a href="#cb2-13"></a><span class="st">  </span><span class="kw">filter</span>(sex <span class="op">==</span><span class="st"> &quot;MALE&quot;</span> <span class="op">|</span><span class="st"> </span>sex <span class="op">==</span><span class="st"> &quot;FEMALE&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a><span class="st">  </span><span class="kw">filter</span>(grade_level <span class="op">==</span><span class="st"> &quot;DISTRICT TOTAL&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="st">  </span><span class="kw">filter</span>(county <span class="op">==</span><span class="st"> &quot;STATEWIDE (EXCLUDING NYC)&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-16"><a href="#cb2-16"></a><span class="st">  </span><span class="kw">select</span>(year_reported, percent_overweight_or_obese, sex)</span>
-<span id="cb2-17"><a href="#cb2-17"></a></span>
-<span id="cb2-18"><a href="#cb2-18"></a>sex_count =<span class="st"> </span></span>
-<span id="cb2-19"><a href="#cb2-19"></a><span class="st">  </span>sex_df <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="st">  </span><span class="kw">group_by</span>(year_reported) </span>
-<span id="cb2-21"><a href="#cb2-21"></a></span>
-<span id="cb2-22"><a href="#cb2-22"></a>sex_count <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb2-23"><a href="#cb2-23"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">as.factor</span>(year_reported), <span class="dt">y =</span> percent_overweight_or_obese, <span class="dt">fill =</span> sex)) <span class="op">+</span></span>
-<span id="cb2-24"><a href="#cb2-24"></a><span class="st">  </span><span class="kw">geom_bar</span>(<span class="dt">stat=</span><span class="st">&#39;identity&#39;</span>, <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>) <span class="op">+</span></span>
-<span id="cb2-25"><a href="#cb2-25"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Gender distribution in the database&quot;</span>,</span>
-<span id="cb2-26"><a href="#cb2-26"></a>       <span class="dt">x =</span> <span class="st">&quot;Year Reported&quot;</span>,</span>
-<span id="cb2-27"><a href="#cb2-27"></a>       <span class="dt">y =</span> <span class="st">&quot;percentage of Overweight or Obese&quot;</span>) <span class="op">+</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">angle =</span> <span class="dv">45</span>, <span class="dt">hjust =</span> <span class="dv">1</span>))</span></code></pre></div>
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA2AAAAIGCAMAAAAFlhxlAAABiVBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kLY6kNtEAVRNTU1NTW5NTY5NbqtNjshmAABmADpmOgBmOjpmOmZmOpBmZjpmZmZmZrZmkJBmkNtmtttmtv9uTU1uTW5uTY5ubm5ubqtujshuq6tuq+SOTU2OTW6OTY6Obk2ObquOjo6OjsiOyMiOyOSOyP+QOgCQOjqQOmaQZgCQZjqQZmaQZpCQkDqQkGaQkLaQtpCQttuQ27aQ2/+rbk2rbm6rbo6rjk2rjo6rq+SryKuryMir5P+2ZgC2Zjq2kDq2tma2tpC2ttu225C229u22/+2/7a2/9u2///Ijk3Ijm7IjqvIq27Iq6vIyI7I5KvI5P/I///bkDrbkGbbtmbbtpDb27bb29vb/7bb/9vb///kq27kq47kq6vkyI7k/8jk///r6+v95yX/tmb/yI7/yMj/25D/27b/29v/5Kv/5Mj/5OT//7b//8j//9v//+T///9cEElbAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAgAElEQVR4nO2djX8jR33G5UvOTiiQYJy7mNCWFnSkIXdJW6hd+kYTfG1peyqlJM25L4AFocGm7R0yTt36Zf/yzuyrRtLI+5Pmt5595nk+kLOk1X53fs882t3RanaQURSlpsFtbwBFIYsBoyhFMWAUpSgGjKIUxYBRlKIYMIpSFANGUYpiwChKUfKAXf3sNwaDwWc/WL7Q/uZNL1/t3z1unjn7zaf1a3ePL3YXvN0u4r5pbq3zL974prltbbbEauGWUFRbiQN28cag0PaypcQBG9+5MWB2EXHAbnzT3LY2W2LFgFFrSRqwq/3BK2bndfXx1sbB0sVuDJirFt3aXaSlGDDqViUN2GRQdrizLfvHp2Z/9tkP853HDz4z2PiqfeVnW4MXP9h3X90cD+58WLyxejnv9ld/OhhsfM3G1uwSi8U+KPZgE7PYh9VeybxSLWIf2vW+OEPNimXdp+o3ffJG+Vy1SZm7MeavzwzsIsU76odZsyXNc9VWz6+OomYkDdjI+Xw/27IHi2ZflvdLo6HZA9h/X3xj03n1ha1BuRepXy7iULyrCoJd7Bd5wF7Yqt46H7DJAqrV1BrLp6o3vfhG+Vy9SZm7McVf9ZbUD7NmS5rnqq2eWx1FzUoYMPeI6Wrffo5/vGXTMtg8Nl1w0yyx8X72qXnovrpdr6B5+e7x2darx8W+sDiUs4sV52CDLxxffX+w2QSsOdozi33Ndvf8r5Jabs7cU9V6zUp+6mzS3MbYHezUllQPp7ekeq7e6pnVUdScVgtY/mFu85HnxnRJ0/ueFq8WzxX90H01V/NyEbAXfrcYjiy79dMqYEWs7FvnAlYcnGajjYOGmqsImPPU1HqbjatPs5qNMfqPH/zZ1mCzfrF82GxJ81y91TOro6g5rRWwSTmgaLt6lYNJfnRW/OW+mqt5OX9yZBd45cPpwYgiYEXPnV7xVMDy47+J82KW1edg0085653epJmNKQ/26oDVD5stmVqk2uqZ1VHUnIQBa/ZFtteuH7DsY3t2ZNZ5ywEzR4Kf/8t/+mS3xDQPmy2ZWqTaagaMuknyUcRXiz+muno2NdhXHjYVx2Puq7mal+snf/4npp/PBmwzK9M8qg/5Fh0iCgPWbNLMxhQv1OdgzcNmS6YWqbZ6ZnUUNacVvgfLL+L4+ZfzQYaN97PsU+dU6WK3GHbPhwCcV3NNv2x3gV84zq6+b/YA46kRw3yQYzvLhxbM4dhXi+XrRaYHOW4O2PRI5NQmzWyMyc2xHXM3CxZHg9XDZkua5+qtnlkdRc1p9Ss5XjzIqkOu7enBvkk99D3zaqH65alBddut6y+5ioB9fqs4dJxa3XjBMP3NAZta7/QmzW3MwN2S6mGzJc1zzVbPrI6iZrXCxb4ff9n0qc++n/99ZuL2wtcyp6ubE5QXP8r/cl+t3l6+3HzR/OpxntvNX0yfg5kUfS7/BvenW4NXfmFX1yxy1nzRfFPAptc7vUkzG1N8d/2+PR617ziuH05tSbNIvdWzq6OoGfFqeopSFANGUYpiwChKUQwYRSmKAaMoRTFgFKUoBoyiFMWAUZSiGDCKUhQDRlGK6i5gz4lICAHRiBAIBoyIfhJ6gmDAiOgnoScIBoyIfhJ6gmDAiOgnoScIBoyIfhJ6gmDAiOgnoScIBoyIfhJ6gmDAiOgnoScIBoyIfhJ6gmDAiOgnoScIBoyIfhJ6gmDAiOgnoScIBoyIfhJ6gmDAiOgnoScIBoyIfhJ6gmDAZPqVQCsiIAoF0YhbCNjz1CUJWLwISl0rBmwNSfrNih/+GHswCEQ/di8dIKACFhliNQIGoh+9vwMEA6aHWI2AgZAQoDPMgOkhViNgICQEBiyIOih5ZIjVCBgICYEBC6IOSh4ZYjUCBkJCiDdgARrBgOkhViNgICQEDIRnFQyYHmI1AgZCQsBAeFbBgOkhViNgICQEDIRnFQyYHmI1AgZCQsBAeFbBgOkhViNgICQEDIRnFQyYHmI1AgZCQsBAeFbBgOkhViNgICQEDIRnFQyYHmI1AgZCQsBAeFbBgOkhViNgICQEDIRnFQyYHmI1AgZCQsBAeFbBgOkhViPEi/iiQBJCp25LGiFqhWcrGTA9xGqEeBEdBEwfwYAt29p+IVYjdND7V+w4+r2fAVtDK5a8x4jmXR24GhlCQmDAgmjFkvcY0byrA1cjQ0gIDJhXHZRcomhLnh5CQmDAvOqg5BJFW/L0EBICA+ZVByWXKNqSp4eQEBgwrzoouUTRljw9hITAgHnVQcklirbk6SEkBAbMK5Y8fCMwEBICmtuOGLDYuiYGQkJAc9sRAxZb18RASAhobjtiwGLrmhgICQHNbUcMWGxdEwMhIaC57YgBi61rYiAkBDS3HTFgsXVNDISEgOa2IwYstq6JgZAQ0Nx2xIDF1jUxEBICmtuOGLDYuiYGQkJAc9sRAxZb18RASAhobjtiwGLrmhgICQHNbUcMWGxdEwMhIaC57YgBi61rYiAkBDS3HTFgsXVNDISEgOa2oyUBO93ZuXeUZZePdu4/Y8DWKnl6CAkBze0lARsPBsPx3eP87/M3j7KT17Prx3v2HwZsnZKnh5AQ0Nz2B2x095Pd4dX+Zv2ECdnlu0d51hiwNUqeHkJCQHPbG7CL3aH5Xza587R6xuy6zt96ll2+86R84rkrtXp0iZAQRIjVGoGBkBDQ3M7VJmDnD157kp3enw7YjNTqAfaZlh5CQkBz25FziDi2h4gXu9v1EyZZ7h6MAVNvBAZCQkBz2x+wbDIw2p564nCP52ABSp4eQkJAc3tJwKZVHhteP37IUcR1S54eQkJAc7tlwLKTnR1zDsbvwQKUPD2EhIDmtj9g+SjHoBlEvFEsefhGYCAkBDS3/QEbbWbjO0/Hm55lGTCQ3s+AqdbJG7CL4lvmSftdGEsevhEYCAkBze1lAbNj9AxY8JKnh5AQ0Nz2Buxqf3uycWAPFBmwsCVPDyEhoLntDVh2tjXYzEblxb4MWLiSp4eQENDc9gdMLJY8fCMwEBICmtuOGLDYuiYGQkJAc9uR//dgDFi4kqeHkBDQ3PYHbO73YAxYmJKnh5AQ0Nz2Bmz+92AMWJiSp4eQENDcZsA6L3l6CAkBzW1vwOZ/D8aAhSl5eggJAc1tf8Dmfw/GgAUpeXoICQHN7SUBk4olD98IDISEgOa2IwYstq6JgZAQ0Nx2tOAQcciAhS55eggJAc1tf8DGdvyQgxzhS54eQkJAc9sbMDtGb8Rh+uAlTw8hIaC5zYB1XvL0EBICmtvegBXRKmPGgAUseXoICQHN7cUBu9gdVOIeLHTJ00NICGhuLw7YSmLJwzcCAyEhoLntiAGLrWtiICQENLcdTQfsbMscH24cMGDBS54eQkJAc9sXsFGerbOt9j8HY8kVGoGBkBDQ3PYErBqd5yhi+JKnh5AQ0NxeHLCr/eoCDsGcASx5+EZgICQENLcXB6zZcfGL5uAlTw8hIaC5zYB1XvL0EBICmtuLA8ZDRMWSp4eQENDcXhwwDnIoljw9hISA5rYnYPUwPacMCF7y9BASAprbvoAVXzQLbr/Hkms0AgMhIaC57Q2YXCx5+EZgICQENLcdMWCxdU0MhISA5rYjBiy2romBkBDQ3HbEgMXWNTEQEgKa244YsNi6JgZCQkBz25F7C1nBjG0suVIjMBASAprbjhZMerNMz12p1aNLhIQgQqzWCAyEhIDmdq5FAZNcJNXVBw7GZ1p6CAkBzW1H7h6Mk97olDw9hISA5rY3YHKx5OEbgYGQENDcdsSAxdY1MRASAprbjuZugs77gymUPD2EhIDmtj9gvPmDUsnTQ0gIaG57A8a56bVKnh5CQkBzmwHrvOTpISQENLe9AeMholbJ00NICGhu+wPGQQ6lkqeHkBDQ3F4SMKlY8vCNwEBICGhuO2LAYuuaGAgJAc1tRwxYbF0TAyEhoLntiAGLrWtiICQENLcdMWCxdU0MhISA5rYjfg8WW9fEQEgIaG4zYJ2XPD2EhIDmtidg4/om6O3vwMeSh28EBkJCQHPbEzDZrPQsuVYjMBASAprbjjjIEVvXxEBICGhuO3IClk9OzykDwpc8PYSEgOa2N2BX+4L7n7PkSo3AQEgIaG474jlYbF0TAyEhoLntiBOPxtY1MRASAprbjpxzMME3YCy5ViMwEBICmtuOpm6CXn8PxkGO0CVPDyEhoLm9OGAriSUP3wgMhISA5rYjBiy2romBkBDQ3Ha0aOrs9hdLseThG4GBkBDQ3PYGrJ70pvUXYix5+EZgICQENLe9AWuupm87nMiSh28EBkJCQHObAeu85OkhJAQ0t70Ba+ZFbHujMJY8fCMwEBICmtv+gGUTO8IxzMYbB63yxZIrNAIDISGgub0kYFKx5OEbgYGQENDcdsSAxdY1MRASAprbjqYulRryFrJaJU8PISGgub04YCuJJQ/fCAyEhIDmtiMGLLauiYGQENDcdjR3d5Vh2yF6llynERgICQHNbX/ARnc/2R1KJg5gycM3AgMhIaC57Q1YPs4xrH92ef5gZ2cvyy4f7dx/xoCtVfL0EBICmtstA3b5zpPs/OtPrh/vZSevM2BrlTw9hISA5rY3YNnYHiJWt5A9tak63Lt89yg7f/OIAVun5OkhJAQ0t/0BKy6VmrqFrNmLnb/1LN+ZFXruSq0eXSIkBBFitUZgICQENLdzLQ7YjK4fP8xO708HbEZq9QD7TEsPISGgue1o5hfNzrxtl48eZpm7B2PA1BuBgZAQ0Nz2Biy72p++Uur8wZ5NGc/B1i95eggJAc1tf8DKlBUJK/KVHyZyFHHNkqeHkBDQ3F4asMmgOkw82bHa4/dgAUqeHkJCQHPbHzBziCi4ToolV2kEBkJCQHPbGzDe/EGr5OkhJAQ0tx25h4gj7sFUSp4eQkJAc3tJwPJ78Al2Yyx5+EZgICQENLeXBsxoxF80hy55eggJAc1tR4tuIbvtWZYBA+n9DJhqnbwBu9gVZIslV2oEBkJCQHPbGzDe4VKr5OkhJAQ0tx1xmD62romBkBDQ3HY083sw0SA9S67RCAyEhIDmtqNF9wfjKGLokqeHkBDQ3PYGTC6WPHwjMBASAprbjhiw2LomBkJCQHPbEedFjK1rYiAkBDS3/QHjvIhKJU8PISGgue0N2My8iAxYsJKnh5AQ0NxmwDoveXoICQHNbW/A3HkRGbBwJU8PISGgue0P2Ny8iAxYmJKnh5AQ0NxeEjCpWPLwjcBASAhobjtiwGLrmhgICQHNbUfuIIfw1yosuUIjMBASAprbjtxBjsFAMmEAS67RCAyEhIDmtj9gmZ32ZrBxwIAFLnl6CAkBze2lAcs4J4dCydNDSAhobjtasAdrny+WXKERGAgJAc1tf8Bkx4csuUojMBASAprb3oBxygCtkqeHkBDQ3HbE78Fi65oYCAkBzW1H0wHLp0UUHSOy5OEbgYGQENDc9gVslGfrbKv9z8FYcoVGYCAkBDS3PQGrfqUiORNjycM3AgMhIaC5vThgV/vVdVKCOQNY8vCNwEBICGhuLw5Ys+PiDy6Dlzw9hISA5jYD1nnJ00NICGhuLw4YDxEVS54eQkJAc3txwDjIoVjy9BASAprbnoDVw/ScMiB4ydNDSAhobvsCVnzRLLjUlyXXaAQGQkJAc9sbsBZ67kqtHl0iJAQRYrVGYCAkBDS3c60YsBmp1aNLhFrJV2sEBkJCQHPbEQMWW9fEQEgIaG47YsBi65oYCAkBzW1HDFhsXRMDISGgue1o+koO/uBSq+TpISQENLcZsM5Lnh5CQkBze3HA8kkReY9mnZKnh5AQ0Nz2BIxzcuiVPD2EhIDmtiMOcsTWNTEQEgKa247m7tHM2xcplDw9hISA5rY/YGN79sUb8IUveXoICQHNbW/AynMw/uAyeMnTQ0gIaG4zYJ2XPD2EhIDmtjdgPETUKnl6CAkBzW1/wDjIoVTy9BASAprbSwImFUsevhEYCAkBzW1HDFhsXRMDISGgue2IAYuta2IgJAQ0tx0xYLF1TQyEhIDmtiMGLLauiYGQENDcdsSAxdY1MRASAprbjuaG6YeCiX1ZcoVGYCAkBDS3/QEb3f1kd3i13/4GYSx5+EZgICQENLe9ASt/1MxLpYKXPD2EhIDmNgPWecnTQ0gIaG57A5aN7SEir0UMX/L0EBICmtv+gGUTXouoUvL0EBICmttLAiYVSx6+ERgICQHNbUcMWGxdEwMhIaC57cgd5Kgmbms7UM+Sh28EBkJCQHPbG7D6B5etvwpjycM3AgMhIaC57Q1YM2VA25F6ljx8IzAQEgKa2wxY5yVPDyEhoLntDVgzJ0fb6xFZ8vCNwEBICGhu+wNWfA82zMb57dAZsGAlTw8hIaC5vSRgUrHk4RuBgZAQ0Nx2xIDF1jUxEBICmtuOnICdbfH2RSolTw8hIaC57Q3Y1f721b7oNnwsefhGYCAkBDS3vQGz0RptZ5P2P2lmycM3AgMhIaC5vTRg403+Hix8ydNDSAhobnsDlo3ydDVfgp2/eZRll4927j9jwNYqeXoICQHNbX/AzElYNhrUX4Kd7tw7yq4f72UnrzNga5U8PYSEgOa2P2CuDl/7O7MHu3z3qNiTMWCrlzw9hISA5rY3YHP3B7PBOn/rWXb5zpPymeeu1OrRJUJCECFWawQGQkJAcztX64Cd3p8O2IzU6gH2mZYeQkJAc9tRE7DxYO7nlvN7MAZMvREYCAkBzW1PwOo9WKNznoOFKXl6CAkBzW1vwOZkg3X9+CFHEdcteXoICQHNbX/AZq9F5PdggUqeHkJCQHPbGzDJrPQsuVYjMBASAprbjpaeg90oljx8IzAQEgKa247cPRgDplPy9BASAprbjpxzMMFlviy5ViMwEBICmtuOFk08yqvpQ5c8PYSEgOa2N2ByseThG4GBkBDQ3HbEgMXWNTEQEgKa2454j+bYuiYGQkJAc9sfMN6jWank6SEkBDS3vQHjLWS1Sp4eQkJAc5sB67zk6SEkBDS3vQHjPZq1Sp4eQkJAc9sfMN6jWank6SEkBDS3lwRMKpY8fCMwEBICmtuOGLDYuiYGQkJAc9vR3LRtot+ssOThG4GBkBDQ3PYHbLSZyX4VxpKHbwQGQkJAc9sbsLlZpRiwQCVPDyEhoLnNgHVe8vQQEgKa296ANfdoZsDCljw9hISA5rY/YPweTKnk6SEkBDS3lwRMKpY8fCMwEBICmtuOOCdHbF0TAyEhoLntiLNKxdY1MRASAprbjmYu9m3/W0uWXKkRGAgJAc1tR5z0JrauiYGQENDc9gZMLpY8fCMwEBICmtuOGLDYuiYGQkJAc9sRJ72JrWtiICQENLf9AeOkN0olTw8hIaC57Q0Y5+TQKnl6CAkBzW0GrPOSp4eQENDc9gaMk95olTw9hISA5rY/YLzYV6nk6SEkBDS3lwRMKpY8fCMwEBICmtuOGLDYuiYGQkJAc9vR3Pdgg4Hgil+WPHwjMBASAprb/oDxF81KJU8PISGgue0NGOfk0Cp5eggJAc3tdQL23JVaPbpESAgixGqNwEBICGhu51oUsGyyccBDxHCI1RqBgZAQ0Nx2tOj3YO1/EsaSh28EBkJCQHPbGzC5WPLwjcBASAhobjtiwGLrmhgICQHNbUcMWGxdEwMhIaC57YgBi61rYiAkBDS3HTFgsXVNDISEgOa2IwYstq6JgZAQ0Nx2xIDF1jUxEBICmtuOGLDYuiYGQkJAc9sRAxZb18RASAhobjtiwGLrmhgICQHNbUcMWGxdEwMhIaC57YgBi61rYiAkBDS3HTFgsXVNDISEgOa2IwYstq6JgZAQ0Nx2xIDF1jUxEBICmtuOGLDYuiYGQkJAc9sRAxZb18RASAhobjtiwGLrmhgICQHNbUcMWGxdEwMhIaC57YgBi61rYiAkBDS3HTFgsXVNDISEgOa2IwYstq6JgZAQ0Nx2xIDF1jUxEBICmtuOGLDYuiYGQkJAc9sRAxZb18RASAhobjtiwGLrmhgICQHNbUcMWGxdEwMhIaC57YgBi61rYiAkBDS3HTFgsXVNDISEgOa2IwYstq6JgZAQ0Nx2xIDF1jUxEBICmtuOGLDYuiYGQkJAc9sRAxZb18RASAhobjtiwGLrmhgICQHNbUcMWGxdEwMhIaC57YgBi61rYiAkBDS3HTFgsXVNDISEgOa2IwYstq6JgZAQ0Nx2xIDF1jUxEBICmtuOGLDYuiYGQkJAc9vRzQG7fLRz/xkDtlbJ00NICGhuywJ2/XgvO3mdAVur5OkhJAQ0t2UBu3z3KDt/84gBW6fk6SEkBDS3ZQE7f+tZdvnOk/LRc4qiWqh1wE7vTwdsDT2/eREiYBAQjQiBEO7B1lA/6kFEXwg9Qax3DiZRP+pBRF8IPUG0GEV86B9FlKgf9SCiL4SeINb7HkyiftSDiL4QeoJY70oOifpRDyL6QugJggEjop+EniAYMCL6SegJggEjop+EniAYMCL6SegJggEjop+EniAYMCL6SegJggEjop+EniAYMCL6SegJoruAUVSCYsAoSlEMGEUpigGjKEUxYBSlKAaMohTFgFGUohgwilIUA0ZRimLAotP//uS2tyCAzr9x21sQiToL2OnOzkNlxPmDIJOHLNWpOkK/FcaKPV2CacS9ABORLdXpzmsBJhNcqvMH6yO6CpjpmOcPdG09vXd02P/ur12l3Ir/+3tdxPmDb4WYSnOZjNsnyiHO++y6E6p1FLDrvzL1DjL721KEncRRV5d/8DeqCbP5un6surM/NAk+Uf30N42w9wzRlHU771S6iGzthHUUsHxu4FPVgF0+2jPl2NlRhWTXf212k//9TT3AyeuXjx6q7icPH14/vvcjxTpZJ5Q/TfPpOpXdzptx/b3fX+/DrpOA/fJJXm/NgBnEf34r+5cnRVm0EEYGcbjzTZ0dpSVcP/7Dh5leKwzi9N6Pv6FIKOsUZDboJQiTLrMX1ttR2j5rPuVOX1+zIZ0E7LA4IDEhM5/OqghL0Tq8KhAne6FmYvUQipMwrVZYxGF+BKpcJ7uLUVNRqLeeKbficMeG+HCtDHcSsJPfK/rmQ7V8VYgsW7MeNyJO3zYf/Yc6++KmEWqtsAhzhHikXqfs/Ot6Z0g54rSLVmTrnul1swfbO7Vbe/K2Wr5KxOWjtx+pHYcWCM1RvrJOmq0oEOajWe/spWxFpjikW7XiW9puZyd/9Hg9RBcBu/7Xo8xu7ane4FiJ+PWP9T42q1boqSL8+kdqGP1GNIjrf/+JMkKxJSXi8nvrfp5qB6z+xtFu7d+qI1QAXSAgGkHEvJQDZo6TT8uDkVOlywcgEBCNIGKBdAOWnyBe6h0ooyAgGkHEIinvwfJBHr2xQxgERCOIWCD9Q8RMd8QWAwHRCCIWSDFg+fXzxVit1rcVEAiIRhDhkV7AyuvnD83ngdYFLRAIiEYQ4ZNawOrr5/W+1IRAQDSCCK/UAtbF9fMICIhGEOGV3iGi9vXzKAiIRhDhk+4ooub180gIiEYQsUjKAVO8fh4J0e9GVLP09LoV9Sw9gREaAWtmPFG7fv6X9ZcUaohmlh4tRPO7Zb3fGZzqI+pmaFpRDumpIdT6rELAqmu5Lh/d/y+t6+fL31cqIqpZevQQ1SQ9mnUqe78movz9jq4V+Sw9iohqlp7wiPABq67lspdzKV0/X/0cThFRjdjqIapJelTrVEzSo4koZ+l5WxFRztKj2Ipqlh4FhMIerLyWS3X2meLncIoTq1QjtnqIapIe3Vl68kl6/u2eIqGYpWfnNfVZevQKVc/So+C2ziFipny5WAe/G9QfFNaepKeQ5iQ9uZRn6cky9Vl6CinN0hM4YL9sfiuudblYPb6hl7AKoTco3AzSqE3bUiI0J+kp54/SnKWn6FCqs/SUhVKapSdwwIrBB83Lxabmj9L6xV2N0BsUbhqh9kFUIjQn6ZlqhVYzcoTuLD1VK3SOuQIHrJyLR3NSlampl7RUIfSGtkuC5vQ21eROipP0VHVSbEaXHUpllp7Qe7A95VOjThF6s/SUBM1Jejqsk+IsPV12KJVZesIGrMtJizpAqI2eg9WJCL/CBaxv0/3cFgKiEUS0VbCA9W66n1tCQDSCiNYKFbD+TfdzOwiIRhDRXsH2YL2b7ueWEBCNIKK1Qh4iZr2a7ueWEBCNIKK1ggSsl9P93AICohFEiBQiYP2c7qd7BEQjiJApQMB6Ot1P5wiIRhAhVICA9XS6n84REI0gQqgQh4j9nO6newREI4iQKdQoYv+m+7kdBEQjiGivYAHr84xCHSIgGkFEewULmOL9l5EQEI0gor1CBUzx/stQCIhGENFeoQKmNy8SFgKiEUS0l/ZN0CkqaTFgFKUoBoyiFMWAUZSiGDCKUhQDRlGKYsAoSlEMGEUpigGLT1f7d56af862NpcsMsi1fdO6Pv3QfTzJV011JgYsQp1t2eCM7h57l7ja3y4WHN6wppcO3CcYsI7FgMWosYnB0vCUActG/p1cLgbstsWAxaiL3c0iO/ZQ0EbibCs/Hjx7+S/yh07AymXOXvrOYGB3evaxedouWxxFViu52B1sfIcB61YMWJSabLxn9z1X+yYp47vHF7vDfLdWn5aVAZsMhvUyZ1t3ntq/q//ny9o9WLOSbZMxBqxbMWBRyux0bIImxY5n+D/2bMyEpT5srAY5hs0y+WtmmfzxxIaxeFwvkP87ZsC6FQMWp4pzpXE9Vjgx/2wc1KdU+R6sGAuplslfszmyh4k2jPax/U+1wDh/4WUGrFMxYHGqDFg5kHixu3FQh8aqOES0R4j1Mv6AlQswYLchBixOFQGbbBSBykMzmd2DZdnILFUtUxwSvvw0f2wPEauA1Sspjx27b0zKYsDi1KQcLDTJMgGxGTnbmg+YHciolpkb5Cj3aPUCdmiSgxxdiwGLU+Wexg5m2B3QyPzz3d3hbMDM+dV2tUw+TF5zqOIAAALPSURBVF8N7W9WX4GNBpv1SjhMfwtiwFA0950yFYMYMBQxYFGKAUMRAxalGDCKUhQDRlGKYsAoSlEMGEUpigGjKEUxYBSlKAaMohTFgFGUohgwilIUA0ZRimLAKEpRDBhFKYoBoyhFMWAUpSgGjKIUxYBRlKIYMIpSFANGUYpiwChKUQwYRSmKAaMoRTFgFKUoBiwefXGR1lvlrxYqzOZSbcSAxSMGDFAMWDxiwADFgMUjBgxQDFg8YsAAxYDFIwYMUAxYPGLAAMWAxaOlATvbKm51nv9j72dp77VnbyGbXXzpoL73cvVy9a7lAWu5EmoNMWDxaHnAys5f3sT87KVXjrOLL9tHk69sz71c6YaAtVsJtYYYsA6V7xqGxU1ezW5jbHYSF7vb9cuigL382wfZ2VfMo6s//u5vHa8YsHYrodYQA9ad8lvknW0N7S3Ks/Hd42y0af9XSxawfxxmP33PPDr73PFouGrAWq2EWkMMWHeqOm5+g/OLXdOhX3pvui/ffA62WZ4f3T0+e/mHr159+4fm7ePtbLLpnj6Z7Ja6KWCtVkKtIQasQ41sRMzOa5Br2/41nHpZtgf76M8/+R3zyB5umuPNFfdgrVZCrSEGrFNd7Jp+PK53DqPB1BGiMGBP/+E72+a/5uDOrGe4YsBarYRaQwxYxzKHhpNqBHxy5593p3ZhwoCZ1Zj/ju0KJpurBqzNSqg1xIB1p/zc6+ylg6t9swszPduehuXPlWoVsPz8aGB3Nvn/Pvq2ffriS+/lz29WL1fvujFgbVZCrSEGrENNyu9v7SmP+XdkcpaPKJZaGrDVtDxglL4YsHjEgAGKAYtHDBigGLB4xIABigGLRwwYoBgwilIUA0ZRimLAKEpRDBhFKYoBoyhFMWAUpSgGjKIUxYBRlKIYMIpSFANGUYpiwChKUQwYRSmKAaMoRTFgFKUoBoyiFMWAUZSi/h+rH/ECkq4bNAAAAABJRU5ErkJggg==" width="90%" />
+<div id="exploratory-data-analysis" class="section level1">
+<h1>Exploratory data analysis</h1>
+<div id="sex" class="section level2">
+<h2>Sex</h2>
+<p>The graph below shows that more male students are in the overweight or obese category each year than female students.It seems like the percentage for male in the overweight or obese category slightly decreases and female slightly increases over years.</p>
+<pre class="r"><code>original = 
+  tibble(
+  read.csv(&quot;./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv&quot;)
+) %&gt;%
+  janitor::clean_names()
+
+sex_df = 
+  original %&gt;% 
+  mutate(
+    percent_healthy_weight = percent_healthy_weight * 100
+  ) %&gt;% ## when importing data the percent healthy weight was distorted so i timed 100
+  select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %&gt;% 
+  filter(sex == &quot;MALE&quot; | sex == &quot;FEMALE&quot;) %&gt;%
+  filter(grade_level == &quot;DISTRICT TOTAL&quot;) %&gt;% 
+  filter(county == &quot;STATEWIDE (EXCLUDING NYC)&quot;) %&gt;% 
+  select(year_reported, percent_overweight_or_obese, sex)
+
+sex_count = 
+  sex_df %&gt;% 
+  group_by(year_reported) 
+
+sex_count %&gt;% 
+  ggplot(aes(x = as.factor(year_reported), y = percent_overweight_or_obese, fill = sex)) +
+  geom_bar(stat=&#39;identity&#39;, position = &quot;dodge&quot;) +
+  labs(title = &quot;Gender distribution in the database&quot;,
+       x = &quot;Year Reported&quot;,
+       y = &quot;percentage of Overweight or Obese&quot;) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
+<p><img src="raw_regression_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+</div>
+<div id="grade-level" class="section level2">
+<h2>Grade Level</h2>
+<p>The graph below shows that students in middle/high school grade level tend to have higher percentage than the elementary students in overweight or obese category each year. There also seems to be an increase in the overweight or obese percentage for the middle or high school students while a decrease for the elementary students over years.</p>
+<pre class="r"><code>grade_df = 
+  original %&gt;% 
+  select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %&gt;% 
+  filter(sex %in% &quot;ALL&quot;) %&gt;% 
+  filter(grade_level %in% c(&quot;ELEMENTARY&quot;, &quot;MIDDLE/HIGH&quot;)) %&gt;% 
+  filter(county == &quot;STATEWIDE (EXCLUDING NYC)&quot;) %&gt;% 
+  select(year_reported, percent_overweight_or_obese, grade_level)
+  
+grade_count = 
+  grade_df %&gt;% 
+  group_by(year_reported)
+  
+grade_count %&gt;% 
+  ggplot(aes(x = as.factor(year_reported), y = percent_overweight_or_obese, fill = grade_level)) +
+  geom_bar(stat=&#39;identity&#39;, position = &quot;dodge&quot;) +
+  labs(title = &quot;Grade level distribution in the database&quot;,
+       x = &quot;Year Reported&quot;,
+       y = &quot;percentage of Overweight or Obese&quot;) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
+<p><img src="raw_regression_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+</div>
+<div id="economic-status" class="section level2">
+<h2>Economic Status</h2>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code># Further original data cleaning for graph of poverty and obesity
+obesity_geo_df = 
+  weight_df %&gt;% 
+  filter(sex %in% &quot;ALL&quot;) %&gt;% 
+  filter(!county == &quot;STATEWIDE (EXCLUDING NYC)&quot;) %&gt;% 
+  filter(grade_level %in% &quot;DISTRICT TOTAL&quot;) %&gt;% 
+  filter(!county == &quot;N/A&quot;) %&gt;% 
+  select(county, percent_overweight_or_obese, latitude, longitude)
+  
+
+# Import tidy and join the median income
+income = read_xlsx(&quot;./dataset/median_income.xlsx&quot;) %&gt;%
+  janitor::clean_names() %&gt;%
+  rename(county = region_county) %&gt;%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model&#39;s efficiency
+         county = toupper(county))
+
+
+income_geo_df = left_join(coordinates, income, by = &quot;county&quot;)  # combine income data to the main </code></pre>
+</div>
+<div id="food-access-ability" class="section level2">
+<h2>Food Access Ability</h2>
+<pre class="r"><code>food_insecurity = read_xlsx(&quot;./dataset/food_insecurity.xlsx&quot;) %&gt;%
+  janitor::clean_names() %&gt;%
+    rename(county = region_county) %&gt;%
+  rename(food_insecurity_p = percentage) %&gt;%
+  mutate(county = toupper(county))
+
+
+#linear_df3 = left_join(linear_df2, food_insecurity, by = &quot;county&quot;) # combine food insecurity data</code></pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 
 </body>
 </html>
