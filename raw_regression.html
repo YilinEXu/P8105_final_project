@@ -308,7 +308,9 @@ $(document).ready(function () {
 <pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>knitr::opts_chunk$set(
+<pre class="r"><code>library(readxl)
+
+knitr::opts_chunk$set(
   fig.width = 9,
   fig.asp = .6,
   out.width = &quot;90%&quot;)</code></pre>
@@ -374,8 +376,40 @@ grade_count %&gt;%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
 <p><img src="raw_regression_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
 </div>
-<div id="section" class="section level2">
-<h2></h2>
+<div id="economic-status" class="section level2">
+<h2>Economic Status</h2>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code># Further original data cleaning for linear regression analysis
+linear_df = weight_df %&gt;%
+  filter(!sex == &quot;ALL&quot;) %&gt;%
+  filter(!grade_level == &quot;DISTRICT TOTAL&quot;) %&gt;%
+  mutate(
+    sex = if_else(sex == &quot;MALE&quot;, 0, 1),
+    grade_level = if_else(grade_level == &quot;ELEMENTARY&quot;, 0, 1)
+  ) %&gt;%
+  drop_na() %&gt;%
+  filter(year_reported %in% c(&quot;2018-2019&quot;)) %&gt;% #only analyzing data in year 2018-2019
+  select(county, percent_overweight_or_obese, grade_level, sex)
+
+
+# Import tidy and join the median income and food insecurity data
+income = read_xlsx(&quot;./dataset/median_income.xlsx&quot;) %&gt;%
+  janitor::clean_names() %&gt;%
+  rename(county = region_county) %&gt;%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model&#39;s efficiency
+         county = toupper(county))
+
+food_insecurity = read_xlsx(&quot;./dataset/food_insecurity.xlsx&quot;) %&gt;%
+  janitor::clean_names() %&gt;%
+    rename(county = region_county) %&gt;%
+  rename(food_insecurity_p = percentage) %&gt;%
+  mutate(county = toupper(county))
+
+linear_df2 = left_join(linear_df, income, by = &quot;county&quot;)  # combine income data to the main 
+linear_df3 = left_join(linear_df2, food_insecurity, by = &quot;county&quot;) # combine food insecurity data</code></pre>
+</div>
+<div id="food-access-ability" class="section level2">
+<h2>Food Access Ability</h2>
 </div>
 </div>
 
