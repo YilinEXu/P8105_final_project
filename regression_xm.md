@@ -73,7 +73,7 @@ There is no strange pattern about Residusl vs Fitted plot, and Normal
 Q-Q plot is on a straight line, so the constant variance assumption is
 met, and this model is valid. Three variables are significant with very
 small p-value (\<0.001). However, due to the limitation of data, the
-models’ R-squared is equal to 0.2526, which means only 25% of the data
-is explained by the model. Other important factors have not been
-included in the model. We will make improvement on this model when more
-data is available.
+model’s R-squared is equal to 0.2526, which means only 25% of the data
+is explained by this model. A possible explanation is that other
+important factors have not been included. We will make improvement when
+more data is available.
