@@ -309,11 +309,32 @@ $(document).ready(function () {
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(readxl)
-
-knitr::opts_chunk$set(
+library(plotly)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>knitr::opts_chunk$set(
   fig.width = 9,
   fig.asp = .6,
-  out.width = &quot;90%&quot;)</code></pre>
+  out.width = &quot;90%&quot;)
+
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d</code></pre>
 <p>We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most.</p>
 <p>Basic variables that we are interested in:</p>
 <p><strong>Sex</strong> <strong>Grade Level</strong> <strong>Economic Status</strong> <strong>Food Access Ability</strong></p>
@@ -379,37 +400,36 @@ grade_count %&gt;%
 <div id="economic-status" class="section level2">
 <h2>Economic Status</h2>
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code># Further original data cleaning for linear regression analysis
-linear_df = weight_df %&gt;%
-  filter(!sex == &quot;ALL&quot;) %&gt;%
-  filter(!grade_level == &quot;DISTRICT TOTAL&quot;) %&gt;%
-  mutate(
-    sex = if_else(sex == &quot;MALE&quot;, 0, 1),
-    grade_level = if_else(grade_level == &quot;ELEMENTARY&quot;, 0, 1)
-  ) %&gt;%
-  drop_na() %&gt;%
-  filter(year_reported %in% c(&quot;2018-2019&quot;)) %&gt;% #only analyzing data in year 2018-2019
-  select(county, percent_overweight_or_obese, grade_level, sex)
+<pre class="r"><code># Further original data cleaning for graph of poverty and obesity
+obesity_geo_df = 
+  weight_df %&gt;% 
+  filter(sex %in% &quot;ALL&quot;) %&gt;% 
+  filter(!county == &quot;STATEWIDE (EXCLUDING NYC)&quot;) %&gt;% 
+  filter(grade_level %in% &quot;DISTRICT TOTAL&quot;) %&gt;% 
+  filter(!county == &quot;N/A&quot;) %&gt;% 
+  select(county, percent_overweight_or_obese, latitude, longitude)
+  
 
-
-# Import tidy and join the median income and food insecurity data
+# Import tidy and join the median income
 income = read_xlsx(&quot;./dataset/median_income.xlsx&quot;) %&gt;%
   janitor::clean_names() %&gt;%
   rename(county = region_county) %&gt;%
   mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model&#39;s efficiency
          county = toupper(county))
 
-food_insecurity = read_xlsx(&quot;./dataset/food_insecurity.xlsx&quot;) %&gt;%
+
+income_geo_df = left_join(coordinates, income, by = &quot;county&quot;)  # combine income data to the main </code></pre>
+</div>
+<div id="food-access-ability" class="section level2">
+<h2>Food Access Ability</h2>
+<pre class="r"><code>food_insecurity = read_xlsx(&quot;./dataset/food_insecurity.xlsx&quot;) %&gt;%
   janitor::clean_names() %&gt;%
     rename(county = region_county) %&gt;%
   rename(food_insecurity_p = percentage) %&gt;%
   mutate(county = toupper(county))
 
-linear_df2 = left_join(linear_df, income, by = &quot;county&quot;)  # combine income data to the main 
-linear_df3 = left_join(linear_df2, food_insecurity, by = &quot;county&quot;) # combine food insecurity data</code></pre>
-</div>
-<div id="food-access-ability" class="section level2">
-<h2>Food Access Ability</h2>
+
+#linear_df3 = left_join(linear_df2, food_insecurity, by = &quot;county&quot;) # combine food insecurity data</code></pre>
 </div>
 </div>
 

@@ -6,11 +6,22 @@ output: github_document
 ```{r}
 library(tidyverse)
 library(readxl)
+library(plotly)
 
 knitr::opts_chunk$set(
   fig.width = 9,
   fig.asp = .6,
   out.width = "90%")
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most. 
@@ -113,35 +124,44 @@ weight_df = left_join(original, coordinates, by = "county")
 ```
 
 ```{r}
-# Further original data cleaning for linear regression analysis
-linear_df = weight_df %>%
-  filter(!sex == "ALL") %>%
-  filter(!grade_level == "DISTRICT TOTAL") %>%
-  mutate(
-    sex = if_else(sex == "MALE", 0, 1),
-    grade_level = if_else(grade_level == "ELEMENTARY", 0, 1)
-  ) %>%
-  drop_na() %>%
-  filter(year_reported %in% c("2018-2019")) %>% #only analyzing data in year 2018-2019
-  select(county, percent_overweight_or_obese, grade_level, sex)
+# Further original data cleaning for graph of poverty and obesity
+obesity_geo_df = 
+  weight_df %>% 
+  filter(sex %in% "ALL") %>% 
+  filter(!county == "STATEWIDE (EXCLUDING NYC)") %>% 
+  filter(grade_level %in% "DISTRICT TOTAL") %>% 
+  filter(!county == "N/A") %>% 
+  select(county, percent_overweight_or_obese, latitude, longitude)
+  
 
-
-# Import tidy and join the median income and food insecurity data
+# Import tidy and join the median income
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
   mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
          county = toupper(county))
 
+
+income_geo_df = left_join(coordinates, income, by = "county")  # combine income data to the main 
+```
+
+```{r}
+
+```
+
+
+
+## Food Access Ability
+
+```{r}
 food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
   janitor::clean_names() %>%
     rename(county = region_county) %>%
   rename(food_insecurity_p = percentage) %>%
   mutate(county = toupper(county))
 
-linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
-linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
-```
 
-## Food Access Ability
+#linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
+
+```
 
