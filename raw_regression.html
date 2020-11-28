@@ -403,10 +403,10 @@ grade_count %&gt;%
 <pre class="r"><code># Further original data cleaning for graph of poverty and obesity
 obesity_geo_df = 
   weight_df %&gt;% 
-  filter(sex %in% &quot;ALL&quot;) %&gt;% 
+  #filter(sex %in% &quot;ALL&quot;) %&gt;% 
   filter(!county == &quot;STATEWIDE (EXCLUDING NYC)&quot;) %&gt;% 
   filter(grade_level %in% &quot;DISTRICT TOTAL&quot;) %&gt;% 
-  filter(!county == &quot;N/A&quot;) %&gt;% 
+  #filter(!county == &quot;N/A&quot;) %&gt;% 
   select(county, percent_overweight_or_obese, latitude, longitude)
   
 
@@ -419,6 +419,28 @@ income = read_xlsx(&quot;./dataset/median_income.xlsx&quot;) %&gt;%
 
 
 income_geo_df = left_join(coordinates, income, by = &quot;county&quot;)  # combine income data to the main </code></pre>
+<pre class="r"><code>obesity_geo_plot = 
+  obesity_geo_df %&gt;% 
+  plot_ly(
+    x = ~latitude, y = ~ longitude, type = &quot;scatter&quot;, mode = &quot;markers&quot;,
+    color = ~percent_overweight_or_obese, alpha = 0.5
+  )
+
+income_geo_plot = 
+  income_geo_df %&gt;% 
+  plot_ly(
+    x = ~latitude, y = ~ longitude, type = &quot;scatter&quot;, mode = &quot;markers&quot;,
+    color = ~median_income, alpha = 0.5
+  )
+
+
+fig1 = subplot(obesity_geo_plot, income_geo_plot)</code></pre>
+<pre><code>## Warning: Ignoring 166 observations</code></pre>
+<pre><code>## Warning: `arrange_()` is deprecated as of dplyr 0.7.0.
+## Please use `arrange()` instead.
+## See vignette(&#39;programming&#39;) for more help
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 </div>
 <div id="food-access-ability" class="section level2">
 <h2>Food Access Ability</h2>
