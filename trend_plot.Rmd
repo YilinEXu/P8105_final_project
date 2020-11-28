@@ -36,7 +36,6 @@ maindata <- read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results
 
 ## Overweight and obsesity percentage trend for students from 2010 to 2019 in NY
 
-
 ```{r,echo=FALSE,fig.align='center'}
 statewide <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
@@ -52,7 +51,7 @@ statewide <- maindata %>%
        y = "Percentage of overweight and obesity among students") +
   theme(axis.text.x = element_text(angle = 45))
 
-gif1 <- animate(statewide + geom_point(aes(group = seq_along(year_reported)), size = 2) + transition_reveal(as.numeric(year_reported))+ enter_fade()+exit_shrink(), fps = 20)
+gif1 <- animate(statewide + geom_point(aes(group = seq_along(year_reported)), size = 2) + transition_reveal(as.numeric(year_reported))+ enter_fade() + exit_shrink(), fps = 20)
 
 anim_save("gif1.gif",gif1)
 ```
@@ -80,7 +79,7 @@ genderperc <- maindata %>%
   theme(axis.text.x = element_text(angle = 45)) %>%
   na.omit()
 
-gif2 <- animate(genderperc + transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 20)
+gif2 <- animate(genderperc +geom_point(aes(group = seq_along(year_reported)), size = 2)+ transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 20)
 
 anim_save("gif2.gif", gif2)
 ```
@@ -104,7 +103,7 @@ gender_num <- maindata %>%
        y = "Number of overweight and obesity among students") +
   theme(axis.text.x = element_text(angle = 45))
 
-gif3 <- gender_num + geom_point(aes(group = seq_along(year_reported))) + transition_reveal(as.numeric(year_reported))
+gif3 <- animate(gender_num + geom_point(aes(group = seq_along(year_reported))) + transition_reveal(as.numeric(year_reported)))
 
 anim_save("gif3.gif",gif3)
 ```
@@ -112,13 +111,40 @@ anim_save("gif3.gif",gif3)
 ![](trend plots/gif3.gif)
 
 
+## Overweight percentage compare to obsesity percentage for students by age from 2010 to 2019 in NY
 
 
 
+```{r}
+compare_obese <- maindata %>%
+  filter(county == "STATEWIDE (EXCLUDING NYC)",
+         sex == "ALL") %>%
+  select(c(year_reported,percent_overweight,percent_obese,grade_level)) %>%
+  tidyr::gather("percent_overweight","percent_obese", 2:3) %>%
+  mutate(weight_status = str_sub(percent_overweight,9,-1),
+         percentage = percent_obese) %>%
+  select(-percent_overweight, -percent_obese) %>%
+  group_by(grade_level) %>%
+  mutate(year_reported = as.factor(year_reported))
 
+ggplot(compare_obese, aes(x = grade_level, y = percentage, fill = weight_status)) +
+  geom_bar(stat = "identity",position = "dodge") +
+  labs(title = "Overweight percentage compare to obsesity percentage",
+       x = "Grade level", 
+       y = "Percentage of obese/overweight among total") +
+  theme_bw()+
+  transition_states(
+    year_reported,
+    transition_length = 1,
+    state_length = 1
+  )+
+  ease_aes("sine-in-out")
 
+anim_save("gif4.gif")
 
+```
 
+![](trend plots/gif4.gif)
 
 
 
