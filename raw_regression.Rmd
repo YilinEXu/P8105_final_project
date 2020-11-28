@@ -5,11 +5,23 @@ output: github_document
 
 ```{r}
 library(tidyverse)
+library(readxl)
+library(plotly)
 
 knitr::opts_chunk$set(
   fig.width = 9,
   fig.asp = .6,
   out.width = "90%")
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most. 
@@ -90,4 +102,147 @@ grade_count %>%
 ```
 
 
-## 
+## Economic Status
+
+
+redo the graph
+
+```{r}
+income = read_xlsx("./dataset/median_income.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(county = region_county) %>%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
+         county = toupper(county)) 
+
+
+obesity = 
+  original %>% 
+  filter(sex %in% "ALL") %>% 
+  filter(!county == "STATEWIDE (EXCLUDING NYC)") %>% 
+  filter(grade_level %in% "DISTRICT TOTAL") %>% 
+  filter(!county == "N/A") %>% 
+  select(county, percent_overweight_or_obese) %>% 
+  group_by(county) %>% 
+  summarize(percent_overweight_or_obese = mean(percent_overweight_or_obese)) %>% 
+  mutate(
+    percent_overweight_or_obese = round(percent_overweight_or_obese, 3)
+  )
+
+
+combine = 
+  left_join(income, obesity, by = "county")
+
+
+combine %>% 
+  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nMedian income: (k)", median_income)) %>% 
+  plot_ly(x = ~percent_overweight_or_obese, y = ~median_income, 
+          text = ~text_label, 
+          type = 'scatter', 
+          mode = 'markers', 
+          color = ~county, 
+          sizes = c(1, 10000), 
+          marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
+  layout(
+    title = "Median income vs overweight or obese distribution", 
+    yaxis2 = list(title = "Meidan income (k)"),
+    xaxis = list(title = "Overweight or obese percent (%)")
+  )
+
+## from the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
+
+
+combine %>% 
+  plot_ly(x = ~median_income, y = ~percent_overweight_or_obese, type = 'scatter', mode = 'markers', color = ~county, marker = list(size = ~percent_overweight_or_obese, opacity = 0.5))
+
+
+combine %>% 
+  plot_ly(x = ~county, y = ~median_income, name = 'income', type = 'scatter', mode = 'lines') %>% 
+  add_trace(y = ~percent_overweight_or_obese, name = 'obese', type = 'scatter', mode = 'lines+marker')
+
+combine %>% 
+  plot_ly(x = ~county, y = ~percent_overweight_or_obese, name = 'percent obesity', type = 'scatter') %>% 
+  add_trace(income, y = ~income, type = 'scatter', mode = 'lines')
+
+```
+
+
+##########################################
+
+```{r echo=FALSE} 
+# Clean data set with geo location information
+coordinates = tibble(
+  read.csv("./dataset/Geocodes_USA_with_Counties.csv")
+) %>%
+  filter(state == "NY") %>%  # filter out counties outside NY state
+  select(county, latitude, longitude) %>% # only information we need is county name and geo location
+  drop_na() %>%
+  group_by(county) %>%
+  summarise(latitude = mean(latitude), longitude = mean(longitude)) %>% #different location in each county varied slightly, so we take the mean of each county's geo location
+  filter(!county == "") %>% # one county's name input is blank
+  mutate(county = toupper(county)) # to switch county name to uppercase
+```
+
+```{r echo=FALSE}
+# combine two data set
+weight_df = left_join(original, coordinates, by = "county")
+```
+
+```{r}
+# Further original data cleaning for graph of poverty and obesity
+obesity_geo_df = 
+  weight_df %>% 
+  #filter(sex %in% "ALL") %>% 
+  filter(!county == "STATEWIDE (EXCLUDING NYC)") %>% 
+  filter(grade_level %in% "DISTRICT TOTAL") %>% 
+  #filter(!county == "N/A") %>% 
+  select(county, percent_overweight_or_obese, latitude, longitude)
+  
+
+# Import tidy and join the median income
+income = read_xlsx("./dataset/median_income.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(county = region_county) %>%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
+         county = toupper(county))
+
+
+income_geo_df = left_join(coordinates, income, by = "county")  # combine income data to the main 
+```
+
+```{r}
+obesity_geo_plot = 
+  obesity_geo_df %>% 
+  plot_ly(
+    x = ~latitude, y = ~ longitude, type = "scatter", mode = "markers",
+    color = ~percent_overweight_or_obese, alpha = 0.5
+  )
+
+income_geo_plot = 
+  income_geo_df %>% 
+  plot_ly(
+    x = ~latitude, y = ~ longitude, type = "scatter", mode = "markers",
+    color = ~median_income, alpha = 0.5
+  )
+
+
+fig1 = subplot(obesity_geo_plot, income_geo_plot)
+
+fig1
+```
+
+
+
+## Food Access Ability
+
+```{r}
+food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
+  janitor::clean_names() %>%
+    rename(county = region_county) %>%
+  rename(food_insecurity_p = percentage) %>%
+  mutate(county = toupper(county))
+
+
+#linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
+
+```
+
