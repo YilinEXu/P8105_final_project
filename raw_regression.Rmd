@@ -123,7 +123,10 @@ obesity =
   filter(!county == "N/A") %>% 
   select(county, percent_overweight_or_obese) %>% 
   group_by(county) %>% 
-  summarize(percent_overweight_or_obese = mean(percent_overweight_or_obese))
+  summarize(percent_overweight_or_obese = mean(percent_overweight_or_obese)) %>% 
+  mutate(
+    percent_overweight_or_obese = round(percent_overweight_or_obese, 3)
+  )
 
 
 combine = 
@@ -131,29 +134,30 @@ combine =
 
 
 combine %>% 
-  plot_ly(x = ~percent_overweight_or_obese, y = ~median_income, type = 'scatter', mode = 'markers', color = ~county, marker = list(size = ~percent_overweight_or_obese, opacity = 0.5))
+  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nMedian income: (k)", median_income)) %>% 
+  plot_ly(x = ~percent_overweight_or_obese, y = ~median_income, 
+          text = ~text_label, 
+          type = 'scatter', 
+          mode = 'markers', 
+          color = ~county, 
+          sizes = c(1, 10000), 
+          marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
+  layout(
+    title = "Median income vs overweight or obese distribution", 
+    yaxis2 = list(title = "Meidan income (k)"),
+    xaxis = list(title = "Overweight or obese percent (%)")
+  )
+
+## from the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
 
 
 combine %>% 
   plot_ly(x = ~median_income, y = ~percent_overweight_or_obese, type = 'scatter', mode = 'markers', color = ~county, marker = list(size = ~percent_overweight_or_obese, opacity = 0.5))
 
 
-
-
-
-
-combine %>% 
-  plot_ly(x = ~county, y = ~median_income, type = 'scatter', mode = 'markers', color = ~median_income, marker = list(size = ~median_income, opacity = 0.1))
-
-
-
 combine %>% 
   plot_ly(x = ~county, y = ~median_income, name = 'income', type = 'scatter', mode = 'lines') %>% 
   add_trace(y = ~percent_overweight_or_obese, name = 'obese', type = 'scatter', mode = 'lines+marker')
-
-
-
-
 
 combine %>% 
   plot_ly(x = ~county, y = ~percent_overweight_or_obese, name = 'percent obesity', type = 'scatter') %>% 
