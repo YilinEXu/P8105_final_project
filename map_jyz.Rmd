@@ -22,6 +22,7 @@ library(BAMMtools)
 library(spdep)
 library(maptools)
 library(leafsync)
+library(gganimate)
 
 knitr::opts_chunk$set(
   message = FALSE,
@@ -49,11 +50,11 @@ original = tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
   janitor::clean_names() %>%
-  select(-location_code, -region, -area_name)  # the only location information we need is county name
+  select(-location_code, -area_name, -region)  # the only location information we need is county name
 ```
 
 ```{r, echo = FALSE} 
-# Clean dataset with geolocation information
+# FIPS code:https://data.ny.gov/Government-Finance/New-York-State-ZIP-Codes-County-FIPS-Cross-Referen/juva-r6g2
 fips_code = tibble(
   read.csv("./map_data_jyz/New_York_State_ZIP_Codes-County_FIPS_Cross-Reference.csv")
 ) %>%
@@ -82,6 +83,7 @@ average_percent_healthy =
   summarize(percent_healthy = mean(percent_healthy_weight), .groups = "keep") %>%
   mutate(percent_healthy = percent_healthy*100)
 
+#tidy dataframe contain only two average percentage and the mapping info
 sum_df = 
   left_join(average_percent_oo,average_percent_healthy, by = "county") %>% 
   left_join(fips_code, by = "county") %>% 
@@ -90,11 +92,12 @@ sum_df =
 
 
 ```{r, include = FALSE}
-#zip code tabulation area
+#import shp file:http://gis.ny.gov/gisdata/inventories/details.cfm?DSID=927
 fips_map = readOGR(dsn = "./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp", encoding = "UTF-8")
 
 fips_map@data<- left_join(fips_map@data, sum_df, by = c("FIPS_CODE" = "fips_code"))
 
+#assign 0 to NAs
 fips_map$percent_healthy[is.na(fips_map$percent_healthy)] <- 0
 fips_map$percent_oo[is.na(fips_map$percent_oo)] <- 0
 ```
@@ -107,7 +110,6 @@ writeOGR(fips_map_crs, './map_data_jyz/fips_map_geojson', layer = 'fips_map', dr
 ```
 
 ```{r, include = FALSE}
-# Layout 
 # format of the label that pops up for each polygon
 label_popup_oo = paste0(
   "<strong>FIPS code: </strong>",
@@ -129,7 +131,6 @@ percent_oo_pal <- colorBin('Reds', bins = percent_oo_bins, na.color = '#d9d9d9')
 ```
 
 ```{r, include = FALSE}
-# Layout 
 # format of the label that pops up for each polygon
 label_popup_healthy = paste0(
   "<strong>FIPS code: </strong>",
@@ -151,7 +152,7 @@ percent_healthy_pal <- colorBin('Blues', bins = percent_healthy_bins, na.color =
 ```
 
 ```{r, echo = FALSE}
-# choropleth map
+# choropleth overweight/obese map
 oo_map = leaflet::leaflet(data = fips_map_crs) %>% 
   addProviderTiles('CartoDB.Positron') %>% 
   addPolygons(fillColor = ~percent_oo_pal(percent_oo),
@@ -164,13 +165,13 @@ oo_map = leaflet::leaflet(data = fips_map_crs) %>%
   addLegend('bottomleft',
             pal = percent_oo_pal,
             values = ~percent_oo,
-            title = "The Average Percentage of Students Who were Overweight or Obese (2010-2019)",
+            title = "The Average Percentage of Students Who were Overweight/Obese (2010-2019)",
             opacity = 1)
 ```
 
 
 ```{r, echo = FALSE}
-# choropleth map
+# choropleth healthy weight map
 healthy_map = leaflet::leaflet(data = fips_map_crs) %>% 
   addProviderTiles('CartoDB.Positron') %>% 
   addPolygons(fillColor = ~percent_healthy_pal(percent_healthy),
@@ -200,16 +201,37 @@ Overall, on average, there were higher percentage of students who maintained a h
 
 ```{r, include=FALSE}
 hamilton_df = 
-  weight_df %>% 
-  filter(county == "HAMILTON") %>% 
-  select(county, year_reported, grade_level, 
-         percent_overweight_or_obese, percent_healthy_weight, sex) %>% 
+  tibble(
+    read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
+) %>%
+  janitor::clean_names() %>% 
+  filter(county == "HAMILTON" & sex == "ALL" & grade_level == "DISTRICT TOTAL") %>% 
+  select(county, year_reported,area_name, 
+         percent_overweight_or_obese, percent_healthy_weight) %>% 
   mutate(percent_healthy_weight = percent_healthy_weight *100)
 
 
 tidy_hamilton = 
-  hamilton_df[!with(hamilton_df,is.na(percent_overweight_or_obese)& is.na(percent_healthy_weight)),]
+  hamilton_df[!with(hamilton_df,is.na(percent_overweight_or_obese)& is.na(percent_healthy_weight)),] %>% 
+  filter(area_name == "HAMILTON") %>% 
+  pivot_longer(
+    percent_overweight_or_obese:percent_healthy_weight,
+    names_to = "status",
+    values_to = "percent"
+  ) %>% 
+  mutate(year_reported = as.factor(year_reported)) %>%
+  ggplot(aes(x = year_reported, y = percent, group = status, color = status)) + 
+  geom_line(size = 1) +
+  geom_point(size = 2) + 
+  labs(title = "Trend of Overweight/Obesity vs. Trend of Healthy Weight (Hamilton)",
+       subtitle = "Data was recorded for every two year periods",
+       x = "Year", 
+       y = "Percentage of students with either weight status") +
+  theme(axis.text.x = element_text(angle = 45)) %>%
+  na.omit()
 
-  
+gif <- animate(tidy_hamilton +geom_point(aes(group = seq_along(year_reported)), size = 2)+ transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 20)
+
+anim_save("gif.gif", gif)
 ```
-
+![](map_data_jyz/gif.gif)
