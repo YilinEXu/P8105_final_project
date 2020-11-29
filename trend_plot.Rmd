@@ -29,8 +29,8 @@ knitr::opts_chunk$set(
 )
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
+  ggplot2.continuous.colour = "Accent",
+  ggplot2.continuous.fill = "Acent"
 )
 
 
@@ -47,7 +47,7 @@ statewide <- maindata %>%
   group_by(grade_level) %>%
   mutate(year_reported = as.factor(year_reported)) %>%
   ggplot(aes(x = year_reported, y = percent_overweight_or_obese, group = grade_level, color = grade_level)) + 
-  geom_line() + 
+  geom_line(size = 1) + 
   geom_point(size = 2) + 
   labs(title = "Students' weights trend of overweight and obesity",
        subtitle = "data was recorded for every two year periods.",
@@ -233,7 +233,7 @@ final_animation<-animate(p, fps = 25, duration = 20, width = 1000, height = 1000
 
 anim_save("final_animation.gif", final_animation)
 ```
-![](final_animation.gif)
+![](trend plots/final_animation.gif)
 
 ```{r,echo=FALSE,fig.align='center'}
 
@@ -301,5 +301,5 @@ final_animation1 <-animate(p, fps = 25, duration = 20, width = 1000, height = 10
 
 anim_save("final_animation_no_mean.gif", final_animation1)
 ```
-![](final_animation_no_mean.gif)
+![](trend plots/final_animation_no_mean.gif)
 
