@@ -300,6 +300,9 @@ $(document).ready(function () {
 
 
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## New names:
+## * `` -&gt; ...1</code></pre>
+<pre><code>## Warning: Expected 2 pieces. Additional pieces discarded in 2 rows [31, 45].</code></pre>
 <div id="normality-check-and-data-transformation" class="section level1">
 <h1>Normality Check and Data Transformation</h1>
 <p>Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y’ = log(y), b. y’= y^0.5, Q_Q plot showed that the log tansformation has improved data’s normality.</p>
@@ -325,29 +328,33 @@ x3 = food insecurity percentage</p>
 <pre><code>## 
 ## Call:
 ## lm(formula = log(percent_overweight_or_obese) ~ grade_level + 
-##     median_income + food_insecurity_p, data = linear_df3)
+##     median_income + food_insecurity_p + sex + white_percent, 
+##     data = linear_df4)
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -0.84887 -0.13917  0.00674  0.15418  0.93503 
+## -0.87006 -0.13522  0.00425  0.14417  0.91660 
 ## 
 ## Coefficients:
-##                     Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)        4.5411958  0.1269828  35.762  &lt; 2e-16 ***
-## grade_level        0.1605545  0.0133570  12.020  &lt; 2e-16 ***
-## median_income     -0.0100907  0.0009203 -10.965  &lt; 2e-16 ***
-## food_insecurity_p -0.0385197  0.0064664  -5.957  3.4e-09 ***
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        2.501533   0.333972   7.490 1.38e-13 ***
+## grade_level        0.162018   0.013135  12.335  &lt; 2e-16 ***
+## median_income     -0.002389   0.001502  -1.591    0.112    
+## food_insecurity_p -0.001717   0.008903  -0.193    0.847    
+## sex               -0.018417   0.013111  -1.405    0.160    
+## white_percent      0.012995   0.001871   6.947 6.28e-12 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 0.2275 on 1160 degrees of freedom
-## Multiple R-squared:  0.2526, Adjusted R-squared:  0.2507 
-## F-statistic: 130.7 on 3 and 1160 DF,  p-value: &lt; 2.2e-16</code></pre>
+## Residual standard error: 0.2215 on 1136 degrees of freedom
+##   (22 observations deleted due to missingness)
+## Multiple R-squared:  0.2864, Adjusted R-squared:  0.2833 
+## F-statistic: 91.18 on 5 and 1136 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><img src="regression_xm_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>There is no strange pattern about Residusl vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid. Three variables are significant with very small p-value (&lt;0.001). However, due to the limitation of data, the models’ R-squared is equal to 0.2526, which means only 25% of the data is explained by the model. Other important factors have not been included in the model. We will make improvement on this model when more data is available.</p>
+<p>There is no strange pattern about Residusl vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid. Three variables are significant with very small p-value (&lt;0.001). However, due to the limitation of data, the model’s R-squared is equal to 0.2526, which means only 25% of the data is explained by this model. A possible explanation is that other important factors have not been included. We will make improvement when more data is available.</p>
 </div>
 
 
