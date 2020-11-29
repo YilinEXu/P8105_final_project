@@ -239,7 +239,47 @@ anim_save("gif.gif", gif, path = "~/Documents/Columbia Data Science/Final/P8105_
 
 ### Hamilton
 
-To explore the reason why `HAMILTON` was colored in darker colors in both choropleth maps, `HAMILTON` was separated from the original collective data and analyzed independently. We found that as time goes by, students' weight in `HAMILTON` exhibited an increasing trend. As one of the healthiest counties with less than 20% of overweight/obese students, `HAMILTON`'s current situation is very concerning since about 40% of students were classified as overweight or obese by 2019. Students who were obese at the beginning of this study may have maintained to be obese, while students who were originally weighted as healthy gained weight. In total, there were more obese students by the end of the 9-years-period compare to the beginning of the study.
+To explore the reason why `HAMILTON` was colored in darker colors in both choropleth maps, `HAMILTON` was separated from the original collective data and analyzed independently. We found that as time goes by, students' weight in `HAMILTON` exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, `HAMILTON`'s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. 
+```{r, echo=FALSE}
+ranking_df =
+  original %>% 
+  #select(county, percent_overweight_or_obese, percent_healthy_weight, year_reported) %>%
+  filter(county != "STATEWIDE (EXCLUDING NYC)") %>% 
+  mutate(percent_healthy_weight = percent_healthy_weight *100) %>%
+  drop_na(percent_overweight_or_obese,percent_healthy_weight) %>% 
+  group_by(county, year_reported) %>%
+  summarize(oo = mean(percent_overweight_or_obese), hw = mean(percent_healthy_weight))
+
+ranking_begin =
+  ranking_df %>% 
+  filter(year_reported == "2010-2012") %>% 
+  ungroup() %>% 
+  top_n(3, hw) %>%
+  plot_ly(x = ~hw, y = ~county, type = 'bar', orientation = 'h', width = 800, height = 200, marker = list(color = c('rgba(137,196,244,1)','rgba(204,204,204,1)', 'rgba(204,204,204,1)'))) %>%
+  layout(title = "",
+         xaxis = list(title = "Top 3 Healthiest Counties(2012)"),
+         yaxis = list(title = ""),
+         showlegend = FALSE)
+
+ranking_ending =
+  ranking_df %>% 
+  filter(year_reported == "2018-2019") %>% 
+  ungroup() %>% 
+  top_n(3, oo) %>%
+  plot_ly(x = ~oo, y = ~county, type = 'bar', orientation = 'h', width = 800, height = 200, marker = list(color = c('rgba(204,204,204,1)', 'rgba(204,204,204,1)','rgba(222,45,38,1)'))) %>%
+  layout(title = "",
+         xaxis = list(title = "Top 3 Most Overweighted Counties(2019)"),
+         yaxis = list(title = ""),
+         showlegend = FALSE)
+
+subplot(ranking_begin,ranking_ending,
+        nrows = 1, widths = c(0.5, 0.5),
+        margin = c(0.1, 0.2, 0.1, 0.1),
+        shareX = FALSE, shareY = FALSE,
+        titleX = TRUE, titleY = FALSE)
+```
+
+Students who were obese at the beginning of this study may have maintained to be obese, while students who were originally weighted as healthy gained weight. In total, there were more obese students by the end of the 9-years-period compare to the beginning of the study.
 
 <br>
 ![](map_data_jyz/gif.gif)
