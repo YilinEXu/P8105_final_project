@@ -303,19 +303,20 @@ $(document).ready(function () {
 <div id="normality-check-and-data-transformation" class="section level1">
 <h1>Normality Check and Data Transformation</h1>
 <p>Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y’ = log(y), b. y’= y^0.5, Q_Q plot showed that the log tansformation has improved data’s normality.</p>
-<p><img src="regression_xm_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="regression_xm_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="regression_xm_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<p><img src="regression_xm_files/figure-html/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Above are the Q-Q plot and histogram of overweight/obesity data after log transformation. Q-Q plot is in a perfect straight line, histogram is normally distributed but a bit skewed to the left. Overall, the normality assumption is satisfied.</p>
+<p>Based on the transformation above, the model we are going to fit is: <span class="math display">\[ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 gender\]</span></p>
 </div>
 <div id="statistics-model" class="section level1">
 <h1>Statistics Model</h1>
 <p>In the beginning we included 4 independent variables, grade level, median income, food insecurity, gender, however the model summary showed there is a weak correlation between gender (p-value = 0.168) with dependent variable y, so we took gender out from the model, left three variables all significantly influenced the percentage overweight and obese.</p>
 </div>
-<div id="final-model-logy-4.541-0.161x1---0.010x2---0.039x3" class="section level1">
-<h1>Final Model: log(y) = 4.541 + 0.161x1 - 0.010x2 - 0.039x3</h1>
-<p>y = percentage overweight or obese<br />
-x1 = grade level (0 = elementary, 1 = middle/high school)<br />
+<div id="final-model" class="section level1">
+<h1>Final Model:</h1>
+<p><span class="math display">\[ log(y) = 4.541 + 0.161x_1 - 0.010x_2 - 0.039x_3\]</span> y = percentage overweight or obese<br />
+x1= grade level (0 = elementary, 1 = middle/high school)<br />
 x2 = median income (k dollars)<br />
 x3 = food insecurity percentage</p>
 </div>
@@ -343,7 +344,7 @@ x3 = food insecurity percentage</p>
 ## Residual standard error: 0.2275 on 1160 degrees of freedom
 ## Multiple R-squared:  0.2526, Adjusted R-squared:  0.2507 
 ## F-statistic: 130.7 on 3 and 1160 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p><img src="regression_xm_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="regression_xm_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
