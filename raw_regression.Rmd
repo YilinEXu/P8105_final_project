@@ -144,7 +144,7 @@ combine %>%
           marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
   layout(
     title = "Median income vs overweight or obese distribution", 
-    yaxis2 = list(title = "Meidan income (k)"),
+    yaxis = list(title = "Meidan income (k)"),
     xaxis = list(title = "Overweight or obese percent (%)")
   )
 
@@ -231,18 +231,38 @@ fig1
 ```
 
 
-
 ## Food Access Ability
 
 ```{r}
+#import food insecurity data
 food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
   janitor::clean_names() %>%
-    rename(county = region_county) %>%
+  rename(county = region_county) %>%
   rename(food_insecurity_p = percentage) %>%
   mutate(county = toupper(county))
 
 
-#linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
 
+#combine with obesity data
+combine2 = 
+  left_join(food_insecurity, obesity, by = "county")
+
+
+
+combine2 %>% 
+  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nFood insecurity: (%)", food_insecurity_p)) %>% 
+  plot_ly(x = ~percent_overweight_or_obese, y = ~food_insecurity_p, 
+          text = ~text_label, 
+          type = 'scatter', 
+          mode = 'markers', 
+          color = ~county, 
+          sizes = c(1, 10000), 
+          marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
+  layout(
+    title = "Food insecurity vs overweight or obese distribution", 
+    yaxis = list(title = "Food insecurity (%)"),
+    xaxis = list(title = "Overweight or obese percent (%)")
+  )
 ```
 
+from the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 
