@@ -3,7 +3,7 @@ title: "Raw Regression"
 output: github_document
 ---
 
-```{r}
+```{r, include=FALSE,message=FALSE,echo=FALSE}
 library(tidyverse)
 library(readxl)
 library(plotly)
@@ -26,12 +26,18 @@ scale_fill_discrete = scale_fill_viridis_d
 
 We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most. 
 
+# Data
+
+The main data set for our project is a data set from The Student Weight Status Category Reporting System (SWSCR). SWSCR collects weight status category data (underweight, healthy weight, overweight or obese, based on BMI-for-age percentile) and includes separate estimates of the percent of students overweight, obese and overweight or obese for all reportable grades within the county and/or region and by grade groups (elementary and middle/high). It can be access at [here](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus). This dataset has a range from 2010 to 2019. 
+
+
+
 Basic variables that we are interested in:
 
-**Sex**
-**Grade Level**
-**Economic Status**
-**Food Access Ability**
+- **Sex**
+- **Grade Level**
+- **Economic Status**
+- **Food Access Ability**
 
 
 # Exploratory data analysis
@@ -265,4 +271,4 @@ combine2 %>%
   )
 ```
 
-from the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 
+From the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 
