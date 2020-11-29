@@ -28,16 +28,21 @@ We planned to use linear regression model to analysis the association between ob
 
 # Data
 
-The main data set for our project is a data set from The Student Weight Status Category Reporting System (SWSCR). SWSCR collects weight status category data (underweight, healthy weight, overweight or obese, based on BMI-for-age percentile) and includes separate estimates of the percent of students overweight, obese and overweight or obese for all reportable grades within the county and/or region and by grade groups (elementary and middle/high). It can be access at [here](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus). This dataset has a range from 2010 to 2019. 
+The main data set for our project is a data set from The Student Weight Status Category Reporting System (SWSCR). SWSCR collects weight status category data and includes separate estimates of the percent of students overweight, obese and overweight or obese for all reportable grades within the county and/or region and by grade groups (elementary and middle/high). It can be accessed at [here](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus). This dataset has a range from 2010 to 2019. 
+
+We also combined two extra datasets to examine the factors of economic status and food access ability on weight status. Economic status dataset can be accessed at[].
+Food access ability dataset can be accessed at [].
 
 
 
 Basic variables that we are interested in:
 
-- **Sex**
-- **Grade Level**
+- **Sex**: Female and male
+- **Grade Level**: Elementary, Middle/High
+- **Weight Status**: Underweight, health weight, overweight or obese based on BMI for age percentile. For this project, we focus on the overweight or obese student percentage which are estimates of based on all reportable grades within the county and/or region and by grade groups. 
 - **Economic Status**
 - **Food Access Ability**
+
 
 
 # Exploratory data analysis
@@ -46,7 +51,7 @@ Basic variables that we are interested in:
 
 The graph below shows that more male students are in the overweight or obese category each year than female students.It seems like the percentage for male in the overweight or obese category slightly decreases and female slightly increases over years. 
 
-```{r}
+```{r, echo=FALSE}
 original = 
   tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
@@ -85,7 +90,7 @@ sex_count %>%
 
 The graph below shows that students in middle/high school grade level tend to have higher percentage than the elementary students in overweight or obese category each year. There also seems to be an increase in the overweight or obese percentage for the middle or high school students while a decrease for the elementary students over years. 
 
-```{r}
+```{r, echo=FALSE}
 grade_df = 
   original %>% 
   select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
@@ -113,7 +118,7 @@ grade_count %>%
 
 redo the graph
 
-```{r}
+```{r,echo=FALSE}
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
@@ -154,8 +159,6 @@ combine %>%
     xaxis = list(title = "Overweight or obese percent (%)")
   )
 
-## from the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
-
 
 combine %>% 
   plot_ly(x = ~median_income, y = ~percent_overweight_or_obese, type = 'scatter', mode = 'markers', color = ~county, marker = list(size = ~percent_overweight_or_obese, opacity = 0.5))
@@ -171,6 +174,7 @@ combine %>%
 
 ```
 
+from the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
 
 ##########################################
 
