@@ -3,7 +3,7 @@ title: "Raw Regression"
 output: github_document
 ---
 
-```{r}
+```{r, include=FALSE,message=FALSE,echo=FALSE}
 library(tidyverse)
 library(readxl)
 library(plotly)
@@ -26,12 +26,23 @@ scale_fill_discrete = scale_fill_viridis_d
 
 We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most. 
 
+# Data
+
+The main data set for our project is a data set from The Student Weight Status Category Reporting System (SWSCR). SWSCR collects weight status category data and includes separate estimates of the percent of students overweight, obese and overweight or obese for all reportable grades within the county and/or region and by grade groups (elementary and middle/high). It can be accessed at [here](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus). This dataset has a range from 2010 to 2019. 
+
+We also combined two extra datasets to examine the factors of economic status and food access ability on weight status. Economic status dataset can be accessed at[].
+Food access ability dataset can be accessed at [].
+
+
+
 Basic variables that we are interested in:
 
-**Sex**
-**Grade Level**
-**Economic Status**
-**Food Access Ability**
+- **Sex**: Female and male
+- **Grade Level**: Elementary, Middle/High
+- **Weight Status**: Underweight, health weight, overweight or obese based on BMI for age percentile. For this project, we focus on the overweight or obese student percentage which are estimates of based on all reportable grades within the county and/or region and by grade groups. 
+- **Economic Status**
+- **Food Access Ability**
+
 
 
 # Exploratory data analysis
@@ -40,7 +51,7 @@ Basic variables that we are interested in:
 
 The graph below shows that more male students are in the overweight or obese category each year than female students.It seems like the percentage for male in the overweight or obese category slightly decreases and female slightly increases over years. 
 
-```{r}
+```{r, echo=FALSE}
 original = 
   tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
@@ -79,7 +90,7 @@ sex_count %>%
 
 The graph below shows that students in middle/high school grade level tend to have higher percentage than the elementary students in overweight or obese category each year. There also seems to be an increase in the overweight or obese percentage for the middle or high school students while a decrease for the elementary students over years. 
 
-```{r}
+```{r, echo=FALSE}
 grade_df = 
   original %>% 
   select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
@@ -107,7 +118,7 @@ grade_count %>%
 
 redo the graph
 
-```{r}
+```{r,echo=FALSE}
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
@@ -144,11 +155,9 @@ combine %>%
           marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
   layout(
     title = "Median income vs overweight or obese distribution", 
-    yaxis2 = list(title = "Meidan income (k)"),
+    yaxis = list(title = "Meidan income (k)"),
     xaxis = list(title = "Overweight or obese percent (%)")
   )
-
-## from the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
 
 
 combine %>% 
@@ -165,6 +174,7 @@ combine %>%
 
 ```
 
+from the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
 
 ##########################################
 
@@ -231,18 +241,38 @@ fig1
 ```
 
 
-
 ## Food Access Ability
 
 ```{r}
+#import food insecurity data
 food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
   janitor::clean_names() %>%
-    rename(county = region_county) %>%
+  rename(county = region_county) %>%
   rename(food_insecurity_p = percentage) %>%
   mutate(county = toupper(county))
 
 
-#linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
 
+#combine with obesity data
+combine2 = 
+  left_join(food_insecurity, obesity, by = "county")
+
+
+
+combine2 %>% 
+  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nFood insecurity: (%)", food_insecurity_p)) %>% 
+  plot_ly(x = ~percent_overweight_or_obese, y = ~food_insecurity_p, 
+          text = ~text_label, 
+          type = 'scatter', 
+          mode = 'markers', 
+          color = ~county, 
+          sizes = c(1, 10000), 
+          marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
+  layout(
+    title = "Food insecurity vs overweight or obese distribution", 
+    yaxis = list(title = "Food insecurity (%)"),
+    xaxis = list(title = "Overweight or obese percent (%)")
+  )
 ```
 
+From the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 

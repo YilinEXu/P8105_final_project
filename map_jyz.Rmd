@@ -1,6 +1,9 @@
 ---
 title: "Mapping and Visualization"
-output: html_document
+output: 
+  html_document:
+        toc: TRUE
+        toc_float: TRUE
 ---
 <style type="text/css">
 
@@ -22,6 +25,7 @@ library(BAMMtools)
 library(spdep)
 library(maptools)
 library(leafsync)
+library(gganimate)
 
 knitr::opts_chunk$set(
   message = FALSE,
@@ -49,11 +53,11 @@ original = tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
   janitor::clean_names() %>%
-  select(-location_code, -region, -area_name)  # the only location information we need is county name
+  select(-location_code, -area_name, -region)  # the only location information we need is county name
 ```
 
 ```{r, echo = FALSE} 
-# Clean dataset with geolocation information
+# FIPS code:https://data.ny.gov/Government-Finance/New-York-State-ZIP-Codes-County-FIPS-Cross-Referen/juva-r6g2
 fips_code = tibble(
   read.csv("./map_data_jyz/New_York_State_ZIP_Codes-County_FIPS_Cross-Reference.csv")
 ) %>%
@@ -82,6 +86,7 @@ average_percent_healthy =
   summarize(percent_healthy = mean(percent_healthy_weight), .groups = "keep") %>%
   mutate(percent_healthy = percent_healthy*100)
 
+#tidy dataframe contain only two average percentage and the mapping info
 sum_df = 
   left_join(average_percent_oo,average_percent_healthy, by = "county") %>% 
   left_join(fips_code, by = "county") %>% 
@@ -90,11 +95,12 @@ sum_df =
 
 
 ```{r, include = FALSE}
-#zip code tabulation area
+#import shp file:http://gis.ny.gov/gisdata/inventories/details.cfm?DSID=927
 fips_map = readOGR(dsn = "./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp", encoding = "UTF-8")
 
 fips_map@data<- left_join(fips_map@data, sum_df, by = c("FIPS_CODE" = "fips_code"))
 
+#assign 0 to NAs
 fips_map$percent_healthy[is.na(fips_map$percent_healthy)] <- 0
 fips_map$percent_oo[is.na(fips_map$percent_oo)] <- 0
 ```
@@ -107,7 +113,6 @@ writeOGR(fips_map_crs, './map_data_jyz/fips_map_geojson', layer = 'fips_map', dr
 ```
 
 ```{r, include = FALSE}
-# Layout 
 # format of the label that pops up for each polygon
 label_popup_oo = paste0(
   "<strong>FIPS code: </strong>",
@@ -129,7 +134,6 @@ percent_oo_pal <- colorBin('Reds', bins = percent_oo_bins, na.color = '#d9d9d9')
 ```
 
 ```{r, include = FALSE}
-# Layout 
 # format of the label that pops up for each polygon
 label_popup_healthy = paste0(
   "<strong>FIPS code: </strong>",
@@ -151,7 +155,7 @@ percent_healthy_pal <- colorBin('Blues', bins = percent_healthy_bins, na.color =
 ```
 
 ```{r, echo = FALSE}
-# choropleth map
+# choropleth overweight/obese map
 oo_map = leaflet::leaflet(data = fips_map_crs) %>% 
   addProviderTiles('CartoDB.Positron') %>% 
   addPolygons(fillColor = ~percent_oo_pal(percent_oo),
@@ -164,13 +168,13 @@ oo_map = leaflet::leaflet(data = fips_map_crs) %>%
   addLegend('bottomleft',
             pal = percent_oo_pal,
             values = ~percent_oo,
-            title = "The Average Percentage of Students Who were Overweight or Obese (2010-2019)",
+            title = "The Average Percentage of Students Who were Overweight/Obese (2010-2019)",
             opacity = 1)
 ```
 
 
 ```{r, echo = FALSE}
-# choropleth map
+# choropleth healthy weight map
 healthy_map = leaflet::leaflet(data = fips_map_crs) %>% 
   addProviderTiles('CartoDB.Positron') %>% 
   addPolygons(fillColor = ~percent_healthy_pal(percent_healthy),
@@ -187,29 +191,98 @@ healthy_map = leaflet::leaflet(data = fips_map_crs) %>%
             opacity = 1)
 ```
 
-### Overweight or Obese vs. Healthy Weight:
-This map includes weight information collected from students who were in two grade levels: `ELEMENTARY` or `MIDDLE/HIGH`. They came from __`r nrow(average_percent_oo)`__ counties in the New York State, while New York City was excluded from the data. The percent of students who were overweight or obese and the percent of students who maintained a healthy weight were selected as indicator variables to represent the student's weight situation in the corresponding counties. Since data was collected over a __9-years-period__, an average of the selected percentages was taken and mapped. 
+### Choropleth Map:
+This map includes weight information collected from students who were in two grade levels: `ELEMENTARY` or `MIDDLE/HIGH`. They came from __`r nrow(average_percent_oo)`__ counties in the New York State, while New York City was excluded from the data. The percent of students who were overweight or obese and the percent of students who maintained a healthy weight were selected as indicator variables to represent the student's weight situation in the corresponding counties. Since data was collected over a __9-years-period__, an average of the selected percentages was taken and mapped.
 <br>
-The Average Percentage of Students Who were Overweight or Obese across 9 years and `r nrow(average_percent_oo)` New York counties were mapped in __red__. The darker the red color, the larger percentage of overweight or obese students can be found in the county. The Average Percentage of Students Who Maintained Healthy Weight were mapped in __blue__, where the darker the blue color, the larger percentage of students in the county maintained a healthy weight. 
+The average percentage of students who were overweight or obese across 9 years and `r nrow(average_percent_oo)` New York counties were mapped in __red__. The darker the red color, the larger percentage of overweight or obese students can be found in the county. The average percentage of students who maintained healthy weight were mapped in __blue__, where the darker the blue color, the larger percentage of students in the county maintained a healthy weight. 
 ```{r echo = FALSE}
 #putting maps side by side
 sync(oo_map, healthy_map, ncol = 2, sync = "all", sync.cursor = TRUE, no.initial.sync = TRUE)
 ```
 <br>
-Overall, on average, there were higher percentage of students who maintained a healthy weight across the `r nrow(average_percent_oo)`counties, and the two maps echo each other nicely. However, there are a few exceptions. Take `HAMILTON` as an example, it is colored as deep red and deep blue at the same time, which means it not only exhibits high average percentage of overweight or obesity but also has high average percentage of students with healthy weight.
+Overall, on average, there were higher percentage of students who maintained a healthy weight across the `r nrow(average_percent_oo)` counties, and the two maps echo each other nicely. However, there are a few exceptions. Take `HAMILTON` as an example, it is colored as deep red and deep blue at the same time, which means it not only exhibits high average percentage of overweight or obesity but also has high average percentage of students with healthy weight.
 
 ```{r, include=FALSE}
 hamilton_df = 
-  weight_df %>% 
-  filter(county == "HAMILTON") %>% 
-  select(county, year_reported, grade_level, 
-         percent_overweight_or_obese, percent_healthy_weight, sex) %>% 
+  tibble(
+    read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
+) %>%
+  janitor::clean_names() %>% 
+  filter(county == "HAMILTON" & sex == "ALL") %>% 
+  select(county,area_name,year_reported, grade_level,
+         percent_overweight_or_obese, percent_healthy_weight) %>% 
   mutate(percent_healthy_weight = percent_healthy_weight *100)
 
-
 tidy_hamilton = 
-  hamilton_df[!with(hamilton_df,is.na(percent_overweight_or_obese)& is.na(percent_healthy_weight)),]
+  hamilton_df[!with(hamilton_df,is.na(percent_overweight_or_obese)& is.na(percent_healthy_weight)),] %>% 
+  filter(area_name == "HAMILTON" & grade_level == "DISTRICT TOTAL") %>% 
+  pivot_longer(
+    percent_overweight_or_obese:percent_healthy_weight,
+    names_to = "status",
+    values_to = "percent"
+  ) %>% 
+  mutate(year_reported = as.factor(year_reported)) %>%
+  ggplot(aes(x = year_reported, y = percent, group = status, color = status)) + 
+  geom_line(size = 1) +
+  geom_point(size = 2) + 
+  labs(title = "Trend of Overweight/Obesity vs. Trend of Healthy Weight (Hamilton)",
+       subtitle = "Data was recorded for every two year periods",
+       x = "Year", 
+       y = "Percentage of students with either weight status") +
+  theme(axis.text.x = element_text(angle = 45)) %>%
+  na.omit()
 
-  
+gif <- animate(tidy_hamilton +geom_point(aes(group = seq_along(year_reported)), size = 2)+ transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 20)
+
+anim_save("gif.gif", gif, path = "~/Documents/Columbia Data Science/Final/P8105_final_project/map_data_jyz")
 ```
 
+### Hamilton
+
+To explore the reason why `HAMILTON` was colored in darker colors in both choropleth maps, `HAMILTON` was separated from the original collective data and analyzed independently. We found that as time goes by, students' weight in `HAMILTON` exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, `HAMILTON`'s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. 
+```{r, echo=FALSE}
+ranking_df =
+  original %>% 
+  #select(county, percent_overweight_or_obese, percent_healthy_weight, year_reported) %>%
+  filter(county != "STATEWIDE (EXCLUDING NYC)") %>% 
+  mutate(percent_healthy_weight = percent_healthy_weight *100) %>%
+  drop_na(percent_overweight_or_obese,percent_healthy_weight) %>% 
+  group_by(county, year_reported) %>%
+  summarize(oo = mean(percent_overweight_or_obese), hw = mean(percent_healthy_weight))
+
+ranking_begin =
+  ranking_df %>% 
+  filter(year_reported == "2010-2012") %>% 
+  ungroup() %>% 
+  top_n(3, hw) %>%
+  plot_ly(x = ~hw, y = ~county, type = 'bar', orientation = 'h', width = 800, height = 200, marker = list(color = c('rgba(137,196,244,1)','rgba(204,204,204,1)', 'rgba(204,204,204,1)'))) %>%
+  layout(title = "",
+         xaxis = list(title = "Top 3 Healthiest Counties(2012)"),
+         yaxis = list(title = ""),
+         showlegend = FALSE)
+
+ranking_ending =
+  ranking_df %>% 
+  filter(year_reported == "2018-2019") %>% 
+  ungroup() %>% 
+  top_n(3, oo) %>%
+  plot_ly(x = ~oo, y = ~county, type = 'bar', orientation = 'h', width = 800, height = 200, marker = list(color = c('rgba(204,204,204,1)', 'rgba(204,204,204,1)','rgba(222,45,38,1)'))) %>%
+  layout(title = "",
+         xaxis = list(title = "Top 3 Most Overweighted Counties(2019)"),
+         yaxis = list(title = ""),
+         showlegend = FALSE)
+
+subplot(ranking_begin,ranking_ending,
+        nrows = 1, widths = c(0.5, 0.5),
+        margin = c(0.1, 0.2, 0.1, 0.1),
+        shareX = FALSE, shareY = FALSE,
+        titleX = TRUE, titleY = FALSE)
+```
+
+Students who were obese at the beginning of this study may have maintained to be obese, while students who were originally weighted as healthy gained weight. In total, there were more obese students by the end of the 9-years-period compare to the beginning of the study.
+
+<br>
+![](map_data_jyz/gif.gif)
+
+### Outlook
+Since the choropleth maps used the average percentage, the changing trend of student weight was neglected. Both the average percent of overweight/obese and healthy students were large for `HAMILTON`. When analyzing all connties in the New York state, even though students' weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration.
