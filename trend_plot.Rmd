@@ -21,16 +21,19 @@ library(kableExtra)
 library(magick)
 library(dplyr)
 knitr::opts_chunk$set(
- echo = FALSE,
- fig.width = 7, 
- fig.height = 5,
- fig.asp = 0.6,
- out.width = "60%")
-theme_set(theme_bw() + 
-          theme(legend.position = "bottom",
-                legend.title = element_blank(),
-                plot.title = element_text(hjust = 0.5, size = 15),
-                plot.subtitle = element_text(hjust = 0.5, size = 12)))
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 10,
+  fig.asp = .6,
+  out.width = "90%"
+)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+
 maindata <- read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv") %>%
   janitor::clean_names()
 ```
@@ -44,7 +47,7 @@ statewide <- maindata %>%
   group_by(grade_level) %>%
   mutate(year_reported = as.factor(year_reported)) %>%
   ggplot(aes(x = year_reported, y = percent_overweight_or_obese, group = grade_level, color = grade_level)) + 
-  geom_line(size = 1) + 
+  geom_line() + 
   geom_point(size = 2) + 
   labs(title = "Students' weights trend of overweight and obesity",
        subtitle = "data was recorded for every two year periods.",
@@ -52,7 +55,7 @@ statewide <- maindata %>%
        y = "Percentage of overweight and obesity among students") +
   theme(axis.text.x = element_text(angle = 45))
 
-gif1 <- animate(statewide + geom_point(aes(group = seq_along(year_reported)), size = 2) + transition_reveal(as.numeric(year_reported))+ enter_fade() + exit_shrink(), fps = 20)
+gif1 <- animate(statewide + geom_point(aes(group = seq_along(year_reported)), size = 2) + transition_reveal(as.numeric(year_reported))+ enter_fade() + exit_shrink(), fps = 25)
 
 anim_save("gif1.gif",gif1)
 ```
@@ -80,7 +83,7 @@ genderperc <- maindata %>%
   theme(axis.text.x = element_text(angle = 45)) %>%
   na.omit()
 
-gif2 <- animate(genderperc +geom_point(aes(group = seq_along(year_reported)), size = 2)+ transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 20)
+gif2 <- animate(genderperc +geom_point(aes(group = seq_along(year_reported)), size = 2)+ transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 25)
 
 anim_save("gif2.gif", gif2)
 ```
@@ -104,7 +107,7 @@ gender_num <- maindata %>%
        y = "Number of overweight and obesity among students") +
   theme(axis.text.x = element_text(angle = 45))
 
-gif3 <- animate(gender_num + geom_point(aes(group = seq_along(year_reported))) + transition_reveal(as.numeric(year_reported)))
+gif3 <- animate(gender_num + geom_point(aes(group = seq_along(year_reported))) + transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 25)
 
 anim_save("gif3.gif",gif3)
 ```
@@ -130,7 +133,8 @@ compare_obese <- maindata %>%
 
 ggplot(compare_obese, aes(x = grade_level, y = percentage, fill = weight_status)) +
   geom_bar(stat = "identity",position = "dodge") +
-  labs(title = "Overweight percentage compare to obsesity percentage",
+  labs(title='Every two years period: {closest_state}',
+    subtitle = "Overweight percentage compare to obsesity percentage",
        x = "Grade level", 
        y = "Percentage of obese/overweight among total") +
   theme_bw()+
