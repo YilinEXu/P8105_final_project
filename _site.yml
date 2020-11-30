@@ -5,10 +5,17 @@ navbar:
   right:
     - text: "Trend Graphs"
       href: trend_plot.html
-    - icon: fa-github fa-lg
-      href: https://github.com/YilinEXu/P8105_final_project.git
     - text: "Student's Weigth Status Over Time Map"
       href: https://jiayihelenzhou.shinyapps.io/ds_project/
+    - text: "Data Explore"
+      href: raw_regression.html
+    - text: "Statistical Analysis""
+      href: regression_xm.html
+    - icon: fa-envelope fa-lg
+      href: contact.html
+    - icon: fa-github fa-lg
+      href: https://github.com/YilinEXu/P8105_final_project.git
+      
       
       
 
