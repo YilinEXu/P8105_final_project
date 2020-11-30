@@ -234,7 +234,7 @@ tidy_hamilton =
 
 gif <- animate(tidy_hamilton +geom_point(aes(group = seq_along(year_reported)), size = 2)+ transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 20)
 
-anim_save("gif.gif", gif, path = "~/Documents/Columbia Data Science/Final/P8105_final_project/map_data_jyz")
+anim_save("gif.gif", gif)
 ```
 
 ### Hamilton
@@ -250,12 +250,12 @@ ranking_df =
   group_by(county, year_reported) %>%
   summarize(oo = mean(percent_overweight_or_obese), hw = mean(percent_healthy_weight))
 
-ranking_begin =
+ranking_begin = 
   ranking_df %>% 
   filter(year_reported == "2010-2012") %>% 
   ungroup() %>% 
   top_n(3, hw) %>%
-  plot_ly(x = ~hw, y = ~county, type = 'bar', orientation = 'h', width = 800, height = 200, marker = list(color = c('rgba(137,196,244,1)','rgba(204,204,204,1)', 'rgba(204,204,204,1)'))) %>%
+  plot_ly(x = ~hw, y = ~county, type = 'bar', orientation = 'h', width = 800, height = 200, marker = list(color = c('rgba(137,196,244,1)','rgba(204,204,204,1)','rgba(204,204,204,1)')))  %>%
   layout(title = "",
          xaxis = list(title = "Top 3 Healthiest Counties(2012)"),
          yaxis = list(title = ""),

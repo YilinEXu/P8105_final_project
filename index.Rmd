@@ -8,10 +8,26 @@ output:
 ---
 
 # Student Weight Status in New York State
+<<<<<<< HEAD
 <center>
 
 ![](xxxxxxxxx.jpg){width=500px}
+=======
+
+<center>
+
+<img src = "image/final project home.jpg" style = "width:75%">
+
+>>>>>>> 553930222e9e6b83426c95ebe74cd864204646d2
 </center>
 
 <br>
 
+<<<<<<< HEAD
+=======
+# Screencast Introduction
+
+
+# Introduction
+
+>>>>>>> 553930222e9e6b83426c95ebe74cd864204646d2
