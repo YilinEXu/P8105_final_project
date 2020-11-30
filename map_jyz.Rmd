@@ -234,7 +234,7 @@ tidy_hamilton =
 
 gif <- animate(tidy_hamilton +geom_point(aes(group = seq_along(year_reported)), size = 2)+ transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 20)
 
-anim_save("gif.gif", gif, path = "~/Documents/Columbia Data Science/Final/P8105_final_project/map_data_jyz")
+anim_save("gif.gif", gif)
 ```
 
 ### Hamilton
