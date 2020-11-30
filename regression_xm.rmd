@@ -7,7 +7,6 @@ output: github_document
 library(tidyverse)
 library(patchwork)
 library(readxl)
-library(kableExtra)
 ```
 
 
