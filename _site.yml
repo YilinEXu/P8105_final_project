@@ -9,9 +9,17 @@ navbar:
       href: https://github.com/YilinEXu/P8105_final_project.git
     - text: "Student's Weigth Status Over Time Map"
       href: https://jiayihelenzhou.shinyapps.io/ds_project/
+<<<<<<< HEAD
+=======
+
+>>>>>>> 445098b41458d182dda51ad6a45661396b5c6c33
     - text: "Student's Weight Status Over Time"
       href: map_jyz.html
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 445098b41458d182dda51ad6a45661396b5c6c33
 output:
   html_document:
     theme: paper
