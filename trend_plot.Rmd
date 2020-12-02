@@ -20,6 +20,7 @@ library(leaps)
 library(kableExtra)
 library(magick)
 library(dplyr)
+library(gifski)
 knitr::opts_chunk$set(
   message = FALSE,
   warning = FALSE,
