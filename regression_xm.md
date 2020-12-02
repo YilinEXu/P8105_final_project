@@ -10,30 +10,34 @@ transformation to improve model adequacy, a. y’ = log(y), b. y’= y^0.5,
 Q\_Q plot showed that the log tansformation has improved data’s
 normality.
 
-![](regression_xm_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+<img src="regression_xm_files/figure-gfm/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](regression_xm_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+<img src="regression_xm_files/figure-gfm/unnamed-chunk-6-2.png" style="display: block; margin: auto;" />
 
 Above are the Q-Q plot and histogram of overweight/obesity data after
 log transformation. Q-Q plot is in a perfect straight line, histogram is
 normally distributed but a bit skewed to the left. Overall, the
 normality assumption is satisfied.
 
+Based on the transformation above, the model we are going to fit is:
+\[ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 gender\]
+
 # Statistics Model
 
 In the beginning we included 4 independent variables, grade level,
-median income, food insecurity and gender, however the model summary
-showed there is a very weak correlation between gender (p-value = 0.168)
-and dependent variable, so we took gender out from the model, left four
+median income, food insecurity, gender, however the model summary showed
+there is a weak correlation between gender (p-value = 0.168) with
+dependent variable y, so we took gender out from the model, left three
 variables all significantly influenced the percentage overweight and
 obese.
 
-# Final Model: log(y) = 4.54 + 0.16x1 - 0.01x2 - 0.03x3
+# Final Model:
 
-y = percentage overweight or obese  
-x1 = grade level (0 = elementary, 1 = middle/high school)  
+\[ log(y) = 4.541 + 0.161x_1 - 0.010x_2 - 0.039x_3\] y = percentage
+overweight or obese  
+x1= grade level (0 = elementary, 1 = middle/high school)  
 x2 = median income (k dollars)  
 x3 = food insecurity percentage
 
@@ -65,7 +69,7 @@ summary(lm_1)
     ## Multiple R-squared:  0.2526, Adjusted R-squared:  0.2507 
     ## F-statistic: 130.7 on 3 and 1160 DF,  p-value: < 2.2e-16
 
-![](regression_xm_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+<img src="regression_xm_files/figure-gfm/unnamed-chunk-9-1.png" style="display: block; margin: auto;" />
 
 # Conclusion
 

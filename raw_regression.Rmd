@@ -1,6 +1,6 @@
 ---
 title: "Raw Regression"
-output: github_document
+output: html_document
 ---
 
 ```{r, include=FALSE,message=FALSE,echo=FALSE}

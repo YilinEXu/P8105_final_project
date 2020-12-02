@@ -17,7 +17,6 @@ h1.title {
 library(tidyverse)
 library(plotly)
 library(rgdal)
-library(plotly)
 library(maps)
 library(devtools)
 library(leaflet)
