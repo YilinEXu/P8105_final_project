@@ -7,12 +7,15 @@ navbar:
       href: trend_plot.html
     - icon: fa-github fa-lg
       href: https://github.com/YilinEXu/P8105_final_project.git
+<<<<<<< HEAD
     - text: "Student's Weigth Status Over Time Map"
       href: https://jiayihelenzhou.shinyapps.io/ds_project/
     - text: "Student's Weight Status Over Time"
       href: 
       
       
+=======
+>>>>>>> 914806f576671e5610b09118f0d140645a7dee56
 
 output:
   html_document:
