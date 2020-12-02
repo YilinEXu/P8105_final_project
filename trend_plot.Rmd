@@ -119,7 +119,7 @@ anim_save("gif3.gif",gif3)
 
 
 
-```{r}
+```{r,echo=FALSE,fig.align='center'}
 compare_obese <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
          sex == "ALL") %>%
@@ -194,7 +194,7 @@ top20 = new_county %>%
   ungroup() %>%
   select(-year)
 
-county20 = rbind(top25, colMeans = colMeans(top25)) %>%
+county20 = rbind(top20, colMeans = colMeans(top20)) %>%
   mutate(num = c(1,2,3,4,5,6,7,8,"mean")) %>%
   filter(num %in% "mean") %>%
   pivot_longer(cols = 1:57,names_to = "county", values_to = "percentage") %>%
@@ -235,7 +235,7 @@ anim_save("final_animation.gif", final_animation)
 ```
 ![](trend plots/final_animation.gif)
 
-```{r,echo=FALSE,fig.align='center'}
+```{r,include=FALSE,fig.align='center'}
 
 dt_count = data.frame()
 
@@ -301,5 +301,4 @@ final_animation1 <-animate(p, fps = 25, duration = 20, width = 1000, height = 10
 
 anim_save("final_animation_no_mean.gif", final_animation1)
 ```
-![](trend plots/final_animation_no_mean.gif)
 
