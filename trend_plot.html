@@ -376,10 +376,49 @@ div.tocify {
 
 <div id="overweight-and-obsesity-percentage-trend-for-students-from-2010-to-2019-in-ny" class="section level2">
 <h2>Overweight and obsesity percentage trend for students from 2010 to 2019 in NY</h2>
-<p><img src="gif1.gif" /></p>
+<p><img src="trend%20plots/gif1.gif" /></p>
 </div>
 <div id="overweight-and-obsesity-percentage-trend-for-students-by-gender-from-2010-to-2019-in-ny" class="section level2">
 <h2>Overweight and obsesity percentage trend for students by gender from 2010 to 2019 in NY</h2>
+<p>percentage</p>
+<p><img src="trend%20plots/gif2.gif" /></p>
+<p>number</p>
+<p><img src="trend%20plots/gif3.gif" /></p>
+</div>
+<div id="overweight-percentage-compare-to-obsesity-percentage-for-students-by-age-from-2010-to-2019-in-ny" class="section level2">
+<h2>Overweight percentage compare to obsesity percentage for students by age from 2010 to 2019 in NY</h2>
+<pre class="r"><code>compare_obese &lt;- maindata %&gt;%
+  filter(county == &quot;STATEWIDE (EXCLUDING NYC)&quot;,
+         sex == &quot;ALL&quot;) %&gt;%
+  select(c(year_reported,percent_overweight,percent_obese,grade_level)) %&gt;%
+  tidyr::gather(&quot;percent_overweight&quot;,&quot;percent_obese&quot;, 2:3) %&gt;%
+  mutate(weight_status = str_sub(percent_overweight,9,-1),
+         percentage = percent_obese) %&gt;%
+  select(-percent_overweight, -percent_obese) %&gt;%
+  group_by(grade_level) %&gt;%
+  mutate(year_reported = as.factor(year_reported))
+
+ggplot(compare_obese, aes(x = grade_level, y = percentage, fill = weight_status)) +
+  geom_bar(stat = &quot;identity&quot;,position = &quot;dodge&quot;) +
+  labs(title=&#39;Every two years period: {closest_state}&#39;,
+    subtitle = &quot;Overweight percentage compare to obsesity percentage&quot;,
+       x = &quot;Grade level&quot;, 
+       y = &quot;Percentage of obese/overweight among total&quot;) +
+  theme_bw()+
+  transition_states(
+    year_reported,
+    transition_length = 1,
+    state_length = 1
+  )+
+  ease_aes(&quot;sine-in-out&quot;)</code></pre>
+<p><img src="trend_plot_files/figure-html/unnamed-chunk-5-1.gif" width="90%" /></p>
+<pre class="r"><code>anim_save(&quot;gif4.gif&quot;)</code></pre>
+<p><img src="trend%20plots/gif4.gif" /></p>
+</div>
+<div id="counties-with-obesity-percentage-comparison" class="section level2">
+<h2>Counties with obesity percentage comparison</h2>
+<p><img src="trend%20plots/final_animation.gif" /></p>
+<p><img src="trend%20plots/final_animation_no_mean.gif" /></p>
 </div>
 
 

@@ -194,7 +194,7 @@ top20 = new_county %>%
   ungroup() %>%
   select(-year)
 
-county20 = rbind(top25, colMeans = colMeans(top25)) %>%
+county20 = rbind(top20, colMeans = colMeans(top20)) %>%
   mutate(num = c(1,2,3,4,5,6,7,8,"mean")) %>%
   filter(num %in% "mean") %>%
   pivot_longer(cols = 1:57,names_to = "county", values_to = "percentage") %>%
