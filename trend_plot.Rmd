@@ -21,18 +21,21 @@ library(kableExtra)
 library(magick)
 library(dplyr)
 library(gifski)
+<<<<<<< HEAD
+=======
+
+>>>>>>> c27a41118d42fe0b4ee8230ad4fef491807a4001
 knitr::opts_chunk$set(
-  message = FALSE,
-  warning = FALSE,
-  fig.width = 10,
-  fig.asp = .6,
-  out.width = "90%"
-)
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
-options(
-  ggplot2.continuous.colour = "Accent",
-  ggplot2.continuous.fill = "Acent"
-)
+ echo = FALSE,
+ fig.width = 7, 
+ fig.height = 5,
+ fig.asp = 0.6,
+ out.width = "60%")
+theme_set(theme_bw() + 
+          theme(legend.position = "bottom",
+                legend.title = element_blank(),
+                plot.title = element_text(hjust = 0.5, size = 15),
+                plot.subtitle = element_text(hjust = 0.5, size = 12)))
 
 
 maindata <- read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv") %>%
@@ -132,7 +135,7 @@ compare_obese <- maindata %>%
   group_by(grade_level) %>%
   mutate(year_reported = as.factor(year_reported))
 
-ggplot(compare_obese, aes(x = grade_level, y = percentage, fill = weight_status)) +
+gif4 <- ggplot(compare_obese, aes(x = grade_level, y = percentage, fill = weight_status)) +
   geom_bar(stat = "identity",position = "dodge") +
   labs(title='Every two years period: {closest_state}',
     subtitle = "Overweight percentage compare to obsesity percentage",
@@ -146,7 +149,7 @@ ggplot(compare_obese, aes(x = grade_level, y = percentage, fill = weight_status)
   )+
   ease_aes("sine-in-out")
 
-anim_save("gif4.gif")
+anim_save("gif4.gif", gif4)
 
 ```
 
