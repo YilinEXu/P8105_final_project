@@ -21,10 +21,7 @@ library(kableExtra)
 library(magick)
 library(dplyr)
 library(gifski)
-<<<<<<< HEAD
-=======
 
->>>>>>> c27a41118d42fe0b4ee8230ad4fef491807a4001
 knitr::opts_chunk$set(
  echo = FALSE,
  fig.width = 7, 
