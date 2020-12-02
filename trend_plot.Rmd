@@ -235,7 +235,7 @@ anim_save("final_animation.gif", final_animation)
 ```
 ![](trend plots/final_animation.gif)
 
-```{r,echo=FALSE,fig.align='center'}
+```{r,include=FALSE,fig.align='center'}
 
 dt_count = data.frame()
 
@@ -301,5 +301,4 @@ final_animation1 <-animate(p, fps = 25, duration = 20, width = 1000, height = 10
 
 anim_save("final_animation_no_mean.gif", final_animation1)
 ```
-![](trend plots/final_animation_no_mean.gif)
 
