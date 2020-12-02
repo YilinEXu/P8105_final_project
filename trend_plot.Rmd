@@ -60,7 +60,7 @@ gif1 <- animate(statewide + geom_point(aes(group = seq_along(year_reported)), si
 anim_save("gif1.gif",gif1)
 ```
 
-![](trend plots/gif1.gif)
+![](gif1.gif)
 
 ## Overweight and obsesity percentage trend for students by gender from 2010 to 2019 in NY
 
@@ -88,7 +88,7 @@ gif2 <- animate(genderperc +geom_point(aes(group = seq_along(year_reported)), si
 anim_save("gif2.gif", gif2)
 ```
 
-![](trend plots/gif2.gif)
+![](gif2.gif)
 
 number 
 ```{r,echo=FALSE,fig.align='center'}
@@ -112,7 +112,7 @@ gif3 <- animate(gender_num + geom_point(aes(group = seq_along(year_reported))) +
 anim_save("gif3.gif",gif3)
 ```
 
-![](trend plots/gif3.gif)
+![](gif3.gif)
 
 
 ## Overweight percentage compare to obsesity percentage for students by age from 2010 to 2019 in NY
@@ -149,7 +149,7 @@ anim_save("gif4.gif")
 
 ```
 
-![](trend plots/gif4.gif)
+![](gif4.gif)
 
 ## Counties with obesity percentage comparison
 
@@ -233,9 +233,9 @@ final_animation<-animate(p, fps = 25, duration = 20, width = 1000, height = 1000
 
 anim_save("final_animation.gif", final_animation)
 ```
-![](trend plots/final_animation.gif)
+![](final_animation.gif)
 
-```{r,include=FALSE,fig.align='center'}
+```{r,include=FALSE,eval=FALSE,fig.align='center'}
 
 dt_count = data.frame()
 
