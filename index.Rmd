@@ -1,5 +1,5 @@
 ---
-title: "Student Obesity In NY State Region"
+title: "P8105 Final project"
 output: 
   html_document:
     toc: true
@@ -8,10 +8,3 @@ output:
 ---
 
 # Student Weight Status in New York State
-<center>
-
-![](xxxxxxxxx.jpg){width=500px}
-</center>
-
-<br>
-
