@@ -235,48 +235,23 @@ combine3 =
     white:mix,
     names_to = "race",
     values_to = "percent") %>% 
-  group_by(race)
+  group_by(county) %>% 
+  pivot_wider(
+    names_from = "race",
+    values_from = "percent"
+  ) 
+  
 
 combine3 %>% 
-  ggplot(aes(x = race, y = percent_overweight_or_obese))+
-  geom_violin()
-
-combine3 %>% 
-  plot_ly(type = 'violin') %>% 
-  add_trace(
-    x = ~race,
-    y = ~percent_overweight_or_obese,
-    legendgroup = 'M',
-    scalegrou = 'M',
-    name = 'M',
-    box = list(visible = T),
-    meanline = list(visible = T),
-    color = I("blue")
-  ) %>% 
-  add_trace(
-    x = ~race,
-    y = ~percent,
-    legendgroup = 'F',
-    scalegroup = 'F',
-    name = 'F',
-    box = list(
-      visible = T
-    ),
-    meanline = list(
-      visible = T
-    ),
-    color = I("pink")) 
-
-
-combine3 %>% 
-  plot_ly(
-    x = ~ race,
-    y = ~percent_overweight_or_obese,
-    split = ~race,
-    type = 'violin',
-    box = list(visible = T),
-    meanline = list(visible = T)
-  ) %>% 
+  plot_ly(x = ~county, y = ~white, type = 'bar') %>% 
+  add_trace(y = ~black, type = 'bar') %>%
+  add_trace(y = ~native, type = 'bar') %>% 
+  add_trace(y = ~asian, type = 'bar') %>% 
+  add_trace(y = ~hawaiian, type = 'bar') %>% 
+  add_trace(y = ~mix, type = 'bar') %>% 
+  add_trace(y = ~percent_overweight_or_obese, type = 'scatter', mode = 'lines', line = list(color = 'rgb(22, 96, 167)', width = 4, dash = 'dot')) %>% 
+  #layout(barmode = 'stack') %>% 
+  add_trace(y = ~percent_overweight_or_obese, type = 'scatter', mode = 'lines+markers') %>% 
   layout(
     xaxis = list(title = "Race"),
     yaxis = list(title = "Obese and overweigth percent(%)")
@@ -291,10 +266,6 @@ combine3 %>%
 ```{r}
 #cor(patient_df)
 
-#join all the df
-combine4 = 
-  left_join(combine, combine2, by = "county") %>% 
-  left_join(combine3, by = "county")
 
 #cor(combine4)
 ```
