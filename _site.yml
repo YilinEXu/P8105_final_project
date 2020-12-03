@@ -11,6 +11,9 @@ navbar:
       href: map_jyz.html
     - icon: fa-github fa-lg
       href: https://github.com/YilinEXu/P8105_final_project.git
+
 output:
   html_document:
     theme: paper
+    includes:
+      after_body: footer.html
