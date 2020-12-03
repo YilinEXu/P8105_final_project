@@ -144,7 +144,7 @@ y = percentage overweight or obese
 x1= grade level  (0 = elementary, 1 = middle/high school)  
 x2 = median income (k dollars)  
 x3 = white population percentage  
-x4 = sex (0 = male, 1 = famale)
+x4 = sex (0 = male, 1 = female)
 
 
 ```{r echo=FALSE, warning=FALSE}
