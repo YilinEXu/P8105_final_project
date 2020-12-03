@@ -84,6 +84,7 @@ sex_count %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
 
+
 ```
 
 
@@ -209,22 +210,77 @@ census_data = read_excel("dataset/census_data.xls",
 
 race_df = as.data.frame(t(as.matrix(census_data)))[-1,] 
 race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL), 
-         c("county", "total", "white", "black", "v4", "v5", "v6", "v7"))
+         c("county", "total", "white", "black", "native", "asian", "hawaiian", "mix"))
 race_df = 
   tibble(race_df) %>%
   janitor::clean_names() %>%
   mutate(
     total = as.numeric(total),
-    white = as.numeric(white),
-    black = as.numeric(black),
-    white_percent = white/total*100,
-    black_percent = black/total*100) %>%
-  select(county, white_percent, black_percent) %>%
+    white = as.numeric(white) / total * 100,
+    black = as.numeric(black)/ total * 100,
+    native = as.numeric(native)/ total * 100,
+    asian = as.numeric(asian)/ total * 100,
+    hawaiian = as.numeric(hawaiian)/ total * 100,
+    mix = as.numeric(mix)/ total * 100) %>%
+  select(-total) %>%
   filter(!county %in% c("United States", "New York State")) %>%
   separate(county, into = c("county", "county1")) %>%
   select(-county1) %>%
   mutate(county = toupper(county))
 
+#combine with obesity data
+combine3 = 
+  left_join(race_df, obesity, by = "county") %>% 
+  pivot_longer(
+    white:mix,
+    names_to = "race",
+    values_to = "percent") %>% 
+  group_by(race)
+
+combine3 %>% 
+  ggplot(aes(x = race, y = percent_overweight_or_obese))+
+  geom_violin()
+
+combine3 %>% 
+  plot_ly(type = 'violin') %>% 
+  add_trace(
+    x = ~race,
+    y = ~percent_overweight_or_obese,
+    legendgroup = 'M',
+    scalegrou = 'M',
+    name = 'M',
+    box = list(visible = T),
+    meanline = list(visible = T),
+    color = I("blue")
+  ) %>% 
+  add_trace(
+    x = ~race,
+    y = ~percent,
+    legendgroup = 'F',
+    scalegroup = 'F',
+    name = 'F',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    color = I("pink")) 
+
+
+combine3 %>% 
+  plot_ly(
+    x = ~ race,
+    y = ~percent_overweight_or_obese,
+    split = ~race,
+    type = 'violin',
+    box = list(visible = T),
+    meanline = list(visible = T)
+  ) %>% 
+  layout(
+    xaxis = list(title = "Race"),
+    yaxis = list(title = "Obese and overweigth percent(%)")
+  )
 
 ```
 
@@ -234,5 +290,12 @@ race_df =
 
 ```{r}
 #cor(patient_df)
+
+#join all the df
+combine4 = 
+  left_join(combine, combine2, by = "county") %>% 
+  left_join(combine3, by = "county")
+
+#cor(combine4)
 ```
 
