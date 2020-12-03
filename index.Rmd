@@ -1,5 +1,5 @@
 ---
-title: "P8105 Final project"
+title: "Student Weight Status in New York State"
 output: 
   html_document:
     toc: true
@@ -7,11 +7,43 @@ output:
     theme: paper
 ---
 
-# Student Weight Status in New York State
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
+&nbsp;
+&nbsp;
 
 <center>
 
 <img src="image/homepage.jpg" style = "width:75%">
 
 </center>
+
+## Project motivation
+
+Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-old, 18.4% among 6- to 11-year-old, and 20.6% among 12- to 19-year-old. Childhood obesity is also more common among certain populations.
+
+The harms of obesity in adolescents both showing physical and psychological aspects. Expression of obesity in children and adolescents is weight gain, a large amount of fat deposition, which increases the body burden and oxygen consumption, obesity children consume more oxygen than normal people. This causes them to be heavy, slow and unable to move. Many children and adolescents often have flat feet, knee flexion, lower limb flexion, spine and intervertebral cartilage damage.
+Obese children and adolescents with high cholesterol and fatty acids, high blood fat, the immune system is inhibited, poor disease resistance. All these symptoms will cause diabetes, hypertension, fatty liver, etc.
+
+Therefore, unhealthy obesity symptoms are of great importance. We conducted a study on the obesity situation of elementary and middle-high school students from 2010 to 2019 to try to find out the obesity-related factors.
+
+&nbsp;
+
+
+## What's in this website
+
+We used data from [*Health Data NY*](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus) to explore student weight information in New York State Region.
+
+In this website you can find:
+      
+  * Project Report
+  * A video introduction
+  * Data resource
+
 

@@ -11,7 +11,7 @@ library(kableExtra)
 ```
 
 
-```{r echo=FALSE} 
+```{r echo=FALSE, message=FALSE} 
 original = tibble(        ## Clean the original weight data
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
@@ -20,7 +20,7 @@ original = tibble(        ## Clean the original weight data
 ```
 
 
-```{r echo=FALSE} 
+```{r echo=FALSE, message=FALSE} 
 # Clean data set with geo location information
 coordinates = tibble(
   read.csv("./dataset/Geocodes_USA_with_Counties.csv")
@@ -35,13 +35,13 @@ coordinates = tibble(
 ```
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 # combine two data set
 weight_df = left_join(original, coordinates, by = "county")
 ```
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 # Further original data cleaning for linear regression analysis
 linear_df = weight_df %>%
   filter(!sex == "ALL") %>%
@@ -56,7 +56,7 @@ linear_df = weight_df %>%
 ```
 
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 # Import tidy and join the median income and food insecurity and race data
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
@@ -70,16 +70,37 @@ food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
   rename(food_insecurity_p = percentage) %>%
   mutate(county = toupper(county))
 
+census_data <- read_excel("dataset/census_data.xls",  
+    sheet = "Pop by Race and Ethnic Origin", 
+    range = "A3:BM10") 
+
+race_df = as.data.frame(t(as.matrix(census_data)))[-1,] 
+race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL), 
+         c("county", "total", "white", "black", "v4", "v5", "v6", "v7"))
+race_df = tibble(race_df) %>%
+  janitor::clean_names() %>%
+  mutate(
+    total = as.numeric(total),
+    white = as.numeric(white),
+    black = as.numeric(black),
+    white_percent = white/total*100,
+         black_percent = black/total*100) %>%
+  select(county, white_percent, black_percent) %>%
+  filter(!county %in% c("United States", "New York State")) %>%
+  separate(county, into = c("county", "county1")) %>%
+  select(-county1) %>%
+  mutate(county = toupper(county))
 
 linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
 linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
+linear_df4 = left_join(linear_df3, race_df, by = "county")
 ```
 
 # Normality Check and Data Transformation
 
-Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log tansformation has improved data's normality.  
+Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log transformation has improved data's normality.  
 
-```{r echo=FALSE, fig.align='center'}
+```{r echo=FALSE, fig.align='center', message=FALSE}
 # Normality check
 qqnorm(log(linear_df$percent_overweight_or_obese), col = c("darkorchid3"))
 
@@ -91,26 +112,33 @@ linear_df3 %>%
 Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is in a perfect straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
 
 Based on the transformation above, the model we are going to fit is:
-$$ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 gender$$
+$$ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender$$
+```{r echo=FALSE}
+lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + food_insecurity_p + white_percent + sex, data = linear_df4) 
+```
 
-# Statistics Model
+```{r}
+summary(lm_1)
+```
 
-In the beginning we included 4 independent variables, grade level, median income, food insecurity,  gender, however the model summary showed there is a weak correlation between gender (p-value = 0.168) with dependent variable y, so we took gender out from the model, left three variables all significantly influenced the percentage overweight and obese.
+
+In the beginning we included 5 independent variables, grade level, median income, food insecurity,  gender, however the model summary showed there is a weak correlation between gender (p-value = 0.168) and food insecurity (p-value = 0.847) and median income (p-value = 0.112) with response variable y, we further improved the model by using stepwise regression, \ left three variables all significantly influenced the percentage overweight and obese.
 
 # Final Model: 
-$$ log(y) = 4.541 + 0.161x_1 - 0.010x_2 - 0.039x_3$$
+$$ log(y) = 2.433 + 0.162x_1 - 0.002x_2 + 0.013x_3$$
 y = percentage overweight or obese  
 x1= grade level  (0 = elementary, 1 = middle/high school)  
 x2 = median income (k dollars)  
-x3 = food insecurity percentage
+x3 = white population percentage
+
 
 ```{r echo=FALSE, warning=FALSE}
 # regression model
-lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + food_insecurity_p, data = linear_df3) 
+lm_2 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + white_percent , data = linear_df4) 
 ```
 # Model Summary
 ```{r}
-summary(lm_1)
+summary(lm_2)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
@@ -119,4 +147,4 @@ plot(lm_1, col = "darkorchid2", alpha = 0.5)
 ```
 
 # Conclusion
-There is no strange pattern about Residusl vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid.  Three variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2526, which means only 25% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
+There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid.  Three variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2526, which means only 25% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 

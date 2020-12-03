@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>report</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="report.html">Project Report</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="trend_plot.html">Trend Graphs</a>
+</li>
+<li>
+  <a href="https://jiayihelenzhou.shinyapps.io/ds_project/">Student's Weigth Status Over Time Map</a>
+</li>
+<li>
+  <a href="map_jyz.html">Student's Weight Status Over Time</a>
+</li>
+<li>
+  <a href="raw_regression.html">Descriptive Graphs</a>
+</li>
+<li>
+  <a href="regression_xm.html">Statistical Analysis</a>
+</li>
+<li>
+  <a href="https://github.com/YilinEXu/P8105_final_project.git">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">report</h1>
+
+</div>
+
+
+<div id="statistical-analysis" class="section level2">
+<h2>Statistical Analysis</h2>
+</div>
+<div id="normality-check-and-data-transformation" class="section level1">
+<h1>Normality Check and Data Transformation</h1>
+<p>Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y’ = log(y), b. y’= y^0.5, Q_Q plot showed that the log transformation has improved data’s normality.</p>
+<p><img src="report_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="report_files/figure-html/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Above are the Q-Q plot and histogram of overweight/obesity data after log transformation. Q-Q plot is in a perfect straight line, histogram is normally distributed but a bit skewed to the left. Overall, the normality assumption is satisfied.</p>
+<p>Based on the transformation above, the model we are going to fit is: <span class="math display">\[ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender\]</span></p>
+<pre class="r"><code>summary(lm_1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log(percent_overweight_or_obese) ~ grade_level + 
+##     median_income + food_insecurity_p + white_percent + sex, 
+##     data = linear_df4)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.87006 -0.13522  0.00425  0.14417  0.91660 
+## 
+## Coefficients:
+##                    Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        2.501533   0.333972   7.490 1.38e-13 ***
+## grade_level        0.162018   0.013135  12.335  &lt; 2e-16 ***
+## median_income     -0.002389   0.001502  -1.591    0.112    
+## food_insecurity_p -0.001717   0.008903  -0.193    0.847    
+## white_percent      0.012995   0.001871   6.947 6.28e-12 ***
+## sex               -0.018417   0.013111  -1.405    0.160    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2215 on 1136 degrees of freedom
+##   (22 observations deleted due to missingness)
+## Multiple R-squared:  0.2864, Adjusted R-squared:  0.2833 
+## F-statistic: 91.18 on 5 and 1136 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>In the beginning we included 5 independent variables, grade level, median income, food insecurity, gender, however the model summary showed there is a weak correlation between gender (p-value = 0.168) and food insecurity (p-value = 0.847) and median income (p-value = 0.112) with response variable y, we further improved the model by using stepwise regression,  left three variables all significantly influenced the percentage overweight and obese.</p>
+</div>
+<div id="final-model" class="section level1">
+<h1>Final Model:</h1>
+<p><span class="math display">\[ log(y) = 2.433 + 0.162x_1 - 0.002x_2 + 0.013x_3\]</span> y = percentage overweight or obese<br />
+x1= grade level (0 = elementary, 1 = middle/high school)<br />
+x2 = median income (k dollars)<br />
+x3 = white population percentage</p>
+</div>
+<div id="model-summary" class="section level1">
+<h1>Model Summary</h1>
+<pre class="r"><code>summary(lm_2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log(percent_overweight_or_obese) ~ grade_level + 
+##     median_income + white_percent, data = linear_df4)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.86152 -0.13206  0.00364  0.14596  0.92678 
+## 
+## Coefficients:
+##                 Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    2.4332979  0.1392875  17.470  &lt; 2e-16 ***
+## grade_level    0.1621480  0.0131342  12.345  &lt; 2e-16 ***
+## median_income -0.0021116  0.0004319  -4.889 1.16e-06 ***
+## white_percent  0.0132515  0.0013453   9.850  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.2215 on 1138 degrees of freedom
+##   (22 observations deleted due to missingness)
+## Multiple R-squared:  0.2851, Adjusted R-squared:  0.2832 
+## F-statistic: 151.3 on 3 and 1138 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p><img src="report_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid. Three variables are significant with very small p-value (&lt;0.001). However, due to the limitation of data, the model’s R-squared is equal to 0.2526, which means only 25% of the data is explained by this model. A possible explanation is that other important factors have not been included. We will make improvement when more data is available.</p>
+</div>
+
+<html>
+  
+&nbsp;
+<hr />
+
+<small>
+  
+<p style="text-align: center;">
+  Elaine Xu (yx2640), Rio Yan(xy2476), Jiayi Zhou(jz3336), Ximeng Zhao(xz3032)
+</p>
+
+<p style="text-align: center;">
+Visualizations and analyses performed using <a href="https://www.r-project.org/about.html">R</a> (v3.6.1) and <a href="https://rstudio.com">RStudio</a> (v1.2.1335). <br>
+
+Additional interactivity added using <a href="https://plot.ly/">plotly</a> (v4.9.0) and <a href="https://shiny.rstudio.com/">Shiny</a> (v1.3.2). <br>
+
+<a href="https://github.com/YilinEXu/P8105_final_project.git">Click here</a> to see details of this project. 
+
+<br>
+
+2020
+</p>
+
+</small>
+
+</html>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
