@@ -11,7 +11,7 @@
 
 
 
-<title>Regression - Statistical Analysis</title>
+<title>report</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -300,15 +300,18 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Regression - Statistical Analysis</h1>
+<h1 class="title toc-ignore">report</h1>
 
 </div>
 
 
+<div id="statistical-analysis" class="section level2">
+<h2>Statistical Analysis</h2>
+</div>
 <div id="normality-check-and-data-transformation" class="section level1">
 <h1>Normality Check and Data Transformation</h1>
 <p>Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y’ = log(y), b. y’= y^0.5, Q_Q plot showed that the log transformation has improved data’s normality.</p>
-<p><img src="regression_xm_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="regression_xm_files/figure-html/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="report_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="report_files/figure-html/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Above are the Q-Q plot and histogram of overweight/obesity data after log transformation. Q-Q plot is in a perfect straight line, histogram is normally distributed but a bit skewed to the left. Overall, the normality assumption is satisfied.</p>
 <p>Based on the transformation above, the model we are going to fit is: <span class="math display">\[ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender\]</span></p>
 <pre class="r"><code>summary(lm_1)</code></pre>
@@ -371,7 +374,7 @@ x3 = white population percentage</p>
 ##   (22 observations deleted due to missingness)
 ## Multiple R-squared:  0.2851, Adjusted R-squared:  0.2832 
 ## F-statistic: 151.3 on 3 and 1138 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p><img src="regression_xm_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="report_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>

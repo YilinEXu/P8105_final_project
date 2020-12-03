@@ -11,7 +11,7 @@ library(kableExtra)
 ```
 
 
-```{r echo=FALSE} 
+```{r echo=FALSE, message=FALSE} 
 original = tibble(        ## Clean the original weight data
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
@@ -20,7 +20,7 @@ original = tibble(        ## Clean the original weight data
 ```
 
 
-```{r echo=FALSE} 
+```{r echo=FALSE, message=FALSE} 
 # Clean data set with geo location information
 coordinates = tibble(
   read.csv("./dataset/Geocodes_USA_with_Counties.csv")
@@ -35,13 +35,13 @@ coordinates = tibble(
 ```
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 # combine two data set
 weight_df = left_join(original, coordinates, by = "county")
 ```
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 # Further original data cleaning for linear regression analysis
 linear_df = weight_df %>%
   filter(!sex == "ALL") %>%
@@ -56,7 +56,7 @@ linear_df = weight_df %>%
 ```
 
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 # Import tidy and join the median income and food insecurity and race data
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
@@ -69,7 +69,8 @@ food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
     rename(county = region_county) %>%
   rename(food_insecurity_p = percentage) %>%
   mutate(county = toupper(county))
-census_data <- read_excel("dataset/census_data.xls", 
+
+census_data <- read_excel("dataset/census_data.xls",  
     sheet = "Pop by Race and Ethnic Origin", 
     range = "A3:BM10") 
 
@@ -97,9 +98,9 @@ linear_df4 = left_join(linear_df3, race_df, by = "county")
 
 # Normality Check and Data Transformation
 
-Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log tansformation has improved data's normality.  
+Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log transformation has improved data's normality.  
 
-```{r echo=FALSE, fig.align='center'}
+```{r echo=FALSE, fig.align='center', message=FALSE}
 # Normality check
 qqnorm(log(linear_df$percent_overweight_or_obese), col = c("darkorchid3"))
 
@@ -146,4 +147,4 @@ plot(lm_1, col = "darkorchid2", alpha = 0.5)
 ```
 
 # Conclusion
-There is no strange pattern about Residusl vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid.  Three variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2526, which means only 25% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
+There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid.  Three variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2526, which means only 25% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
