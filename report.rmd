@@ -1,0 +1,72 @@
+---
+title: "report"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Statistical Analysis
+Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log transformation has improved data's normality.  
+
+```{r echo=FALSE, fig.align='center'}
+# Normality check
+qqnorm(log(linear_df$percent_overweight_or_obese), col = c("darkorchid3"))
+
+linear_df3 %>%
+  ggplot(aes(x = log(percent_overweight_or_obese))) + geom_histogram(color = "purple",
+    fill = "#69b3a2", size = 2) + labs(x = "log (percent overweight and obese)", title = "Histogram of log (percent overweight and obese)") 
+```
+
+Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is in a perfect straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied. 
+
+Based on the transformation above, the model we are going to fit is:
+$$ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender$$
+```{r echo=FALSE}
+lm_1 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + food_insecurity_p + white_percent + sex, data = linear_df4) 
+```
+
+```{r}
+summary(lm_1)
+```
+
+
+In the beginning we included 5 independent variables, grade level, median income, food insecurity,  gender, however the model summary showed there is a weak correlation between gender (p-value = 0.168) and food insecurity (p-value = 0.847) and median income (p-value = 0.112) with response variable y, we further improved the model by using stepwise regression, \ left three variables all significantly influenced the percentage overweight and obese.
+
+# Final Model: 
+$$ log(y) = 2.433 + 0.162x_1 - 0.002x_2 + 0.013x_3$$
+y = percentage overweight or obese  
+x1= grade level  (0 = elementary, 1 = middle/high school)  
+x2 = median income (k dollars)  
+x3 = white population percentage
+
+
+```{r echo=FALSE, warning=FALSE}
+# regression model
+lm_2 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + white_percent , data = linear_df4) 
+```
+# Model Summary
+```{r}
+summary(lm_2)
+```
+
+```{r echo=FALSE, warning=FALSE, fig.align='center'}
+par(mfrow = c(2, 2))
+plot(lm_1, col = "darkorchid2", alpha = 0.5)
+```
+
+# Conclusion
+There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid.  Three variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2526, which means only 25% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
+
