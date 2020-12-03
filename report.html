@@ -320,73 +320,274 @@ $(document).ready(function () {
 <h1>Normality Check and Data Transformation</h1>
 <p>Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y’ = log(y), b. y’= y^0.5, Q_Q plot showed that the log transformation has improved data’s normality.</p>
 <p><img src="report_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="report_files/figure-html/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Above are the Q-Q plot and histogram of overweight/obesity data after log transformation. Q-Q plot is in a perfect straight line, histogram is normally distributed but a bit skewed to the left. Overall, the normality assumption is satisfied.</p>
-<p>Based on the transformation above, the model we are going to fit is: <span class="math display">\[ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender\]</span></p>
-<pre class="r"><code>summary(lm_1)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = log(percent_overweight_or_obese) ~ grade_level + 
-##     median_income + food_insecurity_p + white_percent + sex, 
-##     data = linear_df4)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.87006 -0.13522  0.00425  0.14417  0.91660 
-## 
-## Coefficients:
-##                    Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)        2.501533   0.333972   7.490 1.38e-13 ***
-## grade_level        0.162018   0.013135  12.335  &lt; 2e-16 ***
-## median_income     -0.002389   0.001502  -1.591    0.112    
-## food_insecurity_p -0.001717   0.008903  -0.193    0.847    
-## white_percent      0.012995   0.001871   6.947 6.28e-12 ***
-## sex               -0.018417   0.013111  -1.405    0.160    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.2215 on 1136 degrees of freedom
-##   (22 observations deleted due to missingness)
-## Multiple R-squared:  0.2864, Adjusted R-squared:  0.2833 
-## F-statistic: 91.18 on 5 and 1136 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>In the beginning we included 5 independent variables, grade level, median income, food insecurity, gender, however the model summary showed there is a weak correlation between gender (p-value = 0.168) and food insecurity (p-value = 0.847) and median income (p-value = 0.112) with response variable y, we further improved the model by using stepwise regression,  left three variables all significantly influenced the percentage overweight and obese.</p>
+<p>Above are the Q-Q plot and histogram of overweight/obesity data after log transformation. Q-Q plot is approximetly in a straight line, histogram is normally distributed but a bit skewed to the left. Overall, the normality assumption is satisfied.</p>
+<p>Based on the transformation above, the model we are going to fit is: <span class="math display">\[ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender + \beta_6 year\]</span></p>
+<pre class="r"><code>kable(summary(lm_1)$coefficients)</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+2.5413224
+</td>
+<td style="text-align:right;">
+0.2534978
+</td>
+<td style="text-align:right;">
+10.0250261
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+grade_level
+</td>
+<td style="text-align:right;">
+0.1473630
+</td>
+<td style="text-align:right;">
+0.0098659
+</td>
+<td style="text-align:right;">
+14.9366293
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+median_income
+</td>
+<td style="text-align:right;">
+-0.0013933
+</td>
+<td style="text-align:right;">
+0.0011330
+</td>
+<td style="text-align:right;">
+-1.2297687
+</td>
+<td style="text-align:right;">
+0.2189136
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+food_insecurity_p
+</td>
+<td style="text-align:right;">
+0.0013798
+</td>
+<td style="text-align:right;">
+0.0067247
+</td>
+<td style="text-align:right;">
+0.2051907
+</td>
+<td style="text-align:right;">
+0.8374419
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+white_percent
+</td>
+<td style="text-align:right;">
+0.0116375
+</td>
+<td style="text-align:right;">
+0.0014228
+</td>
+<td style="text-align:right;">
+8.1795396
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sex
+</td>
+<td style="text-align:right;">
+-0.0377451
+</td>
+<td style="text-align:right;">
+0.0098560
+</td>
+<td style="text-align:right;">
+-3.8296638
+</td>
+<td style="text-align:right;">
+0.0001319
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+year_reported
+</td>
+<td style="text-align:right;">
+-0.0102764
+</td>
+<td style="text-align:right;">
+0.0098587
+</td>
+<td style="text-align:right;">
+-1.0423704
+</td>
+<td style="text-align:right;">
+0.2973531
+</td>
+</tr>
+</tbody>
+</table>
+<p><br> In the beginning we included 6 independent variables, grade level, median income, food insecurity, gender, and white population percentage. However the model summary showed there are weak correlation between food insecurity (p-value = 0.925) and median income (p-value = 0.113) and year_reported (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the percentage overweight and obese.</p>
 </div>
 <div id="final-model" class="section level1">
 <h1>Final Model:</h1>
-<p><span class="math display">\[ log(y) = 2.433 + 0.162x_1 - 0.002x_2 + 0.013x_3\]</span> y = percentage overweight or obese<br />
+<p><span class="math display">\[ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4\]</span> y = percentage overweight or obese<br />
 x1= grade level (0 = elementary, 1 = middle/high school)<br />
 x2 = median income (k dollars)<br />
-x3 = white population percentage</p>
+x3 = white population percentage x4 = sex</p>
 </div>
 <div id="model-summary" class="section level1">
 <h1>Model Summary</h1>
-<pre class="r"><code>summary(lm_2)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = log(percent_overweight_or_obese) ~ grade_level + 
-##     median_income + white_percent, data = linear_df4)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -0.86152 -0.13206  0.00364  0.14596  0.92678 
-## 
-## Coefficients:
-##                 Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)    2.4332979  0.1392875  17.470  &lt; 2e-16 ***
-## grade_level    0.1621480  0.0131342  12.345  &lt; 2e-16 ***
-## median_income -0.0021116  0.0004319  -4.889 1.16e-06 ***
-## white_percent  0.0132515  0.0013453   9.850  &lt; 2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.2215 on 1138 degrees of freedom
-##   (22 observations deleted due to missingness)
-## Multiple R-squared:  0.2851, Adjusted R-squared:  0.2832 
-## F-statistic: 151.3 on 3 and 1138 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>kable(summary(lm_2)$coefficients)</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:right;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+2.5837777
+</td>
+<td style="text-align:right;">
+0.1043375
+</td>
+<td style="text-align:right;">
+24.763647
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+grade_level
+</td>
+<td style="text-align:right;">
+0.1474285
+</td>
+<td style="text-align:right;">
+0.0098637
+</td>
+<td style="text-align:right;">
+14.946504
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+median_income
+</td>
+<td style="text-align:right;">
+-0.0016188
+</td>
+<td style="text-align:right;">
+0.0003234
+</td>
+<td style="text-align:right;">
+-5.006178
+</td>
+<td style="text-align:right;">
+0.0000006
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+white_percent
+</td>
+<td style="text-align:right;">
+0.0114301
+</td>
+<td style="text-align:right;">
+0.0010087
+</td>
+<td style="text-align:right;">
+11.331849
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sex
+</td>
+<td style="text-align:right;">
+-0.0377062
+</td>
+<td style="text-align:right;">
+0.0098539
+</td>
+<td style="text-align:right;">
+-3.826512
+</td>
+<td style="text-align:right;">
+0.0001335
+</td>
+</tr>
+</tbody>
+</table>
 <p><img src="report_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is on a straight line, so the constant variance assumption is met, and this model is valid. Three variables are significant with very small p-value (&lt;0.001). However, due to the limitation of data, the model’s R-squared is equal to 0.2526, which means only 25% of the data is explained by this model. A possible explanation is that other important factors have not been included. We will make improvement when more data is available.</p>
+<p>There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid. Four variables are significant with very small p-value (&lt;0.001). However, due to the limitation of data, the model’s R-squared is equal to 0.2166, which means only 22% of the data is explained by this model. A possible explanation is that other important factors have not been included. We will make improvement when more data is available.</p>
 </div>
 
 <html>

@@ -4,7 +4,9 @@ Elaine Xu (yx2640), Jiayi Zhou(jz3336), Rio Yan(xy2476), Ximeng
 Zhao(xz3032)
 11/6/2020
 
-\<\<\<\<\<\<\< HEAD \#\# Introduction ======= \#\#\# Motivation
+# \#\# Introduction
+
+### Motivation
 
 Childhood obesity is a major concern in the United States. In nowadays,
 obesity is putting children and adolescents at risk for poor health.

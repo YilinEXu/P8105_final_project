@@ -42,8 +42,9 @@ We used data from [*Health Data NY*](https://health.data.ny.gov/Health/Student-W
 
 In this website you can find:
       
-  * Project Report
+  * Project report
   * A video introduction
-  * Data resource
+  * Data visualization and regression analysis
+  * Resource
 
 

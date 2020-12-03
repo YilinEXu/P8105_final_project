@@ -1,6 +1,10 @@
 ---
-title: "Regression - Statistical Analysis"
-output: html_document
+title: "Regression Analysis"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: paper
 ---
 
 ```{r setup, include=FALSE}
@@ -47,7 +51,7 @@ linear_df = weight_df %>%
   filter(!sex == "ALL") %>%
   filter(!grade_level == "DISTRICT TOTAL") %>%
   mutate(
-    sex = if_else(sex == "MALE", 0, 1),   #tansform to binary variable to fit model
+    sex = if_else(sex == "MALE", 0, 1),   #transform to binary variable to fit model
     grade_level = if_else(grade_level == "ELEMENTARY", 0, 1)
   ) %>%
   drop_na() %>%
@@ -98,6 +102,7 @@ linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine foo
 linear_df4 = left_join(linear_df3, race_df, by = "county")
 ```
 
+
 # Normality Check and Data Transformation
 
 Before fitting the linear regression model, I used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log transformation has improved data's normality.  
@@ -113,6 +118,8 @@ linear_df3 %>%
 
 Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is approximetly in a straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
 
+# Raw Model
+
 Based on the transformation above, the model we are going to fit is:
 $$ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender + \beta_6 year$$
 ```{r echo=FALSE}
@@ -126,13 +133,13 @@ kable(summary(lm_1)$coefficients)
 <br>
 In the beginning we included 6 independent variables, grade level, median income, food insecurity,  gender, and white population percentage.  However the model summary showed there are weak correlation between food insecurity (p-value = 0.925) and median income (p-value = 0.113) and year_reported (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the percentage overweight and obese.
 
-# Final Model: 
+# Final Model
 $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
 y = percentage overweight or obese  
 x1= grade level  (0 = elementary, 1 = middle/high school)  
 x2 = median income (k dollars)  
-x3 = white population percentage
-x4 = sex
+x3 = white population percentage  
+x4 = sex (0 = male, 1 = female)
 
 
 ```{r echo=FALSE, warning=FALSE}

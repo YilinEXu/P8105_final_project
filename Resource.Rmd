@@ -28,9 +28,16 @@ scale_fill_discrete = scale_fill_viridis_d
 # Interventions on Obesity in Teenagers
 
 
-## Tips to Help Children Maintain a Healthy Weight
+#### Tips to Help Children Maintain a Healthy Weight
 
 [CDC Recommendations](https://www.cdc.gov/healthyweight/children/index.html)
+[NY Department of Health](https://www.health.ny.gov/prevention/nutrition/resources/obparnts.htm)
+
+<center>
+<img src="image/6-recommendations-obesity.jpg" style = "width:55%">
+<center>
+
+
 
 
 
