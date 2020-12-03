@@ -24,14 +24,15 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate the most. 
+We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate in teenagers the most. 
 
 # Data
 
 The main data set for our project is a data set from The Student Weight Status Category Reporting System (SWSCR). SWSCR collects weight status category data and includes separate estimates of the percent of students overweight, obese and overweight or obese for all reportable grades within the county and/or region and by grade groups (elementary and middle/high). It can be accessed at [here](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus). This dataset has a range from 2010 to 2019. 
 
-We also combined two extra datasets to examine the factors of economic status and food access ability on weight status. Economic status dataset can be accessed at[].
-Food access ability dataset can be accessed at [].
+We also combined three extra datasets to examine the factors of economic status and food access ability on weight status. Economic status dataset can be accessed [here](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng100).
+Food access ability dataset can be accessed [here](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng123).
+Race dataset can be accessed [here](https://labor.ny.gov/stats/nys/statewide-population-data.shtm).
 
 
 
@@ -42,6 +43,7 @@ Basic variables that we are interested in:
 - **Weight Status**: Underweight, health weight, overweight or obese based on BMI for age percentile. For this project, we focus on the overweight or obese student percentage which are estimates of based on all reportable grades within the county and/or region and by grade groups. 
 - **Economic Status**
 - **Food Access Ability**
+- **Race**
 
 
 
@@ -196,3 +198,41 @@ combine2 %>%
 ```
 
 From the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 
+
+
+## Race
+
+```{r, echo=FALSE}
+census_data = read_excel("dataset/census_data.xls",  
+    sheet = "Pop by Race and Ethnic Origin", 
+    range = "A3:BM10") 
+
+race_df = as.data.frame(t(as.matrix(census_data)))[-1,] 
+race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL), 
+         c("county", "total", "white", "black", "v4", "v5", "v6", "v7"))
+race_df = 
+  tibble(race_df) %>%
+  janitor::clean_names() %>%
+  mutate(
+    total = as.numeric(total),
+    white = as.numeric(white),
+    black = as.numeric(black),
+    white_percent = white/total*100,
+    black_percent = black/total*100) %>%
+  select(county, white_percent, black_percent) %>%
+  filter(!county %in% c("United States", "New York State")) %>%
+  separate(county, into = c("county", "county1")) %>%
+  select(-county1) %>%
+  mutate(county = toupper(county))
+
+
+```
+
+
+
+## Correlation graph
+
+```{r}
+#cor(patient_df)
+```
+
