@@ -51,9 +51,9 @@ Basic variables that we are interested in:
 
 ## Sex
 
-The graph below shows that more male students are in the overweight or obese category each year than female students.It seems like the percentage for male in the overweight or obese category slightly decreases and female slightly increases over years. 
+The graph below shows that more male students are in the overweight or obese category than female students in 2015 to 2016. Overall the ratio difference is not obvious. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 original = 
   tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
@@ -111,12 +111,26 @@ grade_df =
   select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
   filter(sex %in% "ALL") %>% 
   filter(grade_level %in% c("ELEMENTARY", "MIDDLE/HIGH")) %>% 
-  filter(county == "STATEWIDE (EXCLUDING NYC)") %>% 
-  select(year_reported, percent_overweight_or_obese, grade_level)
-  
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
+  select(year_reported, percent_overweight_or_obese, grade_level) %>% 
+  pivot_wider(
+    names_from = "grade_level",
+    values_from = "percent_overweight_or_obese"
+  ) %>% 
+  unnest()
+
 grade_count = 
   grade_df %>% 
-  group_by(year_reported)
+  group_by(year_reported) %>% 
+  drop_na() %>% 
+  summarize(
+    elementary = mean(ELEMENTARY),
+    middle_high = mean(`MIDDLE/HIGH`)) %>% 
+  pivot_longer(
+    elementary:middle_high,
+    names_to = "grade_level",
+    values_to = "percent_overweight_or_obese"
+  )
   
 grade_count %>% 
   ggplot(aes(x = as.factor(year_reported), y = percent_overweight_or_obese, fill = grade_level)) +
