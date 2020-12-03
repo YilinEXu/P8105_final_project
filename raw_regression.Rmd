@@ -68,12 +68,27 @@ sex_df =
   select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
   filter(sex == "MALE" | sex == "FEMALE") %>%
   filter(grade_level == "DISTRICT TOTAL") %>% 
-  filter(county == "STATEWIDE (EXCLUDING NYC)") %>% 
-  select(year_reported, percent_overweight_or_obese, sex)
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
+  select(year_reported, percent_overweight_or_obese, sex) %>% 
+  pivot_wider(
+    names_from = "sex",
+    values_from = "percent_overweight_or_obese"
+  ) %>% 
+  unnest()
 
 sex_count = 
   sex_df %>% 
-  group_by(year_reported) 
+  group_by(year_reported) %>% 
+  drop_na() %>% 
+  summarize(
+    female = mean(FEMALE),
+    male = mean(MALE)
+    ) %>% 
+  pivot_longer(
+    female:male,
+    names_to = "sex",
+    values_to = "percent_overweight_or_obese"
+  )
 
 sex_count %>% 
   ggplot(aes(x = as.factor(year_reported), y = percent_overweight_or_obese, fill = sex)) +
@@ -82,9 +97,6 @@ sex_count %>%
        x = "Year Reported",
        y = "percentage of Overweight or Obese") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-  
-
-
 ```
 
 
@@ -203,7 +215,7 @@ From the graph we can see that there is a general trend that if food insecurity 
 
 ## Race
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 census_data = read_excel("dataset/census_data.xls",  
     sheet = "Pop by Race and Ethnic Origin", 
     range = "A3:BM10") 
@@ -239,7 +251,12 @@ combine3 =
   pivot_wider(
     names_from = "race",
     values_from = "percent"
-  ) 
+  ) #%>% 
+ # mutate()
+  #arrange(percent_overweight_or_obese) %>% 
+ # mutate(
+   # county = factor(percent_overweight_or_obese, levels = unique[order(precentage)]decreasing = TRUE)
+  
   
 
 combine3 %>% 
@@ -253,8 +270,9 @@ combine3 %>%
   #layout(barmode = 'stack') %>% 
   add_trace(y = ~percent_overweight_or_obese, type = 'scatter', mode = 'lines+markers') %>% 
   layout(
-    xaxis = list(title = "Race"),
+    xaxis = list(title = "County"),
     yaxis = list(title = "Obese and overweigth percent(%)")
+    #yaxis = list(categoryorder = "array", categoryarray = ecomm_yoy2$YOY)) 
   )
 
 ```
