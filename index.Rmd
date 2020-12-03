@@ -8,3 +8,10 @@ output:
 ---
 
 # Student Weight Status in New York State
+
+<center>
+
+<img src="image/homepage.jpg" style = "width:75%">
+
+</center>
+
