@@ -2,6 +2,9 @@ name: "P8105 Final Project"
 output_dir: "."
 navbar:
   title: "Home"
+  left:
+    - text: "Project Report"
+      href: report.html
   right:
     - text: "Trend Graphs"
       href: trend_plot.html
@@ -9,8 +12,13 @@ navbar:
       href: https://jiayihelenzhou.shinyapps.io/ds_project/
     - text: "Student's Weight Status Over Time"
       href: map_jyz.html
+    - text: "Descriptive Graphs"
+      href: raw_regression.html
+    - text: "Statistical Analysis"
+      href: regression_xm.html
     - icon: fa-github fa-lg
       href: https://github.com/YilinEXu/P8105_final_project.git
+      
 
 output:
   html_document:

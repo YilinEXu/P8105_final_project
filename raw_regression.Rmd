@@ -115,10 +115,7 @@ grade_count %>%
 
 ## Economic Status
 
-
-redo the graph
-
-```{r,echo=FALSE}
+```{r,echo=FALSE,warning=FALSE}
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
@@ -161,12 +158,12 @@ combine %>%
 
 ```
 
-from the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
+From the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
 
 
 ## Food Access Ability
 
-```{r, echo=FALSE}
+```{r, echo=FALSE,warning=FALSE}
 #import food insecurity data
 food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
   janitor::clean_names() %>%
