@@ -65,9 +65,10 @@ anim_save("gif1.gif",gif1)
 
 ![](gif1.gif)
 
-## Overweight and obsesity percentage trend for students by gender from 2010 to 2019 in NY
+## Overweight and obsesitytrend for students by gender from 2010 to 2019 in NY
 
-percentage
+From the plot that shows the percentage changing trend, we can see that the percentage of overweight or obesity of female students showing an overall increasing trend over ten years. The percentage of overweight or obesity of male students showing an overall decreasing trend over ten years. For the first two periods, both female and male have same changing trend. After that, their trend changed in negative direction.
+
 ```{r,echo=FALSE,message = FALSE,fig.align='center'}
 genderperc <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
@@ -79,7 +80,7 @@ genderperc <- maindata %>%
   ggplot(aes(x = year_reported, y = percent_overweight_or_obese, group = sex, color = sex)) + 
   geom_line(size = 1) + 
   geom_point(size = 2) + 
-  labs(title = "Percentage trend of overweight and obesity by gender",
+  labs(title = "Percentage trend of overweight or obesity by gender",
        subtitle = "Data was recorded for every two year periods",
        x = "Year", 
        y = "Percentage of overweight and obesity among students") +
@@ -93,7 +94,8 @@ anim_save("gif2.gif", gif2)
 
 ![](gif2.gif)
 
-number 
+From the plot that shows the number changing trend, we can see that the number of overweight or obesity of both genders are showing an overall increasing trend. It is interesting that their variation trend is quite similar where their trend is changing in the same direction.
+
 ```{r,echo=FALSE,message = FALSE,fig.align='center'}
 gender_num <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
@@ -104,7 +106,7 @@ gender_num <- maindata %>%
   ggplot(aes(x = year_reported, y = number_overweight_or_obese, group = sex, color = sex)) + 
   geom_line(size = 1) + 
   geom_point(size = 2) + 
-  labs(title = "Students' weights' number trend of overweight and obesity by gender",
+  labs(title = "Students' weights' number trend of overweight or obesity by gender",
        subtitle = "data was recorded for every two year periods.",
        x = "Year", 
        y = "Number of overweight and obesity among students") +

@@ -428,7 +428,9 @@ h1.title {
 </style>
 <div id="motivation" class="section level2">
 <h2>Motivation</h2>
-<p>Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-olds, 18.4% among 6- to 11-year-olds, and 20.6% among 12- to 19-year-olds. <br> The harms of obesity in adolescents exhibit in both physical and psychological aspects. The expression of obesity in children and adolescents is often indicated by weight gain and having a large amount of fat deposition. The increase in body fat will result in increases in body burden and oxygen consumption, which explains why obese children consume more oxygen than people who maintain a healthy weight. Obesity also causes them to be heavy, slow, and unable to move. Many children and adolescents often have flat feet, knee flexion, lower limb flexion, spine, and intervertebral cartilage damage due to obesity. Obese children and adolescents with high cholesterol levels are also at the risk of having a compromised immune system. Some study also shows that obesity is a risk factor of depression. <br> Therefore, we conducted this study on the obesity situation of students in elementary and middle/high school from 2010 to 2019 to investigate the geographic and time pattern obesity distribution, as well as several potential risk factors that are related to obesity in students.</p>
+<p>Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-olds, 18.4% among 6- to 11-year-olds, and 20.6% among 12- to 19-year-olds.</p>
+<p>The harms of obesity in adolescents exhibit in both physical and psychological aspects. The expression of obesity in children and adolescents is often indicated by weight gain and having a large amount of fat deposition. The increase in body fat will result in increases in body burden and oxygen consumption, which explains why obese children consume more oxygen than people who maintain a healthy weight. Obesity also causes them to be heavy, slow, and unable to move. Many children and adolescents often have flat feet, knee flexion, lower limb flexion, spine, and intervertebral cartilage damage due to obesity. Obese children and adolescents with high cholesterol levels are also at the risk of having a compromised immune system. Some study also shows that obesity is a risk factor of depression.</p>
+<p>Therefore, we conducted this study on the obesity situation of students in elementary and middle/high school from 2010 to 2019 to investigate the geographic and time pattern obesity distribution, as well as several potential risk factors that are related to obesity in students.</p>
 <p> </p>
 <div id="related-work" class="section level4">
 <h4><strong>Related Work</strong></h4>
@@ -446,8 +448,8 @@ h1.title {
 <p>We intend to answer the following questions during the process of our studying:</p>
 <ol style="list-style-type: decimal">
 <li>How student weight changes in New York state by location?</li>
-<li>What is the relationship between the student???s weight and school year?</li>
-<li>Is the student???s obesity status related to their later obesity status? How?</li>
+<li>What is the relationship between the student’s weight and school year?</li>
+<li>Is the student’s obesity status related to their later obesity status? How?</li>
 <li>The association between student weight and their race and socioeconomic status.</li>
 <li>How has the student’s weight changed over time in New York?</li>
 </ol>
@@ -478,7 +480,52 @@ h1.title {
 </div>
 <div id="variables-of-interest" class="section level4">
 <h4><em>Variables of interest</em></h4>
-<p><code>county</code>: County of location for each school district. <code>year_reported</code>: 2-year time period encompassing years in which information was collected from all school districts in New York State. Half of all school districts are requested to send in SWSCR data annually. Two years are then combined to provide information on the whole state. <code>number_overweight</code>&amp;<code>percent_overweight</code>:Number/ percent of students in the 85th to 94th percentiles. <code>number_obese</code>&amp;<code>percent_obese</code>:Number/percent of students in the 95th+ percentiles. <code>number_oevrweight_or_obese</code>&amp;<code>percent_overweight_or_obese</code>:Number/ percent of students in the 85th+ percentiles. <code>number_healthy_weight</code>&amp;<code>percent_healthy_weight</code>:Number/ percent of students are neither overweight nor obese. Students who maintained a healthy weight. <code>grade_level</code>: Grade category–Elementary (grades Pre-K, K, 2 &amp; 4); Middle/high (grades 7 &amp; 10); or District total (grades Pre-K, K, 2, 4, 7 &amp; 10)) <code>sex</code>: Male, Female, or Total.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>county</code></td>
+<td>County of location for each school district.</td>
+</tr>
+<tr class="even">
+<td><code>year_reported</code></td>
+<td>2-year time period encompassing years in which information was collected from all school districts in New York State. Half of all school districts are requested to send in SWSCR data annually. Two years are then combined to provide information on the whole state.</td>
+</tr>
+<tr class="odd">
+<td><code>number_overweight</code>&amp;<code>percent_overweight</code></td>
+<td>Number/ percent of students in the 85th to 94th percentiles.</td>
+</tr>
+<tr class="even">
+<td><code>number_obese</code>&amp;<code>percent_obese</code></td>
+<td>Number/percent of students in the 95th+ percentiles.</td>
+</tr>
+<tr class="odd">
+<td><code>number_oevrweight_or_obese</code>&amp;<code>percent_overweight_or_obese</code></td>
+<td>Number/ percent of students in the 85th+ percentiles.</td>
+</tr>
+<tr class="even">
+<td><code>number_healthy_weight</code>&amp;<code>percent_healthy_weight</code></td>
+<td>Number/ percent of students are neither overweight nor obese. Students who maintained a healthy weight.</td>
+</tr>
+<tr class="odd">
+<td><code>grade_level</code></td>
+<td>Grade category–Elementary (grades Pre-K, K, 2 &amp; 4); Middle/high (grades 7 &amp; 10); or District total (grades Pre-K, K, 2, 4, 7 &amp; 10))</td>
+</tr>
+<tr class="even">
+<td><code>sex</code></td>
+<td>Male, Female, or Total.</td>
+</tr>
+</tbody>
+</table>
 <p> </p>
 </div>
 <div id="data-cleaning" class="section level3">
@@ -773,6 +820,59 @@ subplot(ranking_hw,ranking_oo,
 </div>
 <div id="trend-graphs" class="section level3">
 <h3><em>Trend Graphs:</em></h3>
+<p>For different trend graphs, the data was changed depends on the variables we want to look at. For example, when we want to look at the overweight and obesity trend for students by gender, we will filter with <code>gender = female &amp; male</code>. Most of the data cleaning process are similar, except for the last plot which shows the comparison overweight or obesity percentage through the top 20 counties.</p>
+<p>During the process, we found out some counties have more than one areas in their records. Some of these areas are not recording in every two year periods. Hence, we first drop the records that are not recording in every two-year periods and then dropout the rows having missing values. After cleaning the data, we found out there are still more than fifty counties remained, so we find out the mean value of all counties overweight or obesity percentage. After that, we pick up the mean value that are in top 20 ranking and showed them in the plot.</p>
+<pre class="r"><code>counties &lt;- maindata %&gt;%
+  filter(county != &quot;STATEWIDE (EXCLUDING NYC)&quot;,
+         grade_level == &quot;DISTRICT TOTAL&quot;,
+         sex == &quot;ALL&quot;) %&gt;%
+  select(c(county, year_reported, percent_overweight_or_obese, area_name)) %&gt;%
+  group_by(county) %&gt;%
+  mutate(year_reported = as.factor(year_reported)) %&gt;%
+#  pivot_wider(names_from = county, values_from = percent_overweight_or_obese) %&gt;%
+  separate(year_reported, c(&quot;start_year&quot;,&quot;end_year&quot;), &quot;-&quot;) %&gt;%
+  mutate(start_year = as.numeric(start_year),
+         end_year = as.numeric(end_year),
+         start_year1 = start_year+2) %&gt;%
+  na.omit()
+
+for (i in 1:nrow(counties)) {
+    if (counties$end_year[i] == counties$start_year1[i]) {
+      dt_count &lt;- rbind(dt_count, counties[i,])
+    }
+}
+
+counties = dt_count %&gt;%
+  filter(county != &quot;N/A&quot;) %&gt;%
+  select(-start_year1) %&gt;%
+  mutate(
+    year = paste(start_year, end_year, sep = &quot;-&quot;)
+  ) %&gt;%
+  select(-start_year, -end_year, -area_name) %&gt;%
+  group_by(year)
+
+new_county = counties %&gt;%
+  pivot_wider(names_from = county, values_from = percent_overweight_or_obese)
+
+top20 = new_county %&gt;%
+  ungroup() %&gt;%
+  select(-year)
+
+county20 = rbind(top20, colMeans = colMeans(top20)) %&gt;%
+  mutate(num = c(1,2,3,4,5,6,7,8,&quot;mean&quot;)) %&gt;%
+  filter(num %in% &quot;mean&quot;) %&gt;%
+  pivot_longer(cols = 1:57,names_to = &quot;county&quot;, values_to = &quot;percentage&quot;) %&gt;%
+  select(-num) %&gt;%
+  top_n(20)
+
+county_20 = inner_join(county20,counties) %&gt;%
+  select(-percentage) %&gt;%
+  group_by(year) %&gt;%
+  mutate(percent_overweight_or_obese = percent_overweight_or_obese * 1000,
+        rank = rank(-percent_overweight_or_obese),
+         Value_rel = percent_overweight_or_obese/percent_overweight_or_obese[rank==1],
+         Value_lbl = paste0(&quot; &quot;,round(percent_overweight_or_obese/1e9))) %&gt;%
+  ungroup()</code></pre>
 </div>
 </div>
 <div id="formal-analysis" class="section level2">
