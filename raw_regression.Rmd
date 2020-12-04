@@ -136,7 +136,7 @@ grade_df %>%
 ## Year
 during data cleaning find outliers
 
-```{r}
+```{r,echo=FALSE,warning=FALSE}
 year_df = 
   original %>% 
   select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
@@ -255,6 +255,7 @@ census_data = read_excel("dataset/census_data.xls",
 race_df = as.data.frame(t(as.matrix(census_data)))[-1,] 
 race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL), 
          c("county", "total", "white", "black", "native", "asian", "hawaiian", "mix"))
+
 race_df = 
   tibble(race_df) %>%
   janitor::clean_names() %>%
@@ -265,7 +266,8 @@ race_df =
     native = as.numeric(native)/ total * 100,
     asian = as.numeric(asian)/ total * 100,
     hawaiian = as.numeric(hawaiian)/ total * 100,
-    mix = as.numeric(mix)/ total * 100) %>%
+    mix = as.numeric(mix)/ total * 100,
+    minorities = black + native + asian + hawaiian + mix) %>%
   select(-total) %>%
   filter(!county %in% c("United States", "New York State")) %>%
   separate(county, into = c("county", "county1")) %>%
@@ -279,34 +281,27 @@ combine3 =
     white:mix,
     names_to = "race",
     values_to = "percent") %>% 
-  group_by(county) %>% 
   pivot_wider(
     names_from = "race",
     values_from = "percent"
-  ) #%>% 
- # mutate()
-  #arrange(percent_overweight_or_obese) %>% 
- # mutate(
-   # county = factor(percent_overweight_or_obese, levels = unique[order(precentage)]decreasing = TRUE)
-  
-  
+  ) %>% 
+  mutate(minorities = factor(minorities)) %>% 
+  arrange(minorities)
 
 combine3 %>% 
-  plot_ly(x = ~county, y = ~white, type = 'bar') %>% 
-  add_trace(y = ~black, type = 'bar') %>%
-  add_trace(y = ~native, type = 'bar') %>% 
-  add_trace(y = ~asian, type = 'bar') %>% 
-  add_trace(y = ~hawaiian, type = 'bar') %>% 
-  add_trace(y = ~mix, type = 'bar') %>% 
-  add_trace(y = ~percent_overweight_or_obese, type = 'scatter', mode = 'lines', line = list(color = 'rgb(22, 96, 167)', width = 4, dash = 'dot')) %>% 
-  #layout(barmode = 'stack') %>% 
-  add_trace(y = ~percent_overweight_or_obese, type = 'scatter', mode = 'lines+markers') %>% 
+  plot_ly(x = ~county, y = ~white, name = 'white', type = 'bar') %>% 
+  add_trace(y = ~black, name = 'black', type = 'bar') %>%
+  add_trace(y = ~native, name = 'native', type = 'bar') %>% 
+  add_trace(y = ~asian, name = 'asian', type = 'bar') %>% 
+  add_trace(y = ~hawaiian, name = 'hawaiian', type = 'bar') %>% 
+  add_trace(y = ~mix, name = 'mix', type = 'bar') %>% 
+  add_trace(y = ~percent_overweight_or_obese, name = 'overweight/obese (%)', type = 'scatter', mode = 'markers') %>% 
   layout(
-    xaxis = list(title = "County"),
+    xaxis = list(title = "County",
+                 categoryorder = "array",
+                 categoryarray = ~minorities),
     yaxis = list(title = "Obese and overweigth percent(%)")
-    #yaxis = list(categoryorder = "array", categoryarray = ecomm_yoy2$YOY)) 
   )
-
 ```
 
 
