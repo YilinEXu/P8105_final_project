@@ -59,7 +59,8 @@ linear_df = weight_df %>%
   mutate(
     year_reported = if_else(year_reported == "2015-2016", 0, 1) # transform to binary variable to fit regression model
   ) %>%
-  select(county, year_reported, percent_overweight_or_obese, grade_level, sex)
+  select(county, year_reported, percent_overweight_or_obese, grade_level, sex) %>%
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
@@ -89,6 +90,10 @@ race_df = tibble(race_df) %>%
     total = as.numeric(total),
     white = as.numeric(white),
     black = as.numeric(black),
+    v4 = as.numeric(v4),
+    v5 = as.numeric(v5),
+    v6 = as.numeric(v6),
+    v7 = as.numeric(v7),
     white_percent = white/total*100,
          black_percent = black/total*100) %>%
   select(county, white_percent, black_percent) %>%
@@ -96,6 +101,8 @@ race_df = tibble(race_df) %>%
   separate(county, into = c("county", "county1")) %>%
   select(-county1) %>%
   mutate(county = toupper(county))
+
+
 
 linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
 linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
@@ -135,11 +142,11 @@ In the beginning we included 6 independent variables, grade level, median income
 
 # Final Model
 $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
-y = percentage overweight or obese  
-x1= grade level  (0 = elementary, 1 = middle/high school)  
-x2 = median income (k dollars)  
-x3 = white population percentage  
-x4 = sex (0 = male, 1 = female)
+**y = percentage overweight or obese**  
+**x1= grade level  (0 = elementary, 1 = middle/high school)**  
+**x2 = median income (k dollars)**  
+**x3 = white population percentage**  
+**x4 = sex (0 = male, 1 = female)**
 
 
 ```{r echo=FALSE, warning=FALSE}
