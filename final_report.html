@@ -433,10 +433,10 @@ h1.title {
 <div id="related-work" class="section level4">
 <h4><strong>Related Work</strong></h4>
 <ol style="list-style-type: decimal">
-<li>Obesity More Common Among Kids With Special Needs. Disability Scoop. Published December 7, 2011. Accessed December 2, 2020. <a href="https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/">Link.</a></li>
-<li>Must A, Curtin C, Hubbard K, Sikich L, Bedford J, Bandini L. Obesity Prevention for Children with Developmental Disabilities. Curr Obes Rep. 2014;3(2):156. <a href="doi:10.1007/s13679-014-0098-7" class="uri">doi:10.1007/s13679-014-0098-7</a>. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/">Link.</a></li>
-<li>Hu EY. Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction. Prev Chronic Dis. 2018;15. <a href="doi:10.5888/pcd15.180122" class="uri">doi:10.5888/pcd15.180122</a>. <a href="https://www.cdc.gov/pcd/issues/2018/18_0122.htm">Link.</a></li>
-<li>High School Obesity Rates. The State of Childhood Obesity. Accessed December 2, 2020. <a href="https://stateofchildhoodobesity.org/high-school-obesity/">Link.</a></li>
+<li>Obesity More Common Among Kids With Special Needs. Disability Scoop. Published December 7, 2011.Accessed December 2, 2020. <a href="https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/">Link.</a></li>
+<li>Must A, Curtin C, Hubbard K, Sikich L, Bedford J, Bandini L. Obesity Prevention for Children with Developmental Disabilities. Curr Obes Rep. 2014;3(2):156.doi:10.1007/s13679-014-0098-7. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/">Link.</a></li>
+<li>Hu EY. Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction. Prev Chronic Dis. 2018;15.doi:10.5888/pcd15.180122. <a href="https://www.cdc.gov/pcd/issues/2018/18_0122.htm">Link.</a></li>
+<li>High School Obesity Rates. The State of Childhood Obesity.Accessed December 2, 2020. <a href="https://stateofchildhoodobesity.org/high-school-obesity/">Link.</a></li>
 </ol>
 <p> </p>
 </div>
@@ -533,13 +533,9 @@ sum_df =
   left_join(fips_code, by = &quot;county&quot;) %&gt;% 
   mutate(fips_code = as.character(fips))
 #import shp file:http://gis.ny.gov/gisdata/inventories/details.cfm?DSID=927
-fips_map = readOGR(dsn = &quot;./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp&quot;, encoding = &quot;UTF-8&quot;)</code></pre>
-<pre><code>## OGR data source with driver: ESRI Shapefile 
-## Source: &quot;/Users/zhoujiayi/Documents/Columbia Data Science/Final/Final/P8105_final_project/map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp&quot;, layer: &quot;Counties&quot;
-## with 62 features
-## It has 17 fields
-## Integer64 fields read as strings:  POP1990 POP2000 POP2010 POP2020</code></pre>
-<pre class="r"><code>fips_map@data&lt;- left_join(fips_map@data, sum_df, by = c(&quot;FIPS_CODE&quot; = &quot;fips_code&quot;))
+fips_map = readOGR(dsn = &quot;./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp&quot;, encoding = &quot;UTF-8&quot;)
+
+fips_map@data&lt;- left_join(fips_map@data, sum_df, by = c(&quot;FIPS_CODE&quot; = &quot;fips_code&quot;))
 
 #assign 0 to NAs
 fips_map$percent_healthy[is.na(fips_map$percent_healthy)] &lt;- 0
@@ -551,11 +547,19 @@ fips_map$percent_oo[is.na(fips_map$percent_oo)] &lt;- 0</code></pre>
 <div id="regression-analysis" class="section level4">
 <h4><strong>Regression analysis:</strong></h4>
 <p> </p>
-<p>##Exploratory analysis: <em>Part 1:how student weight status changes in New York by county? </em>Part 2:how does student weight in each county change over the 9-year-period?</p>
 </div>
 </div>
-<div id="part-1" class="section level3">
-<h3><em>Part 1</em></h3>
+</div>
+<div id="exploratory-analysis" class="section level2">
+<h2>Exploratory analysis:</h2>
+<div id="mapping-and-visualization" class="section level3">
+<h3><em>Mapping and Visualization:</em></h3>
+<ul>
+<li>Part 1:how student weight status changes in New York by county?</li>
+<li>Part 2:how does student weight in each county change over the 9-year-period?</li>
+</ul>
+<div id="part-1" class="section level4">
+<h4><strong>Part 1</strong></h4>
 <ol style="list-style-type: decimal">
 <li>Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period: ???the average percentage of students who were overweight or obese??? and ???the average percentage of students who maintained a healthy weight???. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why <code>HAMILTON</code> have both high average percentages of overweight/obese and healthy students, we found that the student weight status in <code>HAMILTON</code> changed considerably over the 9-year-period. As time goes by, students’ weight in <code>HAMILTON</code> exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, <code>HAMILTON</code>’s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.</li>
 </ol>
@@ -637,8 +641,8 @@ healthy_map = leaflet::leaflet(data = fips_map_crs) %&gt;%
             title = &quot;The Average Percentage of Students Who Maintained Healthy Weight (2010-2019)&quot;,
             opacity = 1)</code></pre>
 </div>
-<div id="part-2" class="section level3">
-<h3><em>Part 2</em></h3>
+<div id="part-2" class="section level4">
+<h4><strong>Part 2</strong></h4>
 <ol start="2" style="list-style-type: decimal">
 <li>Interactive time map: Since the choropleth maps used the average percentage, the changing trend of student weight by year was neglected. Both the average percent of overweight/obese and healthy students were large for <code>HAMILTON</code>. When analyzing all connties in the New York state, even though students’ weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration. Therefore, we created a interactive time map<a href="https://jiayihelenzhou.shinyapps.io/ds_project/">Weight Over Time Map</a>. This interactive map aims to explore how weight change in each county over the 9-year-period. We found that not every county has a clear increasing or decreasing trend as Hamilton does. Students who were obese at the beginning of this study may have maintained to be obese in the selected counties. For more changing trending in weight status, please refer to <a href="trend_plot.html">Trend Graphs</a>.</li>
 </ol>
@@ -764,6 +768,10 @@ subplot(ranking_hw,ranking_oo,
         titleX = TRUE, titleY = FALSE)
 
 })</code></pre>
+</div>
+</div>
+<div id="trend-graphs" class="section level3">
+<h3><em>Trend Graphs:</em></h3>
 </div>
 </div>
 <div id="formal-analysis" class="section level2">
