@@ -30,9 +30,9 @@ h1.title {
 ## Motivation
 
 Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-olds, 18.4% among 6- to 11-year-olds, and 20.6% among 12- to 19-year-olds.
-<br>
+
 The harms of obesity in adolescents exhibit in both physical and psychological aspects. The expression of obesity in children and adolescents is often indicated by weight gain and having a large amount of fat deposition. The increase in body fat will result in increases in body burden and oxygen consumption, which explains why obese children consume more oxygen than people who maintain a healthy weight. Obesity also causes them to be heavy, slow, and unable to move. Many children and adolescents often have flat feet, knee flexion, lower limb flexion, spine, and intervertebral cartilage damage due to obesity. Obese children and adolescents with high cholesterol levels are also at the risk of having a compromised immune system. Some study also shows that obesity is a risk factor of depression.
-<br>
+
 Therefore, we conducted this study on the obesity situation of students in elementary and middle/high school from 2010 to 2019 to investigate the geographic and time pattern obesity distribution, as well as several potential risk factors that are related to obesity in students.
 
 &nbsp;
@@ -51,8 +51,8 @@ Therefore, we conducted this study on the obesity situation of students in eleme
 We intend to answer the following questions during the process of our studying:
 
 1. How student weight changes in New York state by location?
-2. What is the relationship between the student???s weight and school year?
-3. Is the student???s obesity status related to their later obesity status? How?
+2. What is the relationship between the student's weight and school year?
+3. Is the student's obesity status related to their later obesity status? How?
 4. The association between student weight and their race and socioeconomic status.
 5. How has the student's weight changed over time in New York?
 
@@ -77,14 +77,17 @@ We intend to answer the following questions during the process of our studying:
 
 #### *Variables of interest*
 
-`county`:	County of location for each school district.
-`year_reported`:	2-year time period encompassing years in which information was collected from all school districts in New York State. Half of all school districts are requested to send in SWSCR data annually. Two years are then combined to provide information on the whole state.
-`number_overweight`&`percent_overweight`:Number/ percent of students in the 85th to 94th percentiles.
-`number_obese`&`percent_obese`:Number/percent of students in the 95th+ percentiles.
-`number_oevrweight_or_obese`&`percent_overweight_or_obese`:Number/ percent of students in the 85th+ percentiles.
-`number_healthy_weight`&`percent_healthy_weight`:Number/ percent of students are neither overweight nor obese. Students who maintained a healthy weight.
-`grade_level`:	Grade category--Elementary (grades Pre-K, K, 2 & 4); Middle/high (grades 7 & 10); or District total (grades Pre-K, K, 2, 4, 7 & 10))
-`sex`:	Male, Female, or Total.
+Variable | Description
+------------- | -------------
+`county` | County of location for each school district.
+`year_reported`  | 2-year time period encompassing years in which information was collected from all school districts in New York State. Half of all school districts are requested to send in SWSCR data annually. Two years are then combined to provide information on the whole state.
+`number_overweight`&`percent_overweight`  | Number/ percent of students in the 85th to 94th percentiles.
+`number_obese`&`percent_obese`  | Number/percent of students in the 95th+ percentiles.
+`number_oevrweight_or_obese`&`percent_overweight_or_obese`  | Number/ percent of students in the 85th+ percentiles.
+`number_healthy_weight`&`percent_healthy_weight`  | Number/ percent of students are neither overweight nor obese. Students who maintained a healthy weight.
+`grade_level`  | 	Grade category--Elementary (grades Pre-K, K, 2 & 4); Middle/high (grades 7 & 10); or District total (grades Pre-K, K, 2, 4, 7 & 10))
+`sex`  | 	Male, Female, or Total.
+
 
 &nbsp;
 
@@ -385,8 +388,62 @@ subplot(ranking_hw,ranking_oo,
 ```
 
 ### *Trend Graphs:*
-```{r}
 
+For different trend graphs, the data was changed depends on the variables we want to look at. For example, when we want to look at the overweight and obesity trend for students by gender, we will filter with `gender = female & male`. Most of the data cleaning process are similar, except for the last plot which shows the comparison overweight or obesity percentage through the top 20 counties.
+
+During the process, we found out some counties have more than one areas in their records. Some of these areas are not recording in every two year periods. Hence, we first drop the records that are not recording in every two-year periods and then dropout the rows having missing values. After cleaning the data, we found out there are still more than fifty counties remained, so we find out the mean value of all counties overweight or obesity percentage. After that, we pick up the mean value that are in top 20 ranking and showed them in the plot.
+```{r, eval=FALSE}
+counties <- maindata %>%
+  filter(county != "STATEWIDE (EXCLUDING NYC)",
+         grade_level == "DISTRICT TOTAL",
+         sex == "ALL") %>%
+  select(c(county, year_reported, percent_overweight_or_obese, area_name)) %>%
+  group_by(county) %>%
+  mutate(year_reported = as.factor(year_reported)) %>%
+#  pivot_wider(names_from = county, values_from = percent_overweight_or_obese) %>%
+  separate(year_reported, c("start_year","end_year"), "-") %>%
+  mutate(start_year = as.numeric(start_year),
+         end_year = as.numeric(end_year),
+         start_year1 = start_year+2) %>%
+  na.omit()
+
+for (i in 1:nrow(counties)) {
+    if (counties$end_year[i] == counties$start_year1[i]) {
+      dt_count <- rbind(dt_count, counties[i,])
+    }
+}
+
+counties = dt_count %>%
+  filter(county != "N/A") %>%
+  select(-start_year1) %>%
+  mutate(
+    year = paste(start_year, end_year, sep = "-")
+  ) %>%
+  select(-start_year, -end_year, -area_name) %>%
+  group_by(year)
+
+new_county = counties %>%
+  pivot_wider(names_from = county, values_from = percent_overweight_or_obese)
+
+top20 = new_county %>%
+  ungroup() %>%
+  select(-year)
+
+county20 = rbind(top20, colMeans = colMeans(top20)) %>%
+  mutate(num = c(1,2,3,4,5,6,7,8,"mean")) %>%
+  filter(num %in% "mean") %>%
+  pivot_longer(cols = 1:57,names_to = "county", values_to = "percentage") %>%
+  select(-num) %>%
+  top_n(20)
+
+county_20 = inner_join(county20,counties) %>%
+  select(-percentage) %>%
+  group_by(year) %>%
+  mutate(percent_overweight_or_obese = percent_overweight_or_obese * 1000,
+        rank = rank(-percent_overweight_or_obese),
+         Value_rel = percent_overweight_or_obese/percent_overweight_or_obese[rank==1],
+         Value_lbl = paste0(" ",round(percent_overweight_or_obese/1e9))) %>%
+  ungroup()
 ```
 
 ## Formal Analysis:
