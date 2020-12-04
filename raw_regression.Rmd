@@ -54,7 +54,7 @@ Basic variables that we are interested in:
 The graph below shows that more male students are in the overweight or obese category than female students in 2015 to 2016. Overall the ratio difference is not obvious. 
 during datacleaning process find out there are outliers at 100 percent 
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 original = 
   tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
@@ -101,7 +101,7 @@ sex_df %>%
 The graph below shows that students in middle/high school grade level tend to have higher percentage than the elementary students in overweight or obese category each year. There also seems to be an increase in the overweight or obese percentage for the middle or high school students while a decrease for the elementary students over years. 
 during datacleaning process find out there are outliers at 100 percent
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 grade_df = 
   original %>% 
   select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
@@ -162,7 +162,7 @@ year_df %>%
 
 ## Economic Status
 
-```{r,echo=FALSE,warning=FALSE}
+```{r,echo=FALSE,warning=FALSE, message=FALSE}
 income = read_xlsx("./dataset/median_income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
@@ -247,7 +247,7 @@ From the graph we can see that there is a general trend that if food insecurity 
 
 ## Race
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 census_data = read_excel("dataset/census_data.xls",  
     sheet = "Pop by Race and Ethnic Origin", 
     range = "A3:BM10") 
