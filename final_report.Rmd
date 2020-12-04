@@ -493,17 +493,19 @@ linear_df = weight_df %>%
   filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
 
 # Import tidy and join the median income and food insecurity and race data
-income = read_xlsx("./dataset/median_income.xlsx") %>%
+income = read_xlsx("./dataset/income.xlsx") %>%
   janitor::clean_names() %>%
   rename(county = region_county) %>%
   mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
-         county = toupper(county))
+         county = toupper(county)) %>%
+  drop_na(median_income)
 
-food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
+food_insecurity = read_xlsx("./dataset/food_access.xlsx", range = "A9:C84") %>%
   janitor::clean_names() %>%
     rename(county = region_county) %>%
   rename(food_insecurity_p = percentage) %>%
-  mutate(county = toupper(county))
+  mutate(county = toupper(county)) %>%
+  drop_na(food_insecurity_p)
 
 census_data <- read_excel("dataset/census_data.xls",  
     sheet = "Pop by Race and Ethnic Origin", 
