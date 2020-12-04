@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 library(tidyverse)
 library(readxl)
 library(plotly)
+library(patchwork)
+library(kableExtra)
 ```
 
 <style type="text/css">
@@ -159,11 +161,8 @@ fips_map$percent_oo[is.na(fips_map$percent_oo)] <- 0
 ```
 
 #### **Regression analysis:**
+The linear regression model used 3 dataset besides the main weight data, they are median income data, food insecurity data and census data.  We combined those data by using `left_join` function, and those data were joined together by `county`.  Before combine those data we are did some cleaning to ensure that `county` variable in each dataset are in consistent form.  The most tricky data is the census data.  We have to first convert it to matrix form then transpose it, then we inlcude the `county` (was first column name) into the data frame.  After the dataset have been joined together, we also used `filter` function to omit outlier values.  We used data in year 2015 and 2016 to ensure they are consistent in time.  Census data is in year 2010 because it is hard to find census data on a specific year and usually those data are produced after the 2010 census was done. Besides, we thought there won't be a big change in race percentage between 5 years period.  3 variables that are binary variables, they are `sex`, `grade_level` and `year_reported`.  We also mutate them into 0 and 1 form by using `if_else` function.
 
-```{r, message = FALSE, warning = FALSE}
-
-
-```
 
 &nbsp;
 
@@ -401,11 +400,127 @@ subplot(ranking_hw,ranking_oo,
 ### *Regression:*
 
 
-```{r, evale = FALSE, message = FALSE}
+```{r, echo=FALSE, message = FALSE, warning=FALSE}
+original = tibble(        ## Clean the original weight data
+  read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
+) %>%
+  janitor::clean_names() %>%
+  select(-location_code, -region, -area_name)  # the only location information we need is county name
 
+coordinates = tibble(
+  read.csv("./dataset/Geocodes_USA_with_Counties.csv")
+) %>%
+  filter(state == "NY") %>%  # filter out counties outside NY state
+  select(county, latitude, longitude) %>% # only information we need is county name and geo location
+  drop_na() %>%
+  group_by(county) %>%
+  summarise(latitude = mean(latitude), longitude = mean(longitude)) %>% #different location in each county varied slightly, so we take the mean of each county's geo location
+  filter(!county == "") %>% # one county's name input is blank
+  mutate(county = toupper(county)) # to switch county name to uppercase
+
+weight_df = left_join(original, coordinates, by = "county")
+
+linear_df = weight_df %>%
+  filter(!sex == "ALL") %>%
+  filter(!grade_level == "DISTRICT TOTAL") %>%
+  mutate(
+    sex = if_else(sex == "MALE", 0, 1),   #transform to binary variable to fit model
+    grade_level = if_else(grade_level == "ELEMENTARY", 0, 1)
+  ) %>%
+  drop_na() %>%
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
+  mutate(
+    year_reported = if_else(year_reported == "2015-2016", 0, 1) # transform to binary variable to fit regression model
+  ) %>%
+  select(county, year_reported, percent_overweight_or_obese, grade_level, sex) %>%
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+
+# Import tidy and join the median income and food insecurity and race data
+income = read_xlsx("./dataset/median_income.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(county = region_county) %>%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
+         county = toupper(county))
+
+food_insecurity = read_xlsx("./dataset/food_insecurity.xlsx") %>%
+  janitor::clean_names() %>%
+    rename(county = region_county) %>%
+  rename(food_insecurity_p = percentage) %>%
+  mutate(county = toupper(county))
+
+census_data <- read_excel("dataset/census_data.xls",  
+    sheet = "Pop by Race and Ethnic Origin", 
+    range = "A3:BM10") 
+
+race_df = as.data.frame(t(as.matrix(census_data)))[-1,]  #transpose the original data
+race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL),  #include column name into the data frame
+         c("county", "total", "white", "black", "v4", "v5", "v6", "v7")) 
+race_df = tibble(race_df) %>%
+  janitor::clean_names() %>%
+  mutate(
+    total = as.numeric(total),
+    white = as.numeric(white),
+    black = as.numeric(black),
+    v4 = as.numeric(v4),
+    v5 = as.numeric(v5),
+    v6 = as.numeric(v6),
+    v7 = as.numeric(v7),
+    white_percent = white/total*100,
+         black_percent = black/total*100) %>%
+  select(county, white_percent, black_percent) %>%
+  filter(!county %in% c("United States", "New York State")) %>%
+  separate(county, into = c("county", "county1")) %>%
+  select(-county1) %>%
+  mutate(county = toupper(county))
+
+
+
+linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
+linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
+linear_df4 = left_join(linear_df3, race_df, by = "county")
+```
+Before fitting the linear regression model, we used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log transformation has improved data's normality.  
+```{r}
+# Normality check
+qqnorm(log(linear_df$percent_overweight_or_obese), col = c("darkorchid3"))
+
+linear_df3 %>%
+  ggplot(aes(x = log(percent_overweight_or_obese))) + geom_histogram(color = "purple",
+    fill = "#69b3a2", size = 2) + labs(x = "log (percent overweight and obese)", title = "Histogram of log (percent overweight and obese)") 
 ```
 
+Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is approximetly in a straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
+<br>
+Based on the transformation above, the model we are going to fit is:
+$$ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender + \beta_6 year$$
+We included 6 independent variables, grade level, median income, food insecurity,  gender, and white population percentage.  However the model summary showed there are weak correlation between food insecurity (p-value = 0.925) and median income (p-value = 0.113) and year_reported (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the percentage overweight and obese.
 
+#### *Final Model:*
+$$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
+**y = percentage overweight or obese**  
+**x1= grade level  (0 = elementary, 1 = middle/high school)**  
+**x2 = median income (k dollars)**  
+**x3 = white population percentage**  
+**x4 = sex (0 = male, 1 = female)**
+
+
+```{r echo=FALSE, warning=FALSE}
+# regression model
+lm_2 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + white_percent + sex, data = linear_df4) 
+```
+#### *Model Summary:*
+```{r}
+kable(summary(lm_2)$coefficients)
+```
+
+```{r echo=FALSE, warning=FALSE, fig.align='center'}
+par(mfrow = c(2, 2))
+plot(lm_2, col = "darkorchid2", alpha = 0.5)
+```
+
+#### *Conclusion*
+
+There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid.  Four variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2166, which means only 22% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
 
 ## Discussion
 
