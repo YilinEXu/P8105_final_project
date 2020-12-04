@@ -52,6 +52,7 @@ Basic variables that we are interested in:
 ## Sex
 
 The graph below shows that more male students are in the overweight or obese category than female students in 2015 to 2016. Overall the ratio difference is not obvious. 
+during datacleaning process find out there are outliers at 100 percent 
 
 ```{r, echo=FALSE, message=FALSE}
 original = 
@@ -70,40 +71,35 @@ sex_df =
   filter(grade_level == "DISTRICT TOTAL") %>% 
   filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
   select(year_reported, percent_overweight_or_obese, sex) %>% 
-  pivot_wider(
-    names_from = "sex",
-    values_from = "percent_overweight_or_obese"
-  ) %>% 
-  unnest()
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+  #pivot_wider(
+    #names_from = "sex",
+    #values_from = "percent_overweight_or_obese"
+  #) %>% 
+  #unnest()
 
-sex_count = 
-  sex_df %>% 
-  group_by(year_reported) %>% 
-  drop_na() %>% 
-  summarize(
-    female = mean(FEMALE),
-    male = mean(MALE)
-    ) %>% 
-  pivot_longer(
-    female:male,
-    names_to = "sex",
-    values_to = "percent_overweight_or_obese"
-  )
-
-sex_count %>% 
-  ggplot(aes(x = as.factor(year_reported), y = percent_overweight_or_obese, fill = sex)) +
-  geom_bar(stat='identity', position = "dodge") +
-  labs(title = "Gender distribution in the database",
-       x = "Year Reported",
-       y = "percentage of Overweight or Obese") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+sex_df %>% 
+  plot_ly(type = 'violin') %>% 
+  add_trace(x = ~year_reported[sex == 'FEMALE'],
+            y = ~percent_overweight_or_obese[sex == 'FEMALE'],
+            legendgroup = 'F', scalegroup = 'F', name = 'F',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("orange")) %>% 
+  add_trace(x = ~year_reported[sex == 'MALE'],
+             y = ~percent_overweight_or_obese[sex == 'MALE'],
+            legendgroup = 'M', scalegroup = 'M', name = 'M',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("blue")) %>% 
+  layout(yaxis = list(zeroline = F), violinmode = 'group') %>%
+  layout(xaxis = list(title = "Year reported"),
+         yaxis = list(title = "Percent overweight or obese"))
 ```
-
 
 
 ## Grade Level
 
 The graph below shows that students in middle/high school grade level tend to have higher percentage than the elementary students in overweight or obese category each year. There also seems to be an increase in the overweight or obese percentage for the middle or high school students while a decrease for the elementary students over years. 
+during datacleaning process find out there are outliers at 100 percent
 
 ```{r, echo=FALSE}
 grade_df = 
@@ -112,34 +108,56 @@ grade_df =
   filter(sex %in% "ALL") %>% 
   filter(grade_level %in% c("ELEMENTARY", "MIDDLE/HIGH")) %>% 
   filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
-  select(year_reported, percent_overweight_or_obese, grade_level) %>% 
-  pivot_wider(
-    names_from = "grade_level",
-    values_from = "percent_overweight_or_obese"
-  ) %>% 
-  unnest()
+  select(year_reported, percent_overweight_or_obese, grade_level) %>%
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+  #pivot_wider(
+    #names_from = "grade_level",
+    #values_from = "percent_overweight_or_obese"
+  #) %>% 
+  #unnest()
 
-grade_count = 
-  grade_df %>% 
-  group_by(year_reported) %>% 
-  drop_na() %>% 
-  summarize(
-    elementary = mean(ELEMENTARY),
-    middle_high = mean(`MIDDLE/HIGH`)) %>% 
-  pivot_longer(
-    elementary:middle_high,
-    names_to = "grade_level",
-    values_to = "percent_overweight_or_obese"
-  )
-  
-grade_count %>% 
-  ggplot(aes(x = as.factor(year_reported), y = percent_overweight_or_obese, fill = grade_level)) +
-  geom_bar(stat='identity', position = "dodge") +
-  labs(title = "Grade level distribution in the database",
-       x = "Year Reported",
-       y = "percentage of Overweight or Obese") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+grade_df %>% 
+  plot_ly(type = 'violin') %>% 
+  add_trace(x = ~year_reported[grade_level == 'ELEMENTARY'],
+            y = ~percent_overweight_or_obese[grade_level == 'ELEMENTARY'],
+            legendgroup = 'ELEMENTARY', scalegroup = 'ELEMENTARY', name = 'ELEMENTARY',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("orange")) %>% 
+  add_trace(x = ~year_reported[grade_level == 'MIDDLE/HIGH'],
+             y = ~percent_overweight_or_obese[grade_level == 'MIDDLE/HIGH'],
+            legendgroup = 'MIDDLE/HIGH', scalegroup = 'MIDDLE/HIGH', name = 'MIDDLE/HIGH',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("blue")) %>% 
+  layout(yaxis = list(zeroline = F), violinmode = 'group') %>%
+  layout(xaxis = list(title = "Year reported"),
+         yaxis = list(title = "Percent overweight or obese"))
 ```
+
+## Year
+during data cleaning find outliers
+
+```{r}
+year_df = 
+  original %>% 
+  select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
+  filter(sex %in% "ALL") %>% 
+  filter(grade_level == "DISTRICT TOTAL") %>% 
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
+  select(year_reported, percent_overweight_or_obese)
+
+year_df %>% 
+  plot_ly(
+    x = ~year_reported,
+    y = ~percent_overweight_or_obese,
+    split = ~year_reported,
+    type = 'violin',
+    box = list(visible = T), meanline = list(visible = T)
+  ) %>% 
+  layout(xaxis = list(title = "Year Reported"),
+         yaxis = list(title = "Percent obese or overweight",
+                      zeroline = F))
+```
+
 
 
 ## Economic Status
@@ -155,7 +173,7 @@ income = read_xlsx("./dataset/median_income.xlsx") %>%
 obesity = 
   original %>% 
   filter(sex %in% "ALL") %>% 
-  filter(!county == "STATEWIDE (EXCLUDING NYC)") %>% 
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
   filter(grade_level %in% "DISTRICT TOTAL") %>% 
   filter(!county == "N/A") %>% 
   select(county, percent_overweight_or_obese) %>% 
@@ -163,7 +181,8 @@ obesity =
   summarize(percent_overweight_or_obese = mean(percent_overweight_or_obese)) %>% 
   mutate(
     percent_overweight_or_obese = round(percent_overweight_or_obese, 3)
-  )
+  ) %>% 
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
 
 
 combine = 
@@ -177,7 +196,6 @@ combine %>%
           type = 'scatter', 
           mode = 'markers', 
           color = ~county, 
-          sizes = c(1, 10000), 
           marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
   layout(
     title = "Median income vs overweight or obese distribution", 
@@ -209,19 +227,19 @@ combine2 =
 
 
 combine2 %>% 
-  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nFood insecurity: (%)", food_insecurity_p)) %>% 
+  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nFood accessbility: (%)", food_insecurity_p)) %>% 
   plot_ly(x = ~percent_overweight_or_obese, y = ~food_insecurity_p, 
           text = ~text_label, 
           type = 'scatter', 
           mode = 'markers', 
           color = ~county, 
-          sizes = c(1, 10000), 
           marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
   layout(
     title = "Food insecurity vs overweight or obese distribution", 
-    yaxis = list(title = "Food insecurity (%)"),
+    yaxis = list(title = "Food accessibility (%)"),
     xaxis = list(title = "Overweight or obese percent (%)")
   )
+
 ```
 
 From the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 
