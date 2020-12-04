@@ -311,7 +311,28 @@ combine3 %>%
 ```{r}
 #cor(patient_df)
 
+final = 
+  original %>% 
+  mutate(
+    percent_healthy_weight = percent_healthy_weight * 100
+  ) %>% ## when importing data the percent healthy weight was distorted so i timed 100
+  select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
+  filter(sex == "MALE" | sex == "FEMALE") %>%
+  filter(grade_level == "ELEMENTARY" | grade_level == "MIDDLE/HIGH") %>% 
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
+  select(-region) %>% 
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
 
-#cor(combine4)
+combine4 = 
+  left_join(final, income, by = "county") %>% 
+  left_join(food_insecurity, by = "county") %>% 
+  left_join(race_df, by = "county") %>% 
+  select(year_reported:black)
+
+library(ggcorrplot)
+
+model.matrix(~0+., data=combine4) %>% 
+  cor(use = "pairwise.complete.obs") %>% 
+  ggcorrplot(show.diag = F, type="lower", lab=TRUE, lab_size=2)
 ```
 
