@@ -1,21 +1,25 @@
-name: "P8105 Final Project"
+name: "Student Weight Status in the New York State"
 output_dir: "."
 navbar:
   title: "Home"
   left:
     - text: "Project Report"
-      href: report.html
+      href: final_report.html
   right:
     - text: "Trend Graphs"
       href: trend_plot.html
-    - text: "Weigth Over Time Map"
-      href: https://jiayihelenzhou.shinyapps.io/ds_project/
-    - text: "Weight Over Time"
-      href: map_jyz.html
-    - text: "Descriptive Graphs"
-      href: raw_regression.html
-    - text: "Regression"
-      href: regression_xm.html
+    - text: "Exploratory Analyses"
+      menu:
+      - text: "Weigth Over Time Map"
+        href: https://jiayihelenzhou.shinyapps.io/ds_project/
+      - text: "Weight Status by County"
+        href: map_jyz.html
+    - text: "Formal Analyses"
+      menu:
+      - text: "Descriptive Graphs"
+        href: raw_regression.html
+      - text: "Regression"
+        href: regression_xm.html
     - icon: fa-github fa-lg
       href: https://github.com/YilinEXu/P8105_final_project.git
 

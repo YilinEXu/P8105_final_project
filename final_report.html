@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Final Report</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="final_report.html">Project Report</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="trend_plot.html">Trend Graphs</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Exploratory Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="https://jiayihelenzhou.shinyapps.io/ds_project/">Weigth Over Time Map</a>
+    </li>
+    <li>
+      <a href="map_jyz.html">Weight Status by County</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Formal Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="raw_regression.html">Descriptive Graphs</a>
+    </li>
+    <li>
+      <a href="regression_xm.html">Regression</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://github.com/YilinEXu/P8105_final_project.git">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Final Report</h1>
+
+</div>
+
+
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+<div id="motivation" class="section level2">
+<h2>Motivation</h2>
+<p>Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-olds, 18.4% among 6- to 11-year-olds, and 20.6% among 12- to 19-year-olds. <br> The harms of obesity in adolescents exhibit in both physical and psychological aspects. The expression of obesity in children and adolescents is often indicated by weight gain and having a large amount of fat deposition. The increase in body fat will result in increases in body burden and oxygen consumption, which explains why obese children consume more oxygen than people who maintain a healthy weight. Obesity also causes them to be heavy, slow, and unable to move. Many children and adolescents often have flat feet, knee flexion, lower limb flexion, spine, and intervertebral cartilage damage due to obesity. Obese children and adolescents with high cholesterol levels are also at the risk of having a compromised immune system. Some study also shows that obesity is a risk factor of depression. <br> Therefore, we conducted this study on the obesity situation of students in elementary and middle/high school from 2010 to 2019 to investigate the geographic and time pattern obesity distribution, as well as several potential risk factors that are related to obesity in students.</p>
+<p> </p>
+<div id="related-work" class="section level4">
+<h4><strong>Related Work</strong></h4>
+<ol style="list-style-type: decimal">
+<li>Obesity More Common Among Kids With Special Needs. Disability Scoop. Published December 7, 2011. Accessed December 2, 2020. <a href="https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/">Link.</a></li>
+<li>Must A, Curtin C, Hubbard K, Sikich L, Bedford J, Bandini L. Obesity Prevention for Children with Developmental Disabilities. Curr Obes Rep. 2014;3(2):156. <a href="doi:10.1007/s13679-014-0098-7" class="uri">doi:10.1007/s13679-014-0098-7</a>. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/">Link.</a></li>
+<li>Hu EY. Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction. Prev Chronic Dis. 2018;15. <a href="doi:10.5888/pcd15.180122" class="uri">doi:10.5888/pcd15.180122</a>. <a href="https://www.cdc.gov/pcd/issues/2018/18_0122.htm">Link.</a></li>
+<li>High School Obesity Rates. The State of Childhood Obesity. Accessed December 2, 2020. <a href="https://stateofchildhoodobesity.org/high-school-obesity/">Link.</a></li>
+</ol>
+<p> </p>
+</div>
+</div>
+<div id="questions" class="section level2">
+<h2>Questions</h2>
+<p>We intend to answer the following questions during the process of our studying:</p>
+<ol style="list-style-type: decimal">
+<li>How student weight changes in New York state by location?</li>
+<li>What is the relationship between the student???s weight and school year?</li>
+<li>Is the student???s obesity status related to their later obesity status? How?</li>
+<li>The association between student weight and their race and socioeconomic status.</li>
+<li>How has the student’s weight changed over time in New York?</li>
+</ol>
+<p> </p>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<div id="data-sources" class="section level4">
+<h4><em>Data Sources</em></h4>
+<ul>
+<li>Main data source:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><a href="https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus">Student Weight Status</a></li>
+<li><a href="https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&amp;p=it&amp;ind_id=Ng100">CHIRS Dashboard</a></li>
+<li><a href="https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&amp;p=it&amp;ind_id=Ng123">Food insecurity</a></li>
+<li><a href="https://labor.ny.gov/stats/nys/statewide-population-data.shtm">Statewide and County Population Data</a></li>
+</ol>
+<ul>
+<li>Geographic data for mapping:</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><a href="https://data.healthcare.gov/dataset/Geocodes-USA-with-Counties/52wv-g36k">Geocodes USA with Counties</a></li>
+<li><a href="https://data.ny.gov/Government-Finance/New-York-State-ZIP-Codes-County-FIPS-Cross-Referen/juva-r6g2">FIPS Cross-Reference</a></li>
+<li><a href="http://gis.ny.gov/gisdata/inventories/details.cfm?DSID=927">NYS Boundaries</a></li>
+</ol>
+<p> </p>
+</div>
+<div id="variables-of-interest" class="section level4">
+<h4><em>Variables of interest</em></h4>
+<p><code>county</code>: County of location for each school district. <code>year_reported</code>: 2-year time period encompassing years in which information was collected from all school districts in New York State. Half of all school districts are requested to send in SWSCR data annually. Two years are then combined to provide information on the whole state. <code>number_overweight</code>&amp;<code>percent_overweight</code>:Number/ percent of students in the 85th to 94th percentiles. <code>number_obese</code>&amp;<code>percent_obese</code>:Number/percent of students in the 95th+ percentiles. <code>number_oevrweight_or_obese</code>&amp;<code>percent_overweight_or_obese</code>:Number/ percent of students in the 85th+ percentiles. <code>number_healthy_weight</code>&amp;<code>percent_healthy_weight</code>:Number/ percent of students are neither overweight nor obese. Students who maintained a healthy weight. <code>grade_level</code>: Grade category–Elementary (grades Pre-K, K, 2 &amp; 4); Middle/high (grades 7 &amp; 10); or District total (grades Pre-K, K, 2, 4, 7 &amp; 10)) <code>sex</code>: Male, Female, or Total.</p>
+<p> </p>
+</div>
+<div id="data-cleaning" class="section level3">
+<h3><em>Data Cleaning</em></h3>
+<div id="mapping" class="section level4">
+<h4><strong>Mapping</strong></h4>
+<p>For the data cleaning in the mapping section, we first imported the student weight status dataset, which includes most of the weight-related variables that we hope to analyze. Since we hope to map the student weight status by county first, the most convenient way to code each county by their unique FIPS code. Therefore, we imported the county FIPS code cross-reference dataset and only selected to retain the <code>county</code> and <code>fips</code> variable in the dataset. By using the <code>distinct</code> function, a clean dataset with 58 NY counties and their corresponding FIPS code was obtained. <br> Next, the student weight status dataset was combined with the FIPS code dataset. The average percentage of overweight or obesity and the average percentage of healthy weight was mapped was calculated, and the result was again combined to the fips code map. To have the desired map colored by the entire county, we then import a NY state counties shapefile and combined it to the previously cleaned dataset with weight status and FIPS code. This resulting dataset was used for the side-by-side choropleth map, which is not sensitive to time but can show the student weight change by county.</p>
+<pre class="r"><code>library(rgdal)
+library(maps)
+library(devtools)
+library(leaflet)
+library(BAMMtools)
+library(spdep)
+library(maptools)
+library(leafsync)
+library(gganimate)
+
+original = tibble(
+  read.csv(&quot;./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv&quot;)
+) %&gt;%
+  janitor::clean_names() %&gt;%
+  select(-location_code, -region, -area_name)  # the only location information we need is county name
+# FIPS code:https://data.ny.gov/Government-Finance/New-York-State-ZIP-Codes-County-FIPS-Cross-Referen/juva-r6g2
+fips_code = tibble(
+  read.csv(&quot;./map_data_jyz/New_York_State_ZIP_Codes-County_FIPS_Cross-Reference.csv&quot;)
+) %&gt;%
+  janitor::clean_names() %&gt;% 
+  rename(&quot;county&quot; = county_name, &quot;fips&quot; = county_fips) %&gt;% 
+  select(county, fips) %&gt;% # only information we need is county name and geolocation
+  distinct() %&gt;% 
+  mutate(county = toupper(county)) # to swith county name to uppercase
+weight_df = 
+  left_join(original, fips_code, by = &quot;county&quot;) %&gt;% 
+  filter(county != &quot;STATEWIDE (EXCLUDING NYC)&quot;)
+  
+average_percent_oo = 
+  weight_df %&gt;% 
+  group_by(county) %&gt;% 
+  drop_na(percent_overweight_or_obese) %&gt;%
+  summarize(percent_oo = mean(percent_overweight_or_obese), .groups = &quot;keep&quot;)
+
+average_percent_healthy = 
+  weight_df %&gt;% 
+  group_by(county) %&gt;% 
+  drop_na(percent_healthy_weight) %&gt;%
+  summarize(percent_healthy = mean(percent_healthy_weight), .groups = &quot;keep&quot;) %&gt;%
+  mutate(percent_healthy = percent_healthy*100)
+
+#tidy dataframe contain only two average percentage and the mapping info
+sum_df = 
+  left_join(average_percent_oo,average_percent_healthy, by = &quot;county&quot;) %&gt;% 
+  left_join(fips_code, by = &quot;county&quot;) %&gt;% 
+  mutate(fips_code = as.character(fips))
+#import shp file:http://gis.ny.gov/gisdata/inventories/details.cfm?DSID=927
+fips_map = readOGR(dsn = &quot;./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp&quot;, encoding = &quot;UTF-8&quot;)</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;/Users/zhoujiayi/Documents/Columbia Data Science/Final/Final/P8105_final_project/map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp&quot;, layer: &quot;Counties&quot;
+## with 62 features
+## It has 17 fields
+## Integer64 fields read as strings:  POP1990 POP2000 POP2010 POP2020</code></pre>
+<pre class="r"><code>fips_map@data&lt;- left_join(fips_map@data, sum_df, by = c(&quot;FIPS_CODE&quot; = &quot;fips_code&quot;))
+
+#assign 0 to NAs
+fips_map$percent_healthy[is.na(fips_map$percent_healthy)] &lt;- 0
+fips_map$percent_oo[is.na(fips_map$percent_oo)] &lt;- 0</code></pre>
+</div>
+<div id="trend-plot" class="section level4">
+<h4><strong>Trend Plot:</strong></h4>
+</div>
+<div id="regression-analysis" class="section level4">
+<h4><strong>Regression analysis:</strong></h4>
+<p> </p>
+<p>##Exploratory analysis: <em>Part 1:how student weight status changes in New York by county? </em>Part 2:how does student weight in each county change over the 9-year-period?</p>
+</div>
+</div>
+<div id="part-1" class="section level3">
+<h3><em>Part 1</em></h3>
+<ol style="list-style-type: decimal">
+<li>Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period: ???the average percentage of students who were overweight or obese??? and ???the average percentage of students who maintained a healthy weight???. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why <code>HAMILTON</code> have both high average percentages of overweight/obese and healthy students, we found that the student weight status in <code>HAMILTON</code> changed considerably over the 9-year-period. As time goes by, students’ weight in <code>HAMILTON</code> exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, <code>HAMILTON</code>’s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.</li>
+</ol>
+<pre class="r"><code>fips_map = readOGR(dsn = &quot;./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp&quot;, encoding = &quot;UTF-8&quot;)
+
+fips_map@data&lt;- left_join(fips_map@data, sum_df, by = c(&quot;FIPS_CODE&quot; = &quot;fips_code&quot;))
+
+#assign 0 to NAs
+fips_map$percent_healthy[is.na(fips_map$percent_healthy)] &lt;- 0
+fips_map$percent_oo[is.na(fips_map$percent_oo)] &lt;- 0
+# CRS setting
+fips_map_crs = spTransform(fips_map, CRS(&quot;+init=epsg:4326&quot;))
+# export the json file
+writeOGR(fips_map_crs, &#39;./map_data_jyz/fips_map_geojson&#39;, layer = &#39;fips_map&#39;, driver = &#39;GeoJSON&#39;, overwrite_layer = TRUE)
+# format of the label that pops up for each polygon
+label_popup_oo = paste0(
+  &quot;&lt;strong&gt;FIPS code: &lt;/strong&gt;&quot;,
+  fips_map$FIPS_CODE,
+  &quot;&lt;br&gt;&lt;strong&gt;County Name: &lt;/strong&gt;&quot;,
+  fips_map$NAME,
+  &quot;&lt;br&gt;&lt;strong&gt;Percent of Overweight or Obese: &lt;/strong&gt;&quot;,
+  fips_map$percent_oo
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$percent_oo, 5)
+
+# set bins
+percent_oo_bins &lt;- c(26,30,34,38,43)
+
+# set pals
+percent_oo_pal &lt;- colorBin(&#39;Reds&#39;, bins = percent_oo_bins, na.color = &#39;#d9d9d9&#39;)
+# format of the label that pops up for each polygon
+label_popup_healthy = paste0(
+  &quot;&lt;strong&gt;FIPS code: &lt;/strong&gt;&quot;,
+  fips_map$FIPS_CODE,
+  &quot;&lt;br&gt;&lt;strong&gt;County Name: &lt;/strong&gt;&quot;,
+  fips_map$NAME,
+  &quot;&lt;br&gt;&lt;strong&gt;Percent of Healthy Weight: &lt;/strong&gt;&quot;,
+  fips_map$percent_healthy
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$percent_healthy, 5)
+
+# set bins
+percent_healthy_bins &lt;- c(55,60,65,70,81)
+
+# set pals
+percent_healthy_pal &lt;- colorBin(&#39;Blues&#39;, bins = percent_healthy_bins, na.color = &#39;#d9d9d9&#39;)
+# choropleth overweight/obese map
+oo_map = leaflet::leaflet(data = fips_map_crs) %&gt;% 
+  addProviderTiles(&#39;CartoDB.Positron&#39;) %&gt;% 
+  addPolygons(fillColor = ~percent_oo_pal(percent_oo),
+              fillOpacity = 0.8,
+              color = &quot;#BDBDC3&quot;,
+              weight = 1,
+              popup = label_popup_oo,
+              highlightOptions = highlightOptions(color = &quot;black&quot;, weight = 2,
+      bringToFront = TRUE)) %&gt;% 
+  addLegend(&#39;bottomleft&#39;,
+            pal = percent_oo_pal,
+            values = ~percent_oo,
+            title = &quot;The Average Percentage of Students Who were Overweight/Obese (2010-2019)&quot;,
+            opacity = 1)
+# choropleth healthy weight map
+healthy_map = leaflet::leaflet(data = fips_map_crs) %&gt;% 
+  addProviderTiles(&#39;CartoDB.Positron&#39;) %&gt;% 
+  addPolygons(fillColor = ~percent_healthy_pal(percent_healthy),
+              fillOpacity = 0.8,
+              color = &quot;#BDBDC3&quot;,
+              weight = 1,
+              popup = label_popup_healthy,
+              highlightOptions = highlightOptions(color = &quot;black&quot;, weight = 2,
+      bringToFront = TRUE)) %&gt;% 
+  addLegend(&#39;bottomleft&#39;,
+            pal = percent_healthy_pal,
+            values = ~percent_healthy,
+            title = &quot;The Average Percentage of Students Who Maintained Healthy Weight (2010-2019)&quot;,
+            opacity = 1)</code></pre>
+</div>
+<div id="part-2" class="section level3">
+<h3><em>Part 2</em></h3>
+<ol start="2" style="list-style-type: decimal">
+<li>Interactive time map: Since the choropleth maps used the average percentage, the changing trend of student weight by year was neglected. Both the average percent of overweight/obese and healthy students were large for <code>HAMILTON</code>. When analyzing all connties in the New York state, even though students’ weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration. Therefore, we created a interactive time map<a href="https://jiayihelenzhou.shinyapps.io/ds_project/">Weight Over Time Map</a>. This interactive map aims to explore how weight change in each county over the 9-year-period. We found that not every county has a clear increasing or decreasing trend as Hamilton does. Students who were obese at the beginning of this study may have maintained to be obese in the selected counties. For more changing trending in weight status, please refer to <a href="trend_plot.html">Trend Graphs</a>.</li>
+</ol>
+<pre class="r"><code>library(flexdashboard)
+library(shiny)
+library(readxl)
+library(tidyverse)
+library(plotly)
+library(tidyverse)
+library(readxl)
+library(plotly)
+library(rgdal)
+library(maps)
+library(devtools)
+library(leaflet)
+library(maptools)
+library(BAMMtools)
+library(patchwork)
+library(spdep)
+
+year_reported = ranking_df %&gt;% ungroup() %&gt;% distinct(year_reported) %&gt;% pull()
+
+# selectInput widget
+selectInput(
+  &quot;year_choice&quot;, 
+  label = h3(&quot;Select Year Range&quot;),
+  choices = year_reported, selected = &quot;2012-2014&quot;)
+
+renderLeaflet({
+  
+time_map = 
+  time_map_df %&gt;%
+    filter(
+      year_reported == input[[&quot;year_choice&quot;]]
+    ) 
+
+fips_map = readOGR(dsn = &quot;./map_data_jyz/NYS_Civil_Boundaries_SHP&quot;, &quot;Counties&quot;)
+
+fips_map@data = left_join(fips_map@data, time_map, by = c(&quot;FIPS_CODE&quot; = &quot;fips&quot;))
+
+# CRS setting
+fips_map_crs = spTransform(fips_map, CRS(&quot;+init=epsg:4326&quot;))
+# export the json file
+writeOGR(fips_map_crs, &#39;./map_data_jyz/fips_time_map_geojson&#39;, layer = &#39;fips_map&#39;, driver = &#39;GeoJSON&#39;, overwrite_layer = TRUE)
+
+# format of the label that pops up for each polygon
+label_popup_oo = paste0(
+  &quot;&lt;strong&gt;FIPS code: &lt;/strong&gt;&quot;,
+  fips_map$FIPS_CODE,
+  &quot;&lt;br&gt;&lt;strong&gt;County Name: &lt;/strong&gt;&quot;,
+  fips_map$NAME,
+  &quot;&lt;br&gt;&lt;strong&gt;Percent of Overweight or Obese: &lt;/strong&gt;&quot;,
+  fips_map$oo
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$oo, 5)
+
+# set bins
+percent_oo_bins = c(26,30,34,38,43)
+
+# set pals
+percent_oo_pal = colorBin(&#39;Reds&#39;, bins = percent_oo_bins, na.color = &#39;#d9d9d9&#39;)
+
+oo_map = leaflet::leaflet(data = fips_map_crs) %&gt;% 
+  addProviderTiles(&#39;CartoDB.Positron&#39;) %&gt;% 
+  addPolygons(fillColor = ~percent_oo_pal(oo),
+              fillOpacity = 0.8,
+              color = &quot;#BDBDC3&quot;,
+              weight = 1,
+              popup = label_popup_oo,
+              highlightOptions = highlightOptions(color = &quot;black&quot;, weight = 2,
+      bringToFront = TRUE)) %&gt;% 
+  addLegend(&#39;bottomleft&#39;,
+            pal = percent_oo_pal,
+            values = ~oo,
+            title = &quot;The Average Percentage of Students Who were Overweight/Obese&quot;,
+            opacity = 1)
+  })
+
+year_reported = ranking_df %&gt;% ungroup() %&gt;% distinct(year_reported) %&gt;% pull()
+
+# selectInput widget
+selectInput(
+  &quot;year_choice&quot;, 
+  label = h3(&quot;Select Year Range&quot;),
+  choices = year_reported, selected = &quot;2010-2011&quot;)
+
+renderPlotly({ 
+
+ranking = 
+  ranking_df %&gt;%
+    filter(
+      year_reported == input[[&quot;year_choice&quot;]]
+    ) 
+
+ranking_hw =
+  ranking%&gt;% 
+  ungroup() %&gt;% 
+  top_n(5, hw) %&gt;%
+  plot_ly(x = ~hw, y = ~county, type = &#39;bar&#39;, orientation = &#39;h&#39;,
+          width = 1000, height = 800 ) %&gt;%
+  layout(title = &quot;&quot;,
+         xaxis = list(title = &quot;Top 10 Healthiest Countie&quot;),
+         yaxis = list(title = &quot;&quot;),
+         showlegend = FALSE)
+
+ranking_oo =
+  ranking%&gt;% 
+  ungroup() %&gt;% 
+  top_n(5, oo) %&gt;%
+  plot_ly(x = ~oo, y = ~county, type = &#39;bar&#39;, orientation = &#39;h&#39;,
+          width = 1000, height = 800 ) %&gt;%
+  layout(title = &quot;&quot;,
+         xaxis = list(title = &quot;Top 10 Overweight/Obese Countie&quot;),
+         yaxis = list(title = &quot;&quot;),
+         showlegend = FALSE)
+
+subplot(ranking_hw,ranking_oo,
+        nrows = 1, widths = c(0.5, 0.5),
+        margin = c(0.1, 0.2, 0.1, 0.1),
+        shareX = FALSE, shareY = FALSE,
+        titleX = TRUE, titleY = FALSE)
+
+})</code></pre>
+</div>
+</div>
+<div id="formal-analysis" class="section level2">
+<h2>Formal Analysis:</h2>
+<div id="descriptive-graphs" class="section level3">
+<h3><em>Descriptive Graphs:</em></h3>
+</div>
+<div id="regression" class="section level3">
+<h3><em>Regression:</em></h3>
+</div>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
+</div>
+
+<html>
+  
+&nbsp;
+<hr />
+
+<small>
+  
+<p style="text-align: center;">
+  Elaine Xu (yx2640), Rio Yan(xy2476), Jiayi Zhou(jz3336), Ximeng Zhao(xz3032)
+</p>
+
+<p style="text-align: center;">
+Visualizations and analyses performed using <a href="https://www.r-project.org/about.html">R</a> (v3.6.1) and <a href="https://rstudio.com">RStudio</a> (v1.2.1335). <br>
+
+Additional interactivity added using <a href="https://plot.ly/">plotly</a> (v4.9.0) and <a href="https://shiny.rstudio.com/">Shiny</a> (v1.3.2). <br>
+
+<a href="https://github.com/YilinEXu/P8105_final_project.git">Click here</a> to see details of this project. 
+
+<br>
+
+2020
+</p>
+
+</small>
+
+</html>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
