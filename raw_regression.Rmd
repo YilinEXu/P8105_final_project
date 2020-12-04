@@ -1,5 +1,5 @@
 ---
-title: "Raw Regression"
+title: "Descriptive Graphs"
 output: html_document
 ---
 
@@ -24,7 +24,9 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate in teenagers the most. 
+We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate in teenagers the most.
+
+&nbsp;
 
 # Data
 
@@ -34,7 +36,7 @@ We also combined three extra datasets to examine the factors of economic status 
 Food access ability dataset can be accessed [here](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng123).
 Race dataset can be accessed [here](https://labor.ny.gov/stats/nys/statewide-population-data.shtm).
 
-
+&nbsp;
 
 Basic variables that we are interested in:
 
@@ -46,8 +48,11 @@ Basic variables that we are interested in:
 - **Race**
 
 
+&nbsp;
 
 # Exploratory data analysis
+
+&nbsp;
 
 ## Sex
 
@@ -72,11 +77,7 @@ sex_df =
   filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
   select(year_reported, percent_overweight_or_obese, sex) %>% 
   filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
-  #pivot_wider(
-    #names_from = "sex",
-    #values_from = "percent_overweight_or_obese"
-  #) %>% 
-  #unnest()
+
 
 sex_df %>% 
   plot_ly(type = 'violin') %>% 
@@ -95,6 +96,7 @@ sex_df %>%
          yaxis = list(title = "Percent overweight or obese"))
 ```
 
+&nbsp;
 
 ## Grade Level
 
@@ -110,11 +112,6 @@ grade_df =
   filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
   select(year_reported, percent_overweight_or_obese, grade_level) %>%
   filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
-  #pivot_wider(
-    #names_from = "grade_level",
-    #values_from = "percent_overweight_or_obese"
-  #) %>% 
-  #unnest()
 
 grade_df %>% 
   plot_ly(type = 'violin') %>% 
@@ -132,8 +129,10 @@ grade_df %>%
   layout(xaxis = list(title = "Year reported"),
          yaxis = list(title = "Percent overweight or obese"))
 ```
+&nbsp;
 
 ## Year
+
 during data cleaning find outliers
 
 ```{r,echo=FALSE,warning=FALSE}
@@ -159,6 +158,7 @@ year_df %>%
 ```
 
 
+&nbsp;
 
 ## Economic Status
 
@@ -207,6 +207,7 @@ combine %>%
 
 From the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
 
+&nbsp;
 
 ## Food Access Ability
 
@@ -244,6 +245,7 @@ combine2 %>%
 
 From the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 
 
+&nbsp;
 
 ## Race
 
@@ -286,10 +288,13 @@ combine3 =
     values_from = "percent"
   ) %>% 
   mutate(minorities = factor(minorities)) %>% 
-  arrange(minorities)
+  arrange(minorities) %>% 
+  drop_na()
+
+ay = list(tickfont = list(color = "black"), overlaying = "y", side = "right", title = "Race%")
 
 combine3 %>% 
-  plot_ly(x = ~county, y = ~white, name = 'white', type = 'bar') %>% 
+  plot_ly(x = ~county, y = ~white, name = 'white', type = 'bar') %>%
   add_trace(y = ~black, name = 'black', type = 'bar') %>%
   add_trace(y = ~native, name = 'native', type = 'bar') %>% 
   add_trace(y = ~asian, name = 'asian', type = 'bar') %>% 
@@ -300,18 +305,38 @@ combine3 %>%
     xaxis = list(title = "County",
                  categoryorder = "array",
                  categoryarray = ~minorities),
-    yaxis = list(title = "Obese and overweigth percent(%)")
-  )
+    yaxis = list(title = "Obese and overweigth percent(%)"),
+    yaxis2 = ay)
 ```
 
 
+&nbsp;
 
 ## Correlation graph
 
-```{r}
-#cor(patient_df)
+```{r, echo=FALSE}
+final = 
+  original %>% 
+  mutate(
+    percent_healthy_weight = percent_healthy_weight * 100
+  ) %>% ## when importing data the percent healthy weight was distorted so i timed 100
+  select(county, region, year_reported, percent_overweight_or_obese, grade_level, sex) %>% 
+  filter(sex == "MALE" | sex == "FEMALE") %>%
+  filter(grade_level == "ELEMENTARY" | grade_level == "MIDDLE/HIGH") %>% 
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
+  select(-region) %>% 
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
 
+combine4 = 
+  left_join(final, income, by = "county") %>% 
+  left_join(food_insecurity, by = "county") %>% 
+  left_join(race_df, by = "county") %>% 
+  select(year_reported:black)
 
-#cor(combine4)
+library(ggcorrplot)
+
+model.matrix(~0+., data=combine4) %>% 
+  cor(use = "pairwise.complete.obs") %>% 
+  ggcorrplot(show.diag = F, type="lower", lab=TRUE, lab_size=2)
 ```
 

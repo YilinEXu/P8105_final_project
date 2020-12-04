@@ -1,0 +1,412 @@
+---
+title: "Final Report"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE)
+library(tidyverse)
+library(readxl)
+library(plotly)
+```
+
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
+## Motivation
+
+Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-olds, 18.4% among 6- to 11-year-olds, and 20.6% among 12- to 19-year-olds.
+<br>
+The harms of obesity in adolescents exhibit in both physical and psychological aspects. The expression of obesity in children and adolescents is often indicated by weight gain and having a large amount of fat deposition. The increase in body fat will result in increases in body burden and oxygen consumption, which explains why obese children consume more oxygen than people who maintain a healthy weight. Obesity also causes them to be heavy, slow, and unable to move. Many children and adolescents often have flat feet, knee flexion, lower limb flexion, spine, and intervertebral cartilage damage due to obesity. Obese children and adolescents with high cholesterol levels are also at the risk of having a compromised immune system. Some study also shows that obesity is a risk factor of depression.
+<br>
+Therefore, we conducted this study on the obesity situation of students in elementary and middle/high school from 2010 to 2019 to investigate the geographic and time pattern obesity distribution, as well as several potential risk factors that are related to obesity in students.
+
+&nbsp;
+
+#### **Related Work**
+
+1. 	Obesity More Common Among Kids With Special Needs. Disability Scoop. Published December 7, 2011.Accessed December 2, 2020. [Link.](https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/)
+2. 	Must A, Curtin C, Hubbard K, Sikich L, Bedford J, Bandini L. Obesity Prevention for Children with Developmental Disabilities. Curr Obes Rep. 2014;3(2):156.doi:10.1007/s13679-014-0098-7. [Link.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/)
+3. 	Hu EY. Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction. Prev Chronic Dis. 2018;15.doi:10.5888/pcd15.180122. [Link.](https://www.cdc.gov/pcd/issues/2018/18_0122.htm)
+4. 	High School Obesity Rates. The State of Childhood Obesity.Accessed December 2, 2020.  [Link.](https://stateofchildhoodobesity.org/high-school-obesity/)
+
+
+&nbsp;
+
+## Questions
+We intend to answer the following questions during the process of our studying:
+
+1. How student weight changes in New York state by location?
+2. What is the relationship between the student???s weight and school year?
+3. Is the student???s obesity status related to their later obesity status? How?
+4. The association between student weight and their race and socioeconomic status.
+5. How has the student's weight changed over time in New York?
+
+&nbsp;
+
+## Data
+
+#### *Data Sources*
+
+* Main data source: 
+1. [Student Weight Status](https://health.data.ny.gov/Health/Student-Weight-Status-Category-Reporting-Results-B/es3k-2aus) 
+2. [CHIRS Dashboard](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng100)
+3. [Food insecurity](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng123)
+4. [Statewide and County Population Data](https://labor.ny.gov/stats/nys/statewide-population-data.shtm)
+
+* Geographic data for mapping:
+1. [Geocodes USA with Counties](https://data.healthcare.gov/dataset/Geocodes-USA-with-Counties/52wv-g36k)
+2. [FIPS Cross-Reference](https://data.ny.gov/Government-Finance/New-York-State-ZIP-Codes-County-FIPS-Cross-Referen/juva-r6g2)
+3. [NYS Boundaries](http://gis.ny.gov/gisdata/inventories/details.cfm?DSID=927)
+
+&nbsp;
+
+#### *Variables of interest*
+
+`county`:	County of location for each school district.
+`year_reported`:	2-year time period encompassing years in which information was collected from all school districts in New York State. Half of all school districts are requested to send in SWSCR data annually. Two years are then combined to provide information on the whole state.
+`number_overweight`&`percent_overweight`:Number/ percent of students in the 85th to 94th percentiles.
+`number_obese`&`percent_obese`:Number/percent of students in the 95th+ percentiles.
+`number_oevrweight_or_obese`&`percent_overweight_or_obese`:Number/ percent of students in the 85th+ percentiles.
+`number_healthy_weight`&`percent_healthy_weight`:Number/ percent of students are neither overweight nor obese. Students who maintained a healthy weight.
+`grade_level`:	Grade category--Elementary (grades Pre-K, K, 2 & 4); Middle/high (grades 7 & 10); or District total (grades Pre-K, K, 2, 4, 7 & 10))
+`sex`:	Male, Female, or Total.
+
+&nbsp;
+
+### *Data Cleaning*
+
+#### **Mapping**
+For the data cleaning in the mapping section, we first imported the student weight status dataset, which includes most of the weight-related variables that we hope to analyze. Since we hope to map the student weight status by county first, the most convenient way to code each county by their unique FIPS code. Therefore, we imported the county FIPS code cross-reference dataset and only selected to retain the `county` and `fips` variable in the dataset. By using the `distinct` function, a clean dataset with 58 NY counties and their corresponding FIPS code was obtained. 
+<br>
+Next, the student weight status dataset was combined with the FIPS code dataset. The average percentage of overweight or obesity and the average percentage of healthy weight was mapped was calculated, and the result was again combined to the fips code map. To have the desired map colored by the entire county, we then import a NY state counties shapefile and combined it to the previously cleaned dataset with weight status and FIPS code. This resulting dataset was used for the side-by-side choropleth map, which is not sensitive to time but can show the student weight change by county.
+
+```{r, eval=FALSE}
+library(rgdal)
+library(maps)
+library(devtools)
+library(leaflet)
+library(BAMMtools)
+library(spdep)
+library(maptools)
+library(leafsync)
+library(gganimate)
+
+original = tibble(
+  read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
+) %>%
+  janitor::clean_names() %>%
+  select(-location_code, -region, -area_name)  # the only location information we need is county name
+# FIPS code:https://data.ny.gov/Government-Finance/New-York-State-ZIP-Codes-County-FIPS-Cross-Referen/juva-r6g2
+fips_code = tibble(
+  read.csv("./map_data_jyz/New_York_State_ZIP_Codes-County_FIPS_Cross-Reference.csv")
+) %>%
+  janitor::clean_names() %>% 
+  rename("county" = county_name, "fips" = county_fips) %>% 
+  select(county, fips) %>% # only information we need is county name and geolocation
+  distinct() %>% 
+  mutate(county = toupper(county)) # to swith county name to uppercase
+weight_df = 
+  left_join(original, fips_code, by = "county") %>% 
+  filter(county != "STATEWIDE (EXCLUDING NYC)")
+  
+average_percent_oo = 
+  weight_df %>% 
+  group_by(county) %>% 
+  drop_na(percent_overweight_or_obese) %>%
+  summarize(percent_oo = mean(percent_overweight_or_obese), .groups = "keep")
+
+average_percent_healthy = 
+  weight_df %>% 
+  group_by(county) %>% 
+  drop_na(percent_healthy_weight) %>%
+  summarize(percent_healthy = mean(percent_healthy_weight), .groups = "keep") %>%
+  mutate(percent_healthy = percent_healthy*100)
+
+#tidy dataframe contain only two average percentage and the mapping info
+sum_df = 
+  left_join(average_percent_oo,average_percent_healthy, by = "county") %>% 
+  left_join(fips_code, by = "county") %>% 
+  mutate(fips_code = as.character(fips))
+#import shp file:http://gis.ny.gov/gisdata/inventories/details.cfm?DSID=927
+fips_map = readOGR(dsn = "./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp", encoding = "UTF-8")
+
+fips_map@data<- left_join(fips_map@data, sum_df, by = c("FIPS_CODE" = "fips_code"))
+
+#assign 0 to NAs
+fips_map$percent_healthy[is.na(fips_map$percent_healthy)] <- 0
+fips_map$percent_oo[is.na(fips_map$percent_oo)] <- 0
+```
+
+#### **Trend Plot:**
+
+```{r, warning = FALSE}
+
+```
+
+#### **Regression analysis:**
+
+```{r, message = FALSE, warning = FALSE}
+
+
+```
+
+&nbsp;
+
+## Exploratory analysis:
+
+### *Mapping and Visualization:*
+* Part 1:how student weight status changes in New York by county?
+* Part 2:how does student weight in each county change over the 9-year-period?
+
+#### **Part 1**
+1. Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period: ???the average percentage of students who were overweight or obese??? and ???the average percentage of students who maintained a healthy weight???. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why `HAMILTON` have both high average percentages of overweight/obese and healthy students, we found that the student weight status in `HAMILTON` changed considerably over the 9-year-period. As time goes by, students' weight in `HAMILTON` exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, `HAMILTON`'s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.
+```{r map, eval=FALSE, message=FALSE}
+fips_map = readOGR(dsn = "./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp", encoding = "UTF-8")
+
+fips_map@data<- left_join(fips_map@data, sum_df, by = c("FIPS_CODE" = "fips_code"))
+
+#assign 0 to NAs
+fips_map$percent_healthy[is.na(fips_map$percent_healthy)] <- 0
+fips_map$percent_oo[is.na(fips_map$percent_oo)] <- 0
+# CRS setting
+fips_map_crs = spTransform(fips_map, CRS("+init=epsg:4326"))
+# export the json file
+writeOGR(fips_map_crs, './map_data_jyz/fips_map_geojson', layer = 'fips_map', driver = 'GeoJSON', overwrite_layer = TRUE)
+# format of the label that pops up for each polygon
+label_popup_oo = paste0(
+  "<strong>FIPS code: </strong>",
+  fips_map$FIPS_CODE,
+  "<br><strong>County Name: </strong>",
+  fips_map$NAME,
+  "<br><strong>Percent of Overweight or Obese: </strong>",
+  fips_map$percent_oo
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$percent_oo, 5)
+
+# set bins
+percent_oo_bins <- c(26,30,34,38,43)
+
+# set pals
+percent_oo_pal <- colorBin('Reds', bins = percent_oo_bins, na.color = '#d9d9d9')
+# format of the label that pops up for each polygon
+label_popup_healthy = paste0(
+  "<strong>FIPS code: </strong>",
+  fips_map$FIPS_CODE,
+  "<br><strong>County Name: </strong>",
+  fips_map$NAME,
+  "<br><strong>Percent of Healthy Weight: </strong>",
+  fips_map$percent_healthy
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$percent_healthy, 5)
+
+# set bins
+percent_healthy_bins <- c(55,60,65,70,81)
+
+# set pals
+percent_healthy_pal <- colorBin('Blues', bins = percent_healthy_bins, na.color = '#d9d9d9')
+# choropleth overweight/obese map
+oo_map = leaflet::leaflet(data = fips_map_crs) %>% 
+  addProviderTiles('CartoDB.Positron') %>% 
+  addPolygons(fillColor = ~percent_oo_pal(percent_oo),
+              fillOpacity = 0.8,
+              color = "#BDBDC3",
+              weight = 1,
+              popup = label_popup_oo,
+              highlightOptions = highlightOptions(color = "black", weight = 2,
+      bringToFront = TRUE)) %>% 
+  addLegend('bottomleft',
+            pal = percent_oo_pal,
+            values = ~percent_oo,
+            title = "The Average Percentage of Students Who were Overweight/Obese (2010-2019)",
+            opacity = 1)
+# choropleth healthy weight map
+healthy_map = leaflet::leaflet(data = fips_map_crs) %>% 
+  addProviderTiles('CartoDB.Positron') %>% 
+  addPolygons(fillColor = ~percent_healthy_pal(percent_healthy),
+              fillOpacity = 0.8,
+              color = "#BDBDC3",
+              weight = 1,
+              popup = label_popup_healthy,
+              highlightOptions = highlightOptions(color = "black", weight = 2,
+      bringToFront = TRUE)) %>% 
+  addLegend('bottomleft',
+            pal = percent_healthy_pal,
+            values = ~percent_healthy,
+            title = "The Average Percentage of Students Who Maintained Healthy Weight (2010-2019)",
+            opacity = 1)
+```
+
+
+#### **Part 2**
+2. Interactive time map: Since the choropleth maps used the average percentage, the changing trend of student weight by year was neglected. Both the average percent of overweight/obese and healthy students were large for `HAMILTON`. When analyzing all connties in the New York state, even though students' weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration. Therefore, we created a interactive time map[Weight Over Time Map](https://jiayihelenzhou.shinyapps.io/ds_project/). This interactive map aims to explore how weight change in each county over the 9-year-period. We found that not every county has a clear increasing or decreasing trend as Hamilton does. Students who were obese at the beginning of this study may have maintained to be obese in the selected counties. For more changing trending in weight status, please refer to [Trend Graphs](trend_plot.html).
+
+```{r shiny_app, eval=FALSE, message=FALSE}
+library(flexdashboard)
+library(shiny)
+library(readxl)
+library(tidyverse)
+library(plotly)
+library(tidyverse)
+library(readxl)
+library(plotly)
+library(rgdal)
+library(maps)
+library(devtools)
+library(leaflet)
+library(maptools)
+library(BAMMtools)
+library(patchwork)
+library(spdep)
+
+year_reported = ranking_df %>% ungroup() %>% distinct(year_reported) %>% pull()
+
+# selectInput widget
+selectInput(
+  "year_choice", 
+  label = h3("Select Year Range"),
+  choices = year_reported, selected = "2012-2014")
+
+renderLeaflet({
+  
+time_map = 
+  time_map_df %>%
+    filter(
+      year_reported == input[["year_choice"]]
+    ) 
+
+fips_map = readOGR(dsn = "./map_data_jyz/NYS_Civil_Boundaries_SHP", "Counties")
+
+fips_map@data = left_join(fips_map@data, time_map, by = c("FIPS_CODE" = "fips"))
+
+# CRS setting
+fips_map_crs = spTransform(fips_map, CRS("+init=epsg:4326"))
+# export the json file
+writeOGR(fips_map_crs, './map_data_jyz/fips_time_map_geojson', layer = 'fips_map', driver = 'GeoJSON', overwrite_layer = TRUE)
+
+# format of the label that pops up for each polygon
+label_popup_oo = paste0(
+  "<strong>FIPS code: </strong>",
+  fips_map$FIPS_CODE,
+  "<br><strong>County Name: </strong>",
+  fips_map$NAME,
+  "<br><strong>Percent of Overweight or Obese: </strong>",
+  fips_map$oo
+)
+
+# get jenks natural break for average
+getJenksBreaks(fips_map$oo, 5)
+
+# set bins
+percent_oo_bins = c(26,30,34,38,43)
+
+# set pals
+percent_oo_pal = colorBin('Reds', bins = percent_oo_bins, na.color = '#d9d9d9')
+
+oo_map = leaflet::leaflet(data = fips_map_crs) %>% 
+  addProviderTiles('CartoDB.Positron') %>% 
+  addPolygons(fillColor = ~percent_oo_pal(oo),
+              fillOpacity = 0.8,
+              color = "#BDBDC3",
+              weight = 1,
+              popup = label_popup_oo,
+              highlightOptions = highlightOptions(color = "black", weight = 2,
+      bringToFront = TRUE)) %>% 
+  addLegend('bottomleft',
+            pal = percent_oo_pal,
+            values = ~oo,
+            title = "The Average Percentage of Students Who were Overweight/Obese",
+            opacity = 1)
+  })
+
+year_reported = ranking_df %>% ungroup() %>% distinct(year_reported) %>% pull()
+
+# selectInput widget
+selectInput(
+  "year_choice", 
+  label = h3("Select Year Range"),
+  choices = year_reported, selected = "2010-2011")
+
+renderPlotly({ 
+
+ranking = 
+  ranking_df %>%
+    filter(
+      year_reported == input[["year_choice"]]
+    ) 
+
+ranking_hw =
+  ranking%>% 
+  ungroup() %>% 
+  top_n(5, hw) %>%
+  plot_ly(x = ~hw, y = ~county, type = 'bar', orientation = 'h',
+          width = 1000, height = 800 ) %>%
+  layout(title = "",
+         xaxis = list(title = "Top 10 Healthiest Countie"),
+         yaxis = list(title = ""),
+         showlegend = FALSE)
+
+ranking_oo =
+  ranking%>% 
+  ungroup() %>% 
+  top_n(5, oo) %>%
+  plot_ly(x = ~oo, y = ~county, type = 'bar', orientation = 'h',
+          width = 1000, height = 800 ) %>%
+  layout(title = "",
+         xaxis = list(title = "Top 10 Overweight/Obese Countie"),
+         yaxis = list(title = ""),
+         showlegend = FALSE)
+
+subplot(ranking_hw,ranking_oo,
+        nrows = 1, widths = c(0.5, 0.5),
+        margin = c(0.1, 0.2, 0.1, 0.1),
+        shareX = FALSE, shareY = FALSE,
+        titleX = TRUE, titleY = FALSE)
+
+})
+```
+
+### *Trend Graphs:*
+```{r}
+
+```
+
+## Formal Analysis:
+
+
+### *Descriptive Graphs:*
+
+```{r, eval = FALSE, include = FALSE}
+
+```
+
+### *Regression:*
+
+
+```{r, evale = FALSE, message = FALSE}
+
+```
+
+
+
+## Discussion
+
+

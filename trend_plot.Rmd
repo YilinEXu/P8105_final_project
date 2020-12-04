@@ -41,7 +41,9 @@ maindata <- read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results
 
 ## Overweight and obsesity percentage trend for students from 2010 to 2019 in NY
 
-```{r,echo=FALSE,fig.align='center'}
+From the plot that showing the percentage of students' overweight or obese weight status, we can see that middle and high school students' overweight percentage is keep increasing over years. Students in elementary school, their overweight percentage is showing an overall decreasing trend. By looking at all grade level, we can see that the change of overweight or obese rate is small, basically stay around 34%.
+
+```{r,echo=FALSE,message = FALSE,fig.align='center'}
 statewide <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
          sex == "ALL") %>%
@@ -66,7 +68,7 @@ anim_save("gif1.gif",gif1)
 ## Overweight and obsesity percentage trend for students by gender from 2010 to 2019 in NY
 
 percentage
-```{r,echo=FALSE,fig.align='center'}
+```{r,echo=FALSE,message = FALSE,fig.align='center'}
 genderperc <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
          sex %in% c("FEMALE","MALE"),
@@ -92,7 +94,7 @@ anim_save("gif2.gif", gif2)
 ![](gif2.gif)
 
 number 
-```{r,echo=FALSE,fig.align='center'}
+```{r,echo=FALSE,message = FALSE,fig.align='center'}
 gender_num <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
          sex %in% c("FEMALE","MALE"),
@@ -120,7 +122,7 @@ anim_save("gif3.gif",gif3)
 
 
 
-```{r,echo=FALSE,fig.align='center'}
+```{r,echo=FALSE,message = FALSE,fig.align='center'}
 compare_obese <- maindata %>%
   filter(county == "STATEWIDE (EXCLUDING NYC)",
          sex == "ALL") %>%
@@ -155,7 +157,7 @@ anim_save("gif4.gif", gif4)
 ## Counties with obesity percentage comparison
 
 
-```{r,echo=FALSE,fig.align='center'}
+```{r,echo=FALSE,message = FALSE, fig.align='center'}
 
 dt_count = data.frame()
 
