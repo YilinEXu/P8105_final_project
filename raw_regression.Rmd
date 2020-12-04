@@ -1,5 +1,5 @@
 ---
-title: "Raw Regression"
+title: "Descriptive Graphs"
 output: html_document
 ---
 
@@ -24,7 +24,9 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate in teenagers the most. 
+We planned to use linear regression model to analysis the association between obesity rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences obesity rate in teenagers the most.
+
+&nbsp;
 
 # Data
 
@@ -34,7 +36,7 @@ We also combined three extra datasets to examine the factors of economic status 
 Food access ability dataset can be accessed [here](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng123).
 Race dataset can be accessed [here](https://labor.ny.gov/stats/nys/statewide-population-data.shtm).
 
-
+&nbsp;
 
 Basic variables that we are interested in:
 
@@ -46,8 +48,11 @@ Basic variables that we are interested in:
 - **Race**
 
 
+&nbsp;
 
 # Exploratory data analysis
+
+&nbsp;
 
 ## Sex
 
@@ -95,6 +100,7 @@ sex_df %>%
          yaxis = list(title = "Percent overweight or obese"))
 ```
 
+&nbsp;
 
 ## Grade Level
 
@@ -132,8 +138,10 @@ grade_df %>%
   layout(xaxis = list(title = "Year reported"),
          yaxis = list(title = "Percent overweight or obese"))
 ```
+&nbsp;
 
 ## Year
+
 during data cleaning find outliers
 
 ```{r,echo=FALSE,warning=FALSE}
@@ -159,6 +167,7 @@ year_df %>%
 ```
 
 
+&nbsp;
 
 ## Economic Status
 
@@ -207,6 +216,7 @@ combine %>%
 
 From the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Two of the most richest county in NY have the least percentage in overweight or obese student. 
 
+&nbsp;
 
 ## Food Access Ability
 
@@ -244,6 +254,7 @@ combine2 %>%
 
 From the graph we can see that there is a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. Two of the counties with the lowest food insecurity percentage in NY have the least percentage in overweight or obese student. 
 
+&nbsp;
 
 ## Race
 
@@ -286,7 +297,8 @@ combine3 =
     values_from = "percent"
   ) %>% 
   mutate(minorities = factor(minorities)) %>% 
-  arrange(minorities)
+  arrange(minorities) %>% 
+  drop_na()
 
 combine3 %>% 
   plot_ly(x = ~county, y = ~white, name = 'white', type = 'bar') %>% 
@@ -300,17 +312,15 @@ combine3 %>%
     xaxis = list(title = "County",
                  categoryorder = "array",
                  categoryarray = ~minorities),
-    yaxis = list(title = "Obese and overweigth percent(%)")
-  )
+    yaxis = list(title = "Obese and overweigth percent(%)"))
 ```
 
 
+&nbsp;
 
 ## Correlation graph
 
-```{r}
-#cor(patient_df)
-
+```{r, echo=FALSE}
 final = 
   original %>% 
   mutate(
