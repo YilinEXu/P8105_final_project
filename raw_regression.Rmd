@@ -77,11 +77,7 @@ sex_df =
   filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
   select(year_reported, percent_overweight_or_obese, sex) %>% 
   filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
-  #pivot_wider(
-    #names_from = "sex",
-    #values_from = "percent_overweight_or_obese"
-  #) %>% 
-  #unnest()
+
 
 sex_df %>% 
   plot_ly(type = 'violin') %>% 
@@ -116,11 +112,6 @@ grade_df =
   filter(year_reported %in% c("2015-2016", "2016-2017")) %>% #only analyzing data in year 2015 and 2016
   select(year_reported, percent_overweight_or_obese, grade_level) %>%
   filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
-  #pivot_wider(
-    #names_from = "grade_level",
-    #values_from = "percent_overweight_or_obese"
-  #) %>% 
-  #unnest()
 
 grade_df %>% 
   plot_ly(type = 'violin') %>% 
@@ -300,8 +291,10 @@ combine3 =
   arrange(minorities) %>% 
   drop_na()
 
+ay = list(tickfont = list(color = "black"), overlaying = "y", side = "right", title = "Race%")
+
 combine3 %>% 
-  plot_ly(x = ~county, y = ~white, name = 'white', type = 'bar') %>% 
+  plot_ly(x = ~county, y = ~white, name = 'white', type = 'bar') %>%
   add_trace(y = ~black, name = 'black', type = 'bar') %>%
   add_trace(y = ~native, name = 'native', type = 'bar') %>% 
   add_trace(y = ~asian, name = 'asian', type = 'bar') %>% 
@@ -312,7 +305,8 @@ combine3 %>%
     xaxis = list(title = "County",
                  categoryorder = "array",
                  categoryarray = ~minorities),
-    yaxis = list(title = "Obese and overweigth percent(%)"))
+    yaxis = list(title = "Obese and overweigth percent(%)"),
+    yaxis2 = ay)
 ```
 
 
