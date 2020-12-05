@@ -210,7 +210,48 @@ county20 = rbind(top20, colMeans = colMeans(top20)) %>%
 #### **Regression analysis:**
 The linear regression model used 3 dataset besides the main weight data, they are median income data, food insecurity data and census data.  We combined those data by using `left_join` function, and those data were joined together by `county`.  Before combine those data we are did some cleaning to ensure that `county` variable in each dataset are in consistent form.  The most tricky data is the census data.  We have to first convert it to matrix form then transpose it, then we inlcude the `county` (was first column name) into the data frame.  After the dataset have been joined together, we also used `filter` function to omit outlier values.  We used data in year 2015 and 2016 to ensure they are consistent in time.  Census data is in year 2010 because it is hard to find census data on a specific year and usually those data are produced after the 2010 census was done. Besides, we thought there won't be a big change in race percentage between 5 years period.  3 variables that are binary variables, they are `sex`, `grade_level` and `year_reported`.  We also mutate them into 0 and 1 form by using `if_else` function.
 ```{r, eval = FALSE, warning = FALSE}
+income = read_xlsx("./dataset/income.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(county = region_county) %>%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
+         county = toupper(county)) %>%
+  drop_na(median_income)
 
+food_insecurity = read_xlsx("./dataset/food_access.xlsx", range = "A9:C84") %>%
+  janitor::clean_names() %>%
+    rename(county = region_county) %>%
+  rename(food_insecurity_p = percentage) %>%
+  mutate(county = toupper(county)) %>%
+  drop_na(food_insecurity_p)
+
+census_data <- read_excel("dataset/census_data.xls",  
+    sheet = "Pop by Race and Ethnic Origin", 
+    range = "A3:BM10") 
+
+race_df = as.data.frame(t(as.matrix(census_data)))[-1,]  #transpose the original data
+race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL),  #include column name into the data frame
+         c("county", "total", "white", "black", "v4", "v5", "v6", "v7")) 
+race_df = tibble(race_df) %>%
+  janitor::clean_names() %>%
+  mutate(
+    total = as.numeric(total),
+    white = as.numeric(white),
+    black = as.numeric(black),
+    v4 = as.numeric(v4),
+    v5 = as.numeric(v5),
+    v6 = as.numeric(v6),
+    v7 = as.numeric(v7),
+    white_percent = white/total*100,
+         black_percent = black/total*100) %>%
+  select(county, white_percent, black_percent) %>%
+  filter(!county %in% c("United States", "New York State")) %>%
+  separate(county, into = c("county", "county1")) %>%
+  select(-county1) %>%
+  mutate(county = toupper(county))
+
+linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
+linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
+linear_df4 = left_join(linear_df3, race_df, by = "county")
 ```
 
 
@@ -431,7 +472,7 @@ subplot(ranking_hw,ranking_oo,
 ### *Regression:*
 
 
-```{r, echo=FALSE, message = FALSE, warning=FALSE}
+```{r, eval = TRUE, echo=FALSE, message = FALSE, warning=FALSE}
 original = tibble(        ## Clean the original weight data
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
@@ -513,7 +554,7 @@ linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine foo
 linear_df4 = left_join(linear_df3, race_df, by = "county")
 ```
 Before fitting the linear regression model, we used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log transformation has improved data's normality.  
-```{r}
+```{r eval = TRUE, fig.align='center', message=FALSE}
 # Normality check
 qqnorm(log(linear_df$percent_overweight_or_obese), col = c("darkorchid3"))
 
@@ -537,16 +578,16 @@ $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
 **x4 = sex (0 = male, 1 = female)**
 
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, eval = TRUE, echo=FALSE, warning=FALSE}
 # regression model
 lm_2 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + white_percent + sex, data = linear_df4) 
 ```
 #### *Model Summary:*
-```{r}
+```{r eval=TRUE}
 kable(summary(lm_2)$coefficients)
 ```
 
-```{r echo=FALSE, warning=FALSE, fig.align='center'}
+```{r eval = TRUE, warning=FALSE, fig.align='center'}
 par(mfrow = c(2, 2))
 plot(lm_2, col = "darkorchid2", alpha = 0.5)
 ```
@@ -557,4 +598,4 @@ There is no strange pattern about Residual vs Fitted plot, and Normal Q-Q plot i
 
 ## Discussion
 
-Our results showed that factors such as grade level, median income, race and gender all play a part in the overall overweight and obese rate in a region.  Median income has a negative correlation with obese and overweight rate, and female student are less suspicious to obese or overweight than male student.  However, we expected that white population has a lower rate of obeseity before this study was done, the result surprisingly showed an opposite trend.  This study has some limitations that need to be mentioned.  First, the data is limited in NY state region, so more data from other regions is needed to make the result more generalizable.  Secondly, the data is county level, so it does not apply to individual.  
+Our results showed that factors such as grade level, median income, race and gender all play a part in the overall overweight and obese rate in a region.  Median income has a negative correlation with obese and overweight rate, and female student are less suspicious to obese or overweight than male student.  However, we expected that white population has a lower rate of obeseity before this study was done, the result surprisingly showed an opposite trend.  This study has some limitations that need to be mentioned.  First, the data is limited in NY state region, so more data from other regions is needed to make the result more generalizable.  Secondly, the data is county level, so it does not apply to individual level.  

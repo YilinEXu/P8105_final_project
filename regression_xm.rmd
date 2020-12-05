@@ -111,8 +111,6 @@ race_df = tibble(race_df) %>%
   select(-county1) %>%
   mutate(county = toupper(county))
 
-
-
 linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
 linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
 linear_df4 = left_join(linear_df3, race_df, by = "county")
