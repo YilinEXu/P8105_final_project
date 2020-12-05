@@ -1,6 +1,9 @@
 ---
 title: "Descriptive Graphs"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 ```{r, include=FALSE,message=FALSE,echo=FALSE}
@@ -85,8 +88,8 @@ sex_df =
   original %>% 
   filter(sex == "MALE" | sex == "FEMALE") %>%
   filter(grade_level == "DISTRICT TOTAL") %>% 
-  select(year_reported, percent_overweight_or_obese, sex) %>% 
-  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+  select(year_reported, percent_overweight_or_obese, sex) 
+
 
 
 sex_df %>% 

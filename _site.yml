@@ -20,8 +20,11 @@ navbar:
         href: raw_regression.html
       - text: "Regression"
         href: regression_xm.html
+    - text: "Resource"
+      href: Resource.html
     - icon: fa-github fa-lg
       href: https://github.com/YilinEXu/P8105_final_project.git
+      
 
 output:
   html_document:

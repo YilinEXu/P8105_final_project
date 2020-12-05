@@ -475,8 +475,7 @@ sex_df =
   original %>% 
   filter(sex == "MALE" | sex == "FEMALE") %>%
   filter(grade_level == "DISTRICT TOTAL") %>% 
-  select(year_reported, percent_overweight_or_obese, sex) %>% 
-  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+  select(year_reported, percent_overweight_or_obese, sex)
 
 sex_df %>% 
   plot_ly(type = 'violin') %>% 
@@ -774,8 +773,7 @@ linear_df = weight_df %>%
   mutate(
     year_reported = if_else(year_reported == "2015-2016", 0, 1) # transform to binary variable to fit regression model
   ) %>%
-  select(county, year_reported, percent_overweight_or_obese, grade_level, sex) %>%
-  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+  select(county, year_reported, percent_overweight_or_obese, grade_level, sex)
 
 # Import tidy and join the median income and food insecurity and race data
 income = read_xlsx("./dataset/income.xlsx") %>%
