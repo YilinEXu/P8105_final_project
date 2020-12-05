@@ -278,7 +278,7 @@ subplot(ranking_begin,ranking_ending,
         titleX = TRUE, titleY = FALSE)
 ```
 
-Students who were obese at the beginning of this study may have maintained to be obese, while students who were originally weighted as healthy gained weight. In total, there were more obese students by the end of the 9-years-period compare to the beginning of the study.
+Students who were obese at the beginning of this study may have maintained to be obese, while students who were originally weighted as healthy gained weight. In total, there were more obese students by the end of the 10-year-period compare to the beginning of the study.
 
 <br>
 ![](map_data_jyz/gif.gif)
