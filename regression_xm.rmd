@@ -145,7 +145,7 @@ kable(summary(lm_1)$coefficients)
 ```
 
 <br>
-In the beginning we included 6 independent variables, grade level, median income, food insecurity,  gender, and white population percentage.  However the model summary showed there are weak correlation between food insecurity (p-value = 0.925) and median income (p-value = 0.113) and year_reported (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the percentage overweight and obese.
+In the beginning we included 6 independent variables, `grade level`, `median income`, `food insecurity`,  `gender`, and `white population percentage`.  However the model summary showed there are weak correlation between `food insecurity` (p-value = 0.925) and `median income` (p-value = 0.113) and `year_reported` (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the `percentage overweight and obese`.
 
 # *Final Model*
 $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
@@ -170,6 +170,7 @@ par(mfrow = c(2, 2))
 plot(lm_2, col = "darkorchid2", alpha = 0.5)
 ```
 
-
 # *Conclusion*
-There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid.  Four variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2166, which means only 22% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
+There is no strange pattern about Residual vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid.  In the beginning we predicted that `food insecurity` is positively related to `percent overweight or obese`, however results showed such correlation is weak, the reason might be that colinearity exist between `food insecurity` and `median income`.  This was proved in the [**Descriptive Graphs**](raw_regression.html) part that the correlation coefficient (r) between these two variables is **-0.93**.  
+<br>
+Four variables (`grade level`, `median income`, `white population percentage`, `sex`) are significant with very small **p-value (<0.001)**.  However, due to the limitation of data, R-squared is equal to 0.2166, a possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
