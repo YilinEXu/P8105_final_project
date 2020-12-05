@@ -12,6 +12,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
+  eval = FALSE,
   message = FALSE,
   warning = FALSE)
 library(tidyverse)
@@ -19,6 +20,15 @@ library(readxl)
 library(plotly)
 library(patchwork)
 library(kableExtra)
+library(rgdal)
+library(maps)
+library(devtools)
+library(leaflet)
+library(BAMMtools)
+library(spdep)
+library(maptools)
+library(leafsync)
+library(gganimate)
 ```
 
 <style type="text/css">
@@ -199,14 +209,12 @@ county20 = rbind(top20, colMeans = colMeans(top20)) %>%
 
 #### **Regression analysis:**
 The linear regression model used 3 dataset besides the main weight data, they are median income data, food insecurity data and census data.  We combined those data by using `left_join` function, and those data were joined together by `county`.  Before combine those data we are did some cleaning to ensure that `county` variable in each dataset are in consistent form.  The most tricky data is the census data.  We have to first convert it to matrix form then transpose it, then we inlcude the `county` (was first column name) into the data frame.  After the dataset have been joined together, we also used `filter` function to omit outlier values.  We used data in year 2015 and 2016 to ensure they are consistent in time.  Census data is in year 2010 because it is hard to find census data on a specific year and usually those data are produced after the 2010 census was done. Besides, we thought there won't be a big change in race percentage between 5 years period.  3 variables that are binary variables, they are `sex`, `grade_level` and `year_reported`.  We also mutate them into 0 and 1 form by using `if_else` function.
-```{r}
-<<<<<<< HEAD
-=======
+```{r, eval = FALSE, warning = FALSE}
 
 ```
->>>>>>> 4ad48e9de293c16cc4c296429e8382db46217935
 
-```
+
+
 
 &nbsp;
 
@@ -529,7 +537,7 @@ $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
 **x4 = sex (0 = male, 1 = female)**
 
 
-```{r echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 # regression model
 lm_2 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + white_percent + sex, data = linear_df4) 
 ```
@@ -549,5 +557,4 @@ There is no strange pattern about Residual vs Fitted plot, and Normal Q-Q plot i
 
 ## Discussion
 
-
-
+Our results showed that factors such as grade level, median income, race and gender all play a part in the overall overweight and obese rate in a region.  Median income has a negative correlation with obese and overweight rate, and female student are less suspicious to obese or overweight than male student.  However, we expected that white population has a lower rate of obeseity before this study was done, the result surprisingly showed an opposite trend.  This study has some limitations that need to be mentioned.  First, the data is limited in NY state region, so more data from other regions is needed to make the result more generalizable.  Secondly, the data is county level, so it does not apply to individual.  
