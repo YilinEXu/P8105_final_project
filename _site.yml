@@ -22,6 +22,8 @@ navbar:
         href: regression_xm.html
     - text: "Resource"
       href: Resource.html
+    - icon: fa-youtube fa-lg 
+      href: https://www.youtube.com/watch?v=FUcb8MfCUV8
     - icon: fa-github fa-lg
       href: https://github.com/YilinEXu/P8105_final_project.git
       
