@@ -199,7 +199,9 @@ county20 = rbind(top20, colMeans = colMeans(top20)) %>%
 
 #### **Regression analysis:**
 The linear regression model used 3 dataset besides the main weight data, they are median income data, food insecurity data and census data.  We combined those data by using `left_join` function, and those data were joined together by `county`.  Before combine those data we are did some cleaning to ensure that `county` variable in each dataset are in consistent form.  The most tricky data is the census data.  We have to first convert it to matrix form then transpose it, then we inlcude the `county` (was first column name) into the data frame.  After the dataset have been joined together, we also used `filter` function to omit outlier values.  We used data in year 2015 and 2016 to ensure they are consistent in time.  Census data is in year 2010 because it is hard to find census data on a specific year and usually those data are produced after the 2010 census was done. Besides, we thought there won't be a big change in race percentage between 5 years period.  3 variables that are binary variables, they are `sex`, `grade_level` and `year_reported`.  We also mutate them into 0 and 1 form by using `if_else` function.
+```{r}
 
+```
 
 &nbsp;
 
@@ -513,7 +515,7 @@ linear_df3 %>%
     fill = "#69b3a2", size = 2) + labs(x = "log (percent overweight and obese)", title = "Histogram of log (percent overweight and obese)") 
 ```
 
-Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is approximetly in a straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
+Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is approximately in a straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
 <br>
 Based on the transformation above, the model we are going to fit is:
 $$ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender + \beta_6 year$$
@@ -544,8 +546,9 @@ plot(lm_2, col = "darkorchid2", alpha = 0.5)
 
 #### *Conclusion*
 
-There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid.  Four variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2166, which means only 22% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
+There is no strange pattern about Residual vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid.  Four variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2166, which means only 22% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
 
 ## Discussion
+
 
 
