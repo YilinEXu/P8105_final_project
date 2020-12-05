@@ -6,6 +6,14 @@ output:
     toc_float: TRUE
 ---
 
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
 ```{r, include=FALSE,message=FALSE,echo=FALSE}
 library(tidyverse)
 library(readxl)
