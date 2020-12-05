@@ -22,7 +22,10 @@ h1.title {
 
 <img src="image/homepage.jpg" style = "width:75%">
 
+(Image reference: Our Best Education Articles of 2018. Greater Good. Accessed December 5, 2020.  [Link.](https://greatergood.berkeley.edu/article/item/our_best_education_articles_of_2018))
+
 </center>
+
 
 ## Project motivation
 
