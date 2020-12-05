@@ -41,10 +41,10 @@ Therefore, we conducted this study on the obesity situation of students in eleme
 
 #### **Related Work**
 
-1. 	Obesity More Common Among Kids With Special Needs. Disability Scoop. Published December 7, 2011.Accessed December 2, 2020. [Link.](https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/)
-2. 	Must A, Curtin C, Hubbard K, Sikich L, Bedford J, Bandini L. Obesity Prevention for Children with Developmental Disabilities. Curr Obes Rep. 2014;3(2):156.doi:10.1007/s13679-014-0098-7. [Link.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/)
-3. 	Hu EY. Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction. Prev Chronic Dis. 2018;15.doi:10.5888/pcd15.180122. [Link.](https://www.cdc.gov/pcd/issues/2018/18_0122.htm)
-4. 	High School Obesity Rates. The State of Childhood Obesity.Accessed December 2, 2020.  [Link.](https://stateofchildhoodobesity.org/high-school-obesity/)
+1. 	"Obesity More Common Among Kids With Special Needs. Disability Scoop"  [Link.](https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/)
+2.  "Obesity Prevention for Children with Developmental Disabilities" [Link.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/)
+3. 	"Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction"  [Link.](https://www.cdc.gov/pcd/issues/2018/18_0122.htm)
+4. 	High School Obesity Rates: The State of Childhood Obesity [Link.](https://stateofchildhoodobesity.org/high-school-obesity/)
 
 
 &nbsp;
@@ -210,7 +210,7 @@ The linear regression model used 3 dataset besides the main weight data, they ar
 
 ### *Mapping and Visualization:*
 * Part 1:how student weight status changes in New York by county?
-* Part 2:how does student weight in each county change over the 9-year-period?
+* Part 2:how does student weight in each county change over the 10-year-period?
 
 #### **Part 1**
 1. Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period:the average percentage of students who were overweight or obese and the average percentage of students who maintained a healthy weight. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why `HAMILTON` have both high average percentages of overweight/obese and healthy students, we found that the student weight status in `HAMILTON` changed considerably over the 9-year-period. As time goes by, students' weight in `HAMILTON` exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, `HAMILTON`'s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.

@@ -369,10 +369,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="https://jiayihelenzhou.shinyapps.io/ds_project/">Weigth Over Time Map</a>
+      <a href="map_jyz.html">Weight Status by County</a>
     </li>
     <li>
-      <a href="map_jyz.html">Weight Status by County</a>
+      <a href="https://jiayihelenzhou.shinyapps.io/ds_project/">Weigth Over Time Map</a>
     </li>
   </ul>
 </li>
@@ -428,17 +428,17 @@ h1.title {
 </style>
 <div id="motivation" class="section level2">
 <h2>Motivation</h2>
-<p>Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-olds, 18.4% among 6- to 11-year-olds, and 20.6% among 12- to 19-year-olds.</p>
+<p>Childhood obesity is a major concern in the United States. In nowadays, obesity is putting children and adolescents at risk for poor health. Obesity prevalence among children and adolescents is very high. According to the CDC website, obesity prevalence was 13.9% among 2- to 5-year-old, 18.4% among 6- to 11-year-old, and 20.6% among 12- to 19-year-old.</p>
 <p>The harms of obesity in adolescents exhibit in both physical and psychological aspects. The expression of obesity in children and adolescents is often indicated by weight gain and having a large amount of fat deposition. The increase in body fat will result in increases in body burden and oxygen consumption, which explains why obese children consume more oxygen than people who maintain a healthy weight. Obesity also causes them to be heavy, slow, and unable to move. Many children and adolescents often have flat feet, knee flexion, lower limb flexion, spine, and intervertebral cartilage damage due to obesity. Obese children and adolescents with high cholesterol levels are also at the risk of having a compromised immune system. Some study also shows that obesity is a risk factor of depression.</p>
 <p>Therefore, we conducted this study on the obesity situation of students in elementary and middle/high school from 2010 to 2019 to investigate the geographic and time pattern obesity distribution, as well as several potential risk factors that are related to obesity in students.</p>
 <p> </p>
 <div id="related-work" class="section level4">
 <h4><strong>Related Work</strong></h4>
 <ol style="list-style-type: decimal">
-<li>Obesity More Common Among Kids With Special Needs. Disability Scoop. Published December 7, 2011.Accessed December 2, 2020. <a href="https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/">Link.</a></li>
-<li>Must A, Curtin C, Hubbard K, Sikich L, Bedford J, Bandini L. Obesity Prevention for Children with Developmental Disabilities. Curr Obes Rep. 2014;3(2):156.doi:10.1007/s13679-014-0098-7. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/">Link.</a></li>
-<li>Hu EY. Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction. Prev Chronic Dis. 2018;15.doi:10.5888/pcd15.180122. <a href="https://www.cdc.gov/pcd/issues/2018/18_0122.htm">Link.</a></li>
-<li>High School Obesity Rates. The State of Childhood Obesity.Accessed December 2, 2020. <a href="https://stateofchildhoodobesity.org/high-school-obesity/">Link.</a></li>
+<li>“Obesity More Common Among Kids With Special Needs. Disability Scoop” <a href="https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/">Link.</a></li>
+<li>“Obesity Prevention for Children with Developmental Disabilities” <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/">Link.</a></li>
+<li>“Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction” <a href="https://www.cdc.gov/pcd/issues/2018/18_0122.htm">Link.</a></li>
+<li>High School Obesity Rates: The State of Childhood Obesity <a href="https://stateofchildhoodobesity.org/high-school-obesity/">Link.</a></li>
 </ol>
 <p> </p>
 </div>
@@ -457,8 +457,8 @@ h1.title {
 </div>
 <div id="data" class="section level2">
 <h2>Data</h2>
-<div id="data-sources" class="section level4">
-<h4><em>Data Sources</em></h4>
+<div id="data-sources" class="section level3">
+<h3><em>Data Sources</em></h3>
 <ul>
 <li>Main data source:</li>
 </ul>
@@ -478,8 +478,8 @@ h1.title {
 </ol>
 <p> </p>
 </div>
-<div id="variables-of-interest" class="section level4">
-<h4><em>Variables of interest</em></h4>
+<div id="variables-of-interest" class="section level3">
+<h3><em>Variables of interest</em></h3>
 <table>
 <colgroup>
 <col width="50%" />
@@ -638,12 +638,12 @@ county20 = rbind(top20, colMeans = colMeans(top20)) %&gt;%
 <h3><em>Mapping and Visualization:</em></h3>
 <ul>
 <li>Part 1:how student weight status changes in New York by county?</li>
-<li>Part 2:how does student weight in each county change over the 9-year-period?</li>
+<li>Part 2:how does student weight in each county change over the 10-year-period?</li>
 </ul>
 <div id="part-1" class="section level4">
 <h4><strong>Part 1</strong></h4>
 <ol style="list-style-type: decimal">
-<li>Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period: ???the average percentage of students who were overweight or obese??? and ???the average percentage of students who maintained a healthy weight???. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why <code>HAMILTON</code> have both high average percentages of overweight/obese and healthy students, we found that the student weight status in <code>HAMILTON</code> changed considerably over the 9-year-period. As time goes by, students’ weight in <code>HAMILTON</code> exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, <code>HAMILTON</code>’s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.</li>
+<li>Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period:the average percentage of students who were overweight or obese and the average percentage of students who maintained a healthy weight. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why <code>HAMILTON</code> have both high average percentages of overweight/obese and healthy students, we found that the student weight status in <code>HAMILTON</code> changed considerably over the 9-year-period. As time goes by, students’ weight in <code>HAMILTON</code> exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, <code>HAMILTON</code>’s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.</li>
 </ol>
 <pre class="r"><code>fips_map = readOGR(dsn = &quot;./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp&quot;, encoding = &quot;UTF-8&quot;)
 
@@ -834,9 +834,6 @@ subplot(ranking_hw,ranking_oo,
 
 })</code></pre>
 </div>
-</div>
-<div id="trend-graphs" class="section level3">
-<h3><em>Trend Graphs:</em></h3>
 </div>
 </div>
 <div id="formal-analysis" class="section level2">
