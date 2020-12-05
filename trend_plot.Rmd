@@ -6,6 +6,9 @@ output:
 fontsize: 12pt
 ---
 
+<div style="margin-bottom:30px;">
+</div>
+
 ```{r,include=FALSE}
 library(tidyverse)
 library(ggplot2)
@@ -39,9 +42,9 @@ maindata <- read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results
   janitor::clean_names()
 ```
 
-## Overweight and obsesity percentage trend for students from 2010 to 2019 in NY
+## Overweight and obesity percentage trends for students from 2010 to 2019 in NY
 
-From the plot that showing the percentage of students' overweight or obese weight status, we can see that middle and high school students' overweight percentage is keep increasing over years. Students in elementary school, their overweight percentage is showing an overall decreasing trend. By looking at all grade level, we can see that the change of overweight or obese rate is small, basically stay around 34%.
+From the plot that shows the percentage of students' overweight and obese weight status, we can see that middle and high school students' overweight percentage keeps increasing over the ten-year time period. Elementary school students' overweight percentage is showing an overall decreasing trend. By looking at all grade levels, we can see that the change of overweight and obese rate is small, basically is staying around 34%.
 
 ```{r,echo=FALSE,message = FALSE,fig.align='center'}
 statewide <- maindata %>%
@@ -52,7 +55,7 @@ statewide <- maindata %>%
   ggplot(aes(x = year_reported, y = percent_overweight_or_obese, group = grade_level, color = grade_level)) + 
   geom_line(size = 1) + 
   geom_point(size = 2) + 
-  labs(title = "Students' weights trend of overweight and obesity",
+  labs(title = "Overweight and obesity trends for students",
        subtitle = "data was recorded for every two year periods.",
        x = "Year", 
        y = "Percentage of overweight and obesity among students") +
@@ -65,9 +68,9 @@ anim_save("gif1.gif",gif1)
 
 ![](gif1.gif)
 
-## Overweight and obsesitytrend for students by gender from 2010 to 2019 in NY
+## Overweight and obesity trends for students categorized by gender from 2010 to 2019 in NY
 
-From the plot that shows the percentage changing trend, we can see that the percentage of overweight or obesity of female students showing an overall increasing trend over ten years. The percentage of overweight or obesity of male students showing an overall decreasing trend over ten years. For the first two periods, both female and male have same changing trend. After that, their trend changed in negative direction.
+This graph shows the changing percentages, we can see that the percentage of overweight and obese female students shows an overall increasing trend over the ten-year period. In contrast, the percentage of overweight and obese male students shows an overall decreasing trend over the ten-year period. From 2010-2013, both females and males have same pattern of change. After that, their trend changes in a negative direction.
 
 ```{r,echo=FALSE,message = FALSE,fig.align='center'}
 genderperc <- maindata %>%
@@ -80,7 +83,7 @@ genderperc <- maindata %>%
   ggplot(aes(x = year_reported, y = percent_overweight_or_obese, group = sex, color = sex)) + 
   geom_line(size = 1) + 
   geom_point(size = 2) + 
-  labs(title = "Percentage trend of overweight or obesity by gender",
+  labs(title = "The percentage of overweight and obese students categorized by gender",
        subtitle = "Data was recorded for every two year periods",
        x = "Year", 
        y = "Percentage of overweight and obesity among students") +
@@ -94,7 +97,7 @@ anim_save("gif2.gif", gif2)
 
 ![](gif2.gif)
 
-From the plot that shows the number changing trend, we can see that the number of overweight or obesity of both genders are showing an overall increasing trend. It is interesting that their variation trend is quite similar where their trend is changing in the same direction.
+This graph shows the number of overweight and obese students in New York State. Overall, we can see that both genders are showing an increasing trend. It is interesting that their trends show similar variations.
 
 ```{r,echo=FALSE,message = FALSE,fig.align='center'}
 gender_num <- maindata %>%
@@ -106,10 +109,10 @@ gender_num <- maindata %>%
   ggplot(aes(x = year_reported, y = number_overweight_or_obese, group = sex, color = sex)) + 
   geom_line(size = 1) + 
   geom_point(size = 2) + 
-  labs(title = "Students' weights' number trend of overweight or obesity by gender",
+  labs(title = "The amount of overweight and obese students categorized by gender",
        subtitle = "data was recorded for every two year periods.",
        x = "Year", 
-       y = "Number of overweight and obesity among students") +
+       y = "number of overweight and obese students in NY") +
   theme(axis.text.x = element_text(angle = 45))
 
 gif3 <- animate(gender_num + geom_point(aes(group = seq_along(year_reported))) + transition_reveal(as.numeric(year_reported)) + enter_fade() + exit_shrink(), fps = 25)
@@ -120,9 +123,9 @@ anim_save("gif3.gif",gif3)
 ![](gif3.gif)
 
 
-## Overweight percentage compare to obsesity percentage for students by age from 2010 to 2019 in NY
+## Overweight percentages compared to obesity percentages for students by age from 2010 to 2019 in NY
 
-
+By analyzing this graph, we can see that the percentage of obesity among students is always higher than the percentage of overweight. The variance between overweight and obese students is notably smaller in elementary school.
 
 ```{r,echo=FALSE,message = FALSE,fig.align='center'}
 compare_obese <- maindata %>%
@@ -139,7 +142,7 @@ compare_obese <- maindata %>%
 gif4 <- ggplot(compare_obese, aes(x = grade_level, y = percentage, fill = weight_status)) +
   geom_bar(stat = "identity",position = "dodge") +
   labs(title='Every two years period: {closest_state}',
-    subtitle = "Overweight percentage compare to obsesity percentage",
+    subtitle = "Overweight percentages compared to obesity percentages",
        x = "Grade level", 
        y = "Percentage of obese/overweight among total") +
   theme_bw()+
@@ -156,8 +159,90 @@ anim_save("gif4.gif", gif4)
 
 ![](gif4.gif)
 
-## Counties with obesity percentage comparison
+## Percentage and number of healthy students by county over ten years
 
+From this interactive graph, we can see the percentage and number of students who have a healthy weight in each county of New York state. Since some of the areas were not monitored every year and have missing values, this graph shows the trends using a two year interval. 
+
+```{r,echo=FALSE,message = FALSE, warning=FALSE,fig.align='center'}
+
+dt_hlth = data.frame()
+
+healthy <- maindata %>%
+  filter(county != "STATEWIDE (EXCLUDING NYC)",
+         grade_level == "DISTRICT TOTAL",
+         sex == "ALL") %>%
+  select(c(county, year_reported, percent_healthy_weight, area_name,number_healthy_weight)) %>%
+  group_by(county) %>%
+  mutate(
+    year_reported = as.factor(year_reported)) %>%
+  separate(year_reported, c("start_year","end_year"), "-") %>%
+  mutate(start_year = as.numeric(start_year),
+         end_year = as.numeric(end_year),
+         start_year1 = start_year+2) %>%
+  na.omit()
+
+for (i in 1:nrow(healthy)) {
+    if (healthy$end_year[i] == healthy$start_year1[i]) {
+      dt_hlth <- rbind(dt_hlth, healthy[i,])
+    }
+}
+
+healthy = dt_hlth %>%
+  filter(county != "N/A") %>%
+  select(-start_year1) %>%
+  mutate(
+    year = paste(start_year, end_year, sep = "-")
+  ) %>%
+  select(-start_year, -end_year, -area_name) %>%
+  group_by(year)
+
+base <- healthy %>%
+  plot_ly(x = ~number_healthy_weight, y = ~percent_healthy_weight, 
+          text = ~county, hoverinfo = "text") %>%
+  layout(xaxis = list(type = "log"))
+
+base %>%
+  add_markers(color = ~county, frame = ~year, ids = ~county, size = 5) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
+  animation_button(
+    x = 1, xanchor = "right", y = 0, yanchor = "bottom"
+  ) %>%
+  animation_slider(
+    currentvalue = list(prefix = "YEAR ", font = list(color="black"))
+  ) %>%
+  layout(xaxis = list(title = "number of healthy weight students"), yaxis = list(title = "percentage of healthy weight students"))
+
+```
+
+
+
+
+## Comparison of overweight or obese percentages in the top 20 counties
+
+We are also interested about the ranking of counties that have highest overweight or obesity percentage among students. From this plot, we show the changes of the ranking of the top 20 counties that have the highest  overweight or obesity mean percentage in New York state through ten years. Some counties have the same percentage in one of the years, so their bars will lay over each other. 
+
+County | Mean percentage
+------------- | -------------
+CATTARAUGUS | 37.1750
+CAYUGA | 37.3250
+CHEMUNG | 38.8125
+CHENANGO | 38.9125
+CLINTON | 38.7375
+CORTLAND | 37.3750
+ESSEX | 37.7000
+FRANKLIN | 40.2500
+GREENE | 38.3750
+JEFFERSON | 36.9625
+LEWIS | 40.0625
+ORLEANS | 38.9875
+OSWEGO | 40.9250
+ST. LAWRENCE | 40.2000
+SCHOHARIE | 37.1125
+SENECA | 39.3000
+SULLIVAN | 38.9875
+WASHINGTON | 38.6500
+WAYNE | 36.9875
+YATES |38.8750
 
 ```{r,echo=FALSE,message = FALSE, fig.align='center'}
 
