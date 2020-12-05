@@ -208,7 +208,7 @@ base %>%
     x = 1, xanchor = "right", y = 0, yanchor = "bottom"
   ) %>%
   animation_slider(
-    currentvalue = list(prefix = "YEAR ", font = list(color="black"))
+    currentvalue = list(prefix = "YEAR ")
   ) %>%
   layout(xaxis = list(title = "number of healthy weight students"), yaxis = list(title = "percentage of healthy weight students"))
 
@@ -219,7 +219,7 @@ base %>%
 
 ## Comparison of overweight or obese percentages in the top 20 counties
 
-We are also interested about the ranking of counties that have highest overweight or obesity percentage among students. From this plot, we show the changes of the ranking of the top 20 counties that have the highest  overweight or obesity mean percentage in New York state through ten years. Some counties have the same percentage in one of the years, so their bars will lay over each other. 
+It is also interesting to see the ranking of counties that have highest overweight and obesity percentages among students. This graph shows the changes in ranking of the top 20 counties that have the highest  overweight and obesity mean percentages in New York state during a ten year period. Some counties have the same percentage in given years, so their bars coincide. 
 
 County | Mean percentage
 ------------- | -------------
