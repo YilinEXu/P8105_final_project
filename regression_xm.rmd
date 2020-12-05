@@ -145,7 +145,7 @@ kable(summary(lm_1)$coefficients)
 ```
 
 <br>
-In the beginning we included 6 independent variables, `grade level`, `median income`, `food insecurity`,  `gender`, and `white population percentage`.  However the model summary showed there are weak correlation between `food insecurity` (p-value = 0.925) and `median income` (p-value = 0.113) and `year_reported` (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the `percentage overweight and obese`.
+In the beginning we included 6 independent variables, `grade level`, `median income`, `food insecurity`,  `gender`, and `white population percentage`, `year`.  However the model summary showed there are weak correlation between `food insecurity` (p-value = 0.925) and `median income` (p-value = 0.113) and `year_reported` (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the `percentage overweight and obese`.
 
 # *Final Model*
 $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
