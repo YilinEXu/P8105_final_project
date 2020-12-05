@@ -101,16 +101,6 @@ For the data cleaning in the mapping section, we first imported the student weig
 Next, the student weight status dataset was combined with the FIPS code dataset. The average percentage of overweight or obesity and the average percentage of healthy weight was mapped was calculated, and the result was again combined to the fips code map. To have the desired map colored by the entire county, we then import a NY state counties shapefile and combined it to the previously cleaned dataset with weight status and FIPS code. This resulting dataset was used for the side-by-side choropleth map, which is not sensitive to time but can show the student weight change by county.
 
 ```{r, eval=FALSE}
-library(rgdal)
-library(maps)
-library(devtools)
-library(leaflet)
-library(BAMMtools)
-library(spdep)
-library(maptools)
-library(leafsync)
-library(gganimate)
-
 original = tibble(
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
@@ -159,8 +149,52 @@ fips_map$percent_oo[is.na(fips_map$percent_oo)] <- 0
 
 #### **Trend Plot:**
 
-```{r, warning = FALSE}
+For different trend graphs, the data cleaning step was changed depends on the variables we want to look at. For example, when we want to look at the overweight and obesity trend for students categorized by gender, we will filter with `gender = female & male`. Most of the data cleaning process are similar, except for the last two plots which shows _the percentage and number of healthy students by county_ and _comparison of overweight or obese percentages in the top 20 counties_.
 
+During the process, we found out some counties have more than one areas in their records. Some of these areas were not monitored every two year and have missing values, so we first drop the records that were not using a two year interval and then dropout the rows having missing values. After cleaning the data, we found out there are still more than fifty counties remained, so we use the mean value of overweight and obese percentage for all counties. Finally, we picked the mean value that are in the top 20 ranking and showed them in the graph.
+```{r, eval = FALSE, warning = FALSE}
+counties <- maindata %>%
+  filter(county != "STATEWIDE (EXCLUDING NYC)",
+         grade_level == "DISTRICT TOTAL",
+         sex == "ALL") %>%
+  select(c(county, year_reported, percent_overweight_or_obese, area_name)) %>%
+  group_by(county) %>%
+  mutate(year_reported = as.factor(year_reported)) %>%
+#  pivot_wider(names_from = county, values_from = percent_overweight_or_obese) %>%
+  separate(year_reported, c("start_year","end_year"), "-") %>%
+  mutate(start_year = as.numeric(start_year),
+         end_year = as.numeric(end_year),
+         start_year1 = start_year+2) %>%
+  na.omit()
+
+for (i in 1:nrow(counties)) {
+    if (counties$end_year[i] == counties$start_year1[i]) {
+      dt_count <- rbind(dt_count, counties[i,])
+    }
+}
+
+counties = dt_count %>%
+  filter(county != "N/A") %>%
+  select(-start_year1) %>%
+  mutate(
+    year = paste(start_year, end_year, sep = "-")
+  ) %>%
+  select(-start_year, -end_year, -area_name) %>%
+  group_by(year)
+
+new_county = counties %>%
+  pivot_wider(names_from = county, values_from = percent_overweight_or_obese)
+
+top20 = new_county %>%
+  ungroup() %>%
+  select(-year)
+
+county20 = rbind(top20, colMeans = colMeans(top20)) %>%
+  mutate(num = c(1,2,3,4,5,6,7,8,"mean")) %>%
+  filter(num %in% "mean") %>%
+  pivot_longer(cols = 1:57,names_to = "county", values_to = "percentage") %>%
+  select(-num) %>%
+  top_n(20)
 ```
 
 #### **Regression analysis:**
@@ -262,22 +296,6 @@ healthy_map = leaflet::leaflet(data = fips_map_crs) %>%
 2. Interactive time map: Since the choropleth maps used the average percentage, the changing trend of student weight by year was neglected. Both the average percent of overweight/obese and healthy students were large for `HAMILTON`. When analyzing all connties in the New York state, even though students' weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration. Therefore, we created a interactive time map[Weight Over Time Map](https://jiayihelenzhou.shinyapps.io/ds_project/). This interactive map aims to explore how weight change in each county over the 9-year-period. We found that not every county has a clear increasing or decreasing trend as Hamilton does. Students who were obese at the beginning of this study may have maintained to be obese in the selected counties. For more changing trending in weight status, please refer to [Trend Graphs](trend_plot.html).
 
 ```{r shiny_app, eval=FALSE, message=FALSE}
-library(flexdashboard)
-library(shiny)
-library(readxl)
-library(tidyverse)
-library(plotly)
-library(tidyverse)
-library(readxl)
-library(plotly)
-library(rgdal)
-library(maps)
-library(devtools)
-library(leaflet)
-library(maptools)
-library(BAMMtools)
-library(patchwork)
-library(spdep)
 
 year_reported = ranking_df %>% ungroup() %>% distinct(year_reported) %>% pull()
 
@@ -388,61 +406,8 @@ subplot(ranking_hw,ranking_oo,
 
 ### *Trend Graphs:*
 
-For different trend graphs, the data was changed depends on the variables we want to look at. For example, when we want to look at the overweight and obesity trend for students by gender, we will filter with `gender = female & male`. Most of the data cleaning process are similar, except for the last plot which shows the comparison overweight or obesity percentage through the top 20 counties.
-
-During the process, we found out some counties have more than one areas in their records. Some of these areas are not recording in every two year periods. Hence, we first drop the records that are not recording in every two-year periods and then dropout the rows having missing values. After cleaning the data, we found out there are still more than fifty counties remained, so we find out the mean value of all counties overweight or obesity percentage. After that, we pick up the mean value that are in top 20 ranking and showed them in the plot.
 ```{r, eval=FALSE}
-counties <- maindata %>%
-  filter(county != "STATEWIDE (EXCLUDING NYC)",
-         grade_level == "DISTRICT TOTAL",
-         sex == "ALL") %>%
-  select(c(county, year_reported, percent_overweight_or_obese, area_name)) %>%
-  group_by(county) %>%
-  mutate(year_reported = as.factor(year_reported)) %>%
-#  pivot_wider(names_from = county, values_from = percent_overweight_or_obese) %>%
-  separate(year_reported, c("start_year","end_year"), "-") %>%
-  mutate(start_year = as.numeric(start_year),
-         end_year = as.numeric(end_year),
-         start_year1 = start_year+2) %>%
-  na.omit()
 
-for (i in 1:nrow(counties)) {
-    if (counties$end_year[i] == counties$start_year1[i]) {
-      dt_count <- rbind(dt_count, counties[i,])
-    }
-}
-
-counties = dt_count %>%
-  filter(county != "N/A") %>%
-  select(-start_year1) %>%
-  mutate(
-    year = paste(start_year, end_year, sep = "-")
-  ) %>%
-  select(-start_year, -end_year, -area_name) %>%
-  group_by(year)
-
-new_county = counties %>%
-  pivot_wider(names_from = county, values_from = percent_overweight_or_obese)
-
-top20 = new_county %>%
-  ungroup() %>%
-  select(-year)
-
-county20 = rbind(top20, colMeans = colMeans(top20)) %>%
-  mutate(num = c(1,2,3,4,5,6,7,8,"mean")) %>%
-  filter(num %in% "mean") %>%
-  pivot_longer(cols = 1:57,names_to = "county", values_to = "percentage") %>%
-  select(-num) %>%
-  top_n(20)
-
-county_20 = inner_join(county20,counties) %>%
-  select(-percentage) %>%
-  group_by(year) %>%
-  mutate(percent_overweight_or_obese = percent_overweight_or_obese * 1000,
-        rank = rank(-percent_overweight_or_obese),
-         Value_rel = percent_overweight_or_obese/percent_overweight_or_obese[rank==1],
-         Value_lbl = paste0(" ",round(percent_overweight_or_obese/1e9))) %>%
-  ungroup()
 ```
 
 ## Formal Analysis:

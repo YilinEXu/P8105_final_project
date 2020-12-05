@@ -20,7 +20,15 @@ original = tibble(        ## Clean the original weight data
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
   janitor::clean_names() %>%
-  select(-location_code, -region, -area_name) # the only location information we need is county name
+  select(-location_code, -region, -area_name) %>% # the only location information we need is county name
+  mutate(
+    percent_healthy_weight = percent_healthy_weight * 100 ## when importing data the percent healthy weight was distorted so i timed 100
+  ) 
+
+  original$percent_overweight_or_obese[original$percent_healthy_weight == 100.0] <- 0 #input 0% to overweight column when healthy column is 100%
+  original = original %>%
+    drop_na()
+
 ```
 
 
@@ -59,8 +67,7 @@ linear_df = weight_df %>%
   mutate(
     year_reported = if_else(year_reported == "2015-2016", 0, 1) # transform to binary variable to fit regression model
   ) %>%
-  select(county, year_reported, percent_overweight_or_obese, grade_level, sex) %>%
-  filter(!percent_overweight_or_obese == 100) #omit the outlier (one y is equal to 100%)
+  select(county, year_reported, percent_overweight_or_obese, grade_level, sex) 
 ```
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
