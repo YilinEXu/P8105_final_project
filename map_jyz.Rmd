@@ -191,7 +191,7 @@ healthy_map = leaflet::leaflet(data = fips_map_crs) %>%
 ```
 
 ### Choropleth Map:
-This map includes weight information collected from students who were in two grade levels: `ELEMENTARY` or `MIDDLE/HIGH`. They came from __`r nrow(average_percent_oo)`__ counties in the New York State, while New York City was excluded from the data. The percent of students who were overweight or obese and the percent of students who maintained a healthy weight were selected as indicator variables to represent the student's weight situation in the corresponding counties. Since data was collected over a __9-years-period__, an average of the selected percentages was taken and mapped.
+This map includes weight information collected from students who were in two grade levels: `ELEMENTARY` or `MIDDLE/HIGH`. They came from __`r nrow(average_percent_oo)`__ counties in the New York State, while New York City was excluded from the data. The percent of students who were overweight or obese and the percent of students who maintained a healthy weight were selected as indicator variables to represent the student's weight situation in the corresponding counties. Since data was collected over a __10-year-period__, an average of the selected percentages was taken and mapped.
 <br>
 The average percentage of students who were overweight or obese across 9 years and `r nrow(average_percent_oo)` New York counties were mapped in __red__. The darker the red color, the larger percentage of overweight or obese students can be found in the county. The average percentage of students who maintained healthy weight were mapped in __blue__, where the darker the blue color, the larger percentage of students in the county maintained a healthy weight. 
 ```{r echo = FALSE}
@@ -278,7 +278,7 @@ subplot(ranking_begin,ranking_ending,
         titleX = TRUE, titleY = FALSE)
 ```
 
-Students who were obese at the beginning of this study may have maintained to be obese, while students who were originally weighted as healthy gained weight. In total, there were more obese students by the end of the 9-years-period compare to the beginning of the study.
+Students who were obese at the beginning of this study may have maintained to be obese, while students who were originally weighted as healthy gained weight. In total, there were more obese students by the end of the 10-year-period compare to the beginning of the study.
 
 <br>
 ![](map_data_jyz/gif.gif)

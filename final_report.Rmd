@@ -12,6 +12,7 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
+  eval = FALSE,
   message = FALSE,
   warning = FALSE)
 library(tidyverse)
@@ -19,6 +20,16 @@ library(readxl)
 library(plotly)
 library(patchwork)
 library(kableExtra)
+library(rgdal)
+library(maps)
+library(devtools)
+library(leaflet)
+library(BAMMtools)
+library(spdep)
+library(maptools)
+library(leafsync)
+library(gganimate)
+library(ggcorrplot)
 ```
 
 <style type="text/css">
@@ -41,10 +52,10 @@ Therefore, we conducted this study on the obesity situation of students in eleme
 
 #### **Related Work**
 
-1. 	Obesity More Common Among Kids With Special Needs. Disability Scoop. Published December 7, 2011.Accessed December 2, 2020. [Link.](https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/)
-2. 	Must A, Curtin C, Hubbard K, Sikich L, Bedford J, Bandini L. Obesity Prevention for Children with Developmental Disabilities. Curr Obes Rep. 2014;3(2):156.doi:10.1007/s13679-014-0098-7. [Link.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/)
-3. 	Hu EY. Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction. Prev Chronic Dis. 2018;15.doi:10.5888/pcd15.180122. [Link.](https://www.cdc.gov/pcd/issues/2018/18_0122.htm)
-4. 	High School Obesity Rates. The State of Childhood Obesity.Accessed December 2, 2020.  [Link.](https://stateofchildhoodobesity.org/high-school-obesity/)
+1. 	"Obesity More Common Among Kids With Special Needs. Disability Scoop"  [Link.](https://www.disabilityscoop.com/2011/12/07/obesity-special-needs/14599/)
+2.  "Obesity Prevention for Children with Developmental Disabilities" [Link.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4267572/)
+3. 	"Obesity Among High School Students in the United States: Risk Factors and Their Population Attributable Fraction"  [Link.](https://www.cdc.gov/pcd/issues/2018/18_0122.htm)
+4. 	High School Obesity Rates: The State of Childhood Obesity [Link.](https://stateofchildhoodobesity.org/high-school-obesity/)
 
 
 &nbsp;
@@ -199,9 +210,52 @@ county20 = rbind(top20, colMeans = colMeans(top20)) %>%
 
 #### **Regression analysis:**
 The linear regression model used 3 dataset besides the main weight data, they are median income data, food insecurity data and census data.  We combined those data by using `left_join` function, and those data were joined together by `county`.  Before combine those data we are did some cleaning to ensure that `county` variable in each dataset are in consistent form.  The most tricky data is the census data.  We have to first convert it to matrix form then transpose it, then we inlcude the `county` (was first column name) into the data frame.  After the dataset have been joined together, we also used `filter` function to omit outlier values.  We used data in year 2015 and 2016 to ensure they are consistent in time.  Census data is in year 2010 because it is hard to find census data on a specific year and usually those data are produced after the 2010 census was done. Besides, we thought there won't be a big change in race percentage between 5 years period.  3 variables that are binary variables, they are `sex`, `grade_level` and `year_reported`.  We also mutate them into 0 and 1 form by using `if_else` function.
-```{r}
+```{r, eval = FALSE, warning = FALSE}
+income = read_xlsx("./dataset/income.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(county = region_county) %>%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
+         county = toupper(county)) %>%
+  drop_na(median_income)
 
+food_insecurity = read_xlsx("./dataset/food_access.xlsx", range = "A9:C84") %>%
+  janitor::clean_names() %>%
+    rename(county = region_county) %>%
+  rename(food_insecurity_p = percentage) %>%
+  mutate(county = toupper(county)) %>%
+  drop_na(food_insecurity_p)
+
+census_data <- read_excel("dataset/census_data.xls",  
+    sheet = "Pop by Race and Ethnic Origin", 
+    range = "A3:BM10") 
+
+race_df = as.data.frame(t(as.matrix(census_data)))[-1,]  #transpose the original data
+race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL),  #include column name into the data frame
+         c("county", "total", "white", "black", "v4", "v5", "v6", "v7")) 
+race_df = tibble(race_df) %>%
+  janitor::clean_names() %>%
+  mutate(
+    total = as.numeric(total),
+    white = as.numeric(white),
+    black = as.numeric(black),
+    v4 = as.numeric(v4),
+    v5 = as.numeric(v5),
+    v6 = as.numeric(v6),
+    v7 = as.numeric(v7),
+    white_percent = white/total*100,
+         black_percent = black/total*100) %>%
+  select(county, white_percent, black_percent) %>%
+  filter(!county %in% c("United States", "New York State")) %>%
+  separate(county, into = c("county", "county1")) %>%
+  select(-county1) %>%
+  mutate(county = toupper(county))
+
+linear_df2 = left_join(linear_df, income, by = "county")  # combine income data to the main 
+linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine food insecurity data
+linear_df4 = left_join(linear_df3, race_df, by = "county")
 ```
+
+
 
 
 &nbsp;
@@ -210,10 +264,10 @@ The linear regression model used 3 dataset besides the main weight data, they ar
 
 ### *Mapping and Visualization:*
 * Part 1:how student weight status changes in New York by county?
-* Part 2:how does student weight in each county change over the 9-year-period?
+* Part 2:how does student weight in each county change over the 10-year-period?
 
 #### **Part 1**
-1. Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period:the average percentage of students who were overweight or obese and the average percentage of students who maintained a healthy weight. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why `HAMILTON` have both high average percentages of overweight/obese and healthy students, we found that the student weight status in `HAMILTON` changed considerably over the 9-year-period. As time goes by, students' weight in `HAMILTON` exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, `HAMILTON`'s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.
+Side-by-side choropleth map: In the exploratory analysis, we have first mapped the student weight status across 58 New York counties. The student weight status has been separated into two groups and represented by the average percentage over a 9-year-period:the average percentage of students who were overweight or obese and the average percentage of students who maintained a healthy weight. A side-by-side choropleth map was generated. This map helps us visualize that the student weight status does vary by county. Counties located in the upper east side of the NY state, such as Clinton, Franklin, and St Lawrence, tend to have the highest average percentage of students who were overweight or obese. Overall, on average, there was a higher percentage of students who maintained a healthy weight across the 58 counties, where the students maintained healthy weight took up about 55%-82% of the student population across all counties. However, there are a few exceptions. Take HAMILTON as an example, it is colored deep red and deep blue at the same time. After exploring the reason why `HAMILTON` have both high average percentages of overweight/obese and healthy students, we found that the student weight status in `HAMILTON` changed considerably over the 9-year-period. As time goes by, students' weight in `HAMILTON` exhibited an increasing trend. As one of the healthiest counties during 2010-2012 with over than 89% of students maintained a healthy weight, `HAMILTON`'s current situation is very concerning since over 53% of students were classified as overweight or obese by 2019. This discovery led us to part 2 of this exploratory analysis.
 ```{r map, eval=FALSE, message=FALSE}
 fips_map = readOGR(dsn = "./map_data_jyz/NYS_Civil_Boundaries_SHP/Counties.shp", encoding = "UTF-8")
 
@@ -296,7 +350,7 @@ healthy_map = leaflet::leaflet(data = fips_map_crs) %>%
 
 
 #### **Part 2**
-2. Interactive time map: Since the choropleth maps used the average percentage, the changing trend of student weight by year was neglected. Both the average percent of overweight/obese and healthy students were large for `HAMILTON`. When analyzing all connties in the New York state, even though students' weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration. Therefore, we created a interactive time map[Weight Over Time Map](https://jiayihelenzhou.shinyapps.io/ds_project/). This interactive map aims to explore how weight change in each county over the 9-year-period. We found that not every county has a clear increasing or decreasing trend as Hamilton does. Students who were obese at the beginning of this study may have maintained to be obese in the selected counties. For more changing trending in weight status, please refer to [Trend Graphs](trend_plot.html).
+Interactive time map: Since the choropleth maps used the average percentage, the changing trend of student weight by year was neglected. Both the average percent of overweight/obese and healthy students were large for `HAMILTON`. When analyzing all connties in the New York state, even though students' weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration. Therefore, we created a interactive time map[Weight Over Time Map](https://jiayihelenzhou.shinyapps.io/ds_project/). This interactive map aims to explore how weight change in each county over the 9-year-period. We found that not every county has a clear increasing or decreasing trend as Hamilton does. Students who were obese at the beginning of this study may have maintained to be obese in the selected counties. For more changing trending in weight status, please refer to [Trend Graphs](trend_plot.html).
 
 ```{r shiny_app, eval=FALSE, message=FALSE}
 
@@ -407,19 +461,307 @@ subplot(ranking_hw,ranking_oo,
 })
 ```
 
-## Formal Analysis:
+## Statistical Analysis:
 
 
 ### *Descriptive Graphs:*
 
-```{r, eval = FALSE, include = FALSE}
+Since visualization over the years has been explored during the exploratory analysis phase, in our formal analysis, we planned to use a linear regression model to analyze the association between the obesity or overweight rate and other variables like sex, grade level, economic status, etc. The resulting model can give us a sense of which factor influences the obesity or overweight rate in students from elementary to middle/high school the most.
 
+We combined three extra datasets to examine the factors of economic status, food access ability, and racial difference in weight status. The economic status dataset m 2016 can be accessed [here](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng100).
+Food access ability dataset from 2015 can be accessed [here](https://webbi1.health.ny.gov/SASStoredProcess/guest?_program=/EBI/PHIG/apps/chir_dashboard/chir_dashboard&p=it&ind_id=Ng123).
+Race dataset from 2010 can be accessed [here](https://labor.ny.gov/stats/nys/statewide-population-data.shtm).
+
+
+Basic variables that we are interested in:
+
+- **Sex**: Female and male
+- **Grade Level**: Elementary, Middle/High
+- **Weight Status**: Underweight, health weight, overweight or obese based on BMI for age percentile. For this project, we focus on the overweight or obese student percentage which are estimates of based on all reportable grades within the county and/or region and by grade groups. 
+- **Economic Status**: Median income in different counties
+- **Food Access Ability**: Food insecurity percentage in different counties
+- **Race**: African American and Caucasians 
+
+At first, we were taking the mean of all the years in the original student weight status dataset in order to better combine the income 2016 and food accessibility 2015 datasets. However, after consulting Margaret, we decided to include student weight status from 2015-2016 in the original data. This way, the size of the dataset doubles, and we can use "year" as another variable in the model. Our race dataset was produced after the 2010 census was done and an update wouldn???t be done until the end of this year. It is hard to find census data on a specific year, and we thought since there was no big shift of race distribution between 5 years period in NY state, it???s safe to use the 2010 race percentage dataset. 
+
+During the data cleaning process, we notice that there were data that only contained part of the overweight or obese percentage, meaning some counties have only the overweight percentage or the obese percentage. Because we are focusing on the overweight or obese percentage variable(sum of overweight percentage and obese percentage), if one of the weight category percentage is missing, then the overweight or obese percentage variable will just contain one value instead of the sum. However, we didn???t treat them as missing data or simply discard them because it???s possible that some counties have students in one out of the three categories, meaning either all of them are in the healthy category, in the overweight category, or in the obese category. Therefore we decided to keep all the data. 
+
+#### Sex
+
+First we want to explore the distribution of sex and overweight or obese percentage over two years. The graph below shows that male student tend to have higher overweight or obese percentage than female students, and their distribution of higher percentage of overweight or obese is slightly more than female students. There might also be an increase in female's overweight or obese percentage and a decrease in male's overweight or obese percentage. However, overall the ratio difference is not obvious. 
+
+```{r, eval = TRUE}
+original = 
+  tibble(
+  read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
+) %>%
+  janitor::clean_names() %>% 
+  filter(year_reported %in% c("2015-2016", "2016-2017")) %>%  #only analyzing data in year 2015 and 2016
+  mutate(
+    year_reported = if_else(year_reported == "2015-2016", 2015, 2016),
+    percent_healthy_weight = percent_healthy_weight * 100 ## when importing data the percent healthy weight was distorted so i timed 100
+  ) %>% 
+  select(county, area_name, year_reported, percent_overweight_or_obese, grade_level, sex, percent_healthy_weight) %>% 
+  drop_na(percent_healthy_weight)
+  
+original$percent_overweight_or_obese[original$percent_healthy_weight == 100.0] <- 0 #input 0% to overweight column when healthy column is 100%
+original =
+  original %>% 
+  select(-percent_healthy_weight) %>% 
+  drop_na()
+sex_df = 
+  original %>% 
+  filter(sex == "MALE" | sex == "FEMALE") %>%
+  filter(grade_level == "DISTRICT TOTAL") %>% 
+  select(year_reported, percent_overweight_or_obese, sex) %>% 
+  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+sex_df %>% 
+  plot_ly(type = 'violin') %>% 
+  add_trace(x = ~year_reported[sex == 'FEMALE'],
+            y = ~percent_overweight_or_obese[sex == 'FEMALE'],
+            legendgroup = 'F', scalegroup = 'F', name = 'F',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("orange")) %>% 
+  add_trace(x = ~year_reported[sex == 'MALE'],
+             y = ~percent_overweight_or_obese[sex == 'MALE'],
+            legendgroup = 'M', scalegroup = 'M', name = 'M',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("blue")) %>% 
+  layout(yaxis = list(zeroline = F), violinmode = 'group') %>%
+  layout(title = "Sex vs overweight or obese distribution",
+         xaxis = list(title = "Year reported"),
+         yaxis = list(title = "Percent overweight or obese"))
 ```
+
+
+#### Grade Level
+
+Next, we are exploring the relationship grade level and overweight or obese percentage over the two years. 
+The graph below shows that students in middle/high school grade level tend to have higher percentage than the elementary students in overweight or obese category each year. There also seems to be an increase in the overweight or obese percentage for the middle or high school students while a decrease for the elementary students over years. 
+
+
+```{r, eval = TRUE}
+grade_df = 
+  original %>% 
+  filter(sex %in% "ALL") %>% 
+  filter(grade_level %in% c("ELEMENTARY", "MIDDLE/HIGH")) %>% 
+  select(year_reported, percent_overweight_or_obese, grade_level)
+grade_df %>% 
+  plot_ly(type = 'violin') %>% 
+  add_trace(x = ~year_reported[grade_level == 'ELEMENTARY'],
+            y = ~percent_overweight_or_obese[grade_level == 'ELEMENTARY'],
+            legendgroup = 'ELEMENTARY', scalegroup = 'ELEMENTARY', name = 'ELEMENTARY',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("orange")) %>% 
+  add_trace(x = ~year_reported[grade_level == 'MIDDLE/HIGH'],
+             y = ~percent_overweight_or_obese[grade_level == 'MIDDLE/HIGH'],
+            legendgroup = 'MIDDLE/HIGH', scalegroup = 'MIDDLE/HIGH', name = 'MIDDLE/HIGH',
+            box = list(visible = T), meanline = list(visible = T),
+            color = I("blue")) %>%
+  layout(title = "Grade level vs overweight or obese distribution",
+         xaxis = list(title = "Year reported"),
+         yaxis = list(title = "Percent overweight or obese"), list(zeroline = F), violinmode = 'group')
+```
+
+
+#### Year
+
+Then, we explore distribution of the two years and overweight and obese percentage.
+The graph below shows that students in 2015 tend to have higher percentage in overweight or obese category than students in 2016. Overall the median and mean overweight or obese percentage locate around 35%, with 2015 having higher tails above 55% and with 2016 having lower tails below 10%. 
+
+
+```{r, eval = TRUE}
+year_df = 
+  original %>% 
+  filter(sex %in% "ALL") %>% 
+  filter(grade_level == "DISTRICT TOTAL") %>% 
+  select(year_reported, percent_overweight_or_obese)
+year_df %>% 
+  plot_ly(
+    x = ~year_reported,
+    y = ~percent_overweight_or_obese,
+    split = ~year_reported,
+    type = 'violin',
+    box = list(visible = T), meanline = list(visible = T)
+  ) %>% 
+  layout(title = "Year vs overweight or obese distribution",
+         xaxis = list(title = "Year Reported"),
+         yaxis = list(title = "Percent obese or overweight",
+                      zeroline = F))
+```
+
+
+#### Economic Status
+
+We are examine the distribution of median income and overweight or obese percentage. 
+From the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher.
+
+```{r, eval = TRUE}
+income = read_xlsx("./dataset/income.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(county = region_county) %>%
+  mutate(median_income = median_income*0.001,  # convert the income unit from $100,000 to 100k format, large values will reduce model's efficiency
+         county = toupper(county)) %>%
+  drop_na(median_income)
+obesity = 
+  original %>% 
+  filter(sex %in% "ALL") %>% 
+  filter(grade_level %in% "DISTRICT TOTAL") %>% 
+  filter(!county == "N/A") %>% 
+  select(county, percent_overweight_or_obese) %>% 
+  group_by(county) %>% 
+  summarize(percent_overweight_or_obese = mean(percent_overweight_or_obese)) %>% 
+  mutate(
+    percent_overweight_or_obese = round(percent_overweight_or_obese, 3)
+  )
+combine = 
+  left_join(income, obesity, by = "county")
+combine %>% 
+  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nMedian income: (k)", median_income)) %>% 
+  plot_ly(x = ~percent_overweight_or_obese, y = ~median_income, 
+          text = ~text_label, 
+          type = 'scatter', 
+          mode = 'markers', 
+          color = ~county, 
+          marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
+  layout(
+    title = "Median income vs overweight or obese distribution", 
+    yaxis = list(title = "Meidan income (k)"),
+    xaxis = list(title = "Overweight or obese percent (%)")
+  )
+```
+
+#### Food Access Ability
+
+We are examine the distribution of food insecurity and overweight or obese percentage. 
+From the graph we can see that there might be a general trend that if food insecurity percentage is high, the the overweight or obese percent in students are higher. 
+
+```{r, eval = TRUE}
+#import food insecurity data
+food_insecurity = read_xlsx("./dataset/food_access.xlsx", range = "A9:C84") %>%
+  janitor::clean_names() %>%
+    rename(county = region_county) %>%
+  rename(food_insecurity_p = percentage) %>%
+  mutate(county = toupper(county)) %>%
+  drop_na(food_insecurity_p) %>% 
+  select(-estimated_number_food_insecure_individuals)
+#combine with obesity data
+combine2 = 
+  left_join(food_insecurity, obesity, by = "county")
+combine2 %>% 
+  mutate(text_label = str_c("Overweight or obese: (%) ", percent_overweight_or_obese, "\nFood insecurity: (%)", food_insecurity_p)) %>% 
+  plot_ly(x = ~percent_overweight_or_obese, y = ~food_insecurity_p, 
+          text = ~text_label, 
+          type = 'scatter', 
+          mode = 'markers', 
+          color = ~county, 
+          marker = list(size = ~percent_overweight_or_obese, opacity = 0.6, sizemode = 'diameter')) %>% 
+  layout(
+    title = "Food insecurity vs overweight or obese distribution", 
+    yaxis = list(title = "Food insecurity (%)"),
+    xaxis = list(title = "Overweight or obese percent (%)")
+  )
+```
+
+
+
+#### Race
+
+We plot out the race distribution across the counties and see if race distribution and overweight or obese percentage are associated. We first added up all the blacks, native american, asians, hawaiians, and mixed race's percentages and combine them into one minorities variables. Then we ordered them according to the minorities percentage in each county and marked the overweight or obese percentage. 
+
+There might exist a general trend that if the county has high minorities percentage, the overweight or obese percent in students tend to be lower. Then after exploring the plotly graph, we decided to only include white and black race for our final linear regression model, because black percentage is directly associated with the minorities percentage.
+
+```{r, eval = TRUE}
+census_data = read_excel("dataset/census_data.xls",  
+    sheet = "Pop by Race and Ethnic Origin", 
+    range = "A3:BM10") 
+race_df = as.data.frame(t(as.matrix(census_data)))[-1,] 
+race_df = setNames(cbind(rownames(race_df), race_df, row.names = NULL), 
+         c("county", "total", "white", "black", "native", "asian", "hawaiian", "mix"))
+race_df = 
+  tibble(race_df) %>%
+  janitor::clean_names() %>%
+  mutate(
+    total = as.numeric(total),
+    white = as.numeric(white) / total * 100,
+    black = as.numeric(black)/ total * 100,
+    native = as.numeric(native)/ total * 100,
+    asian = as.numeric(asian)/ total * 100,
+    hawaiian = as.numeric(hawaiian)/ total * 100,
+    mix = as.numeric(mix)/ total * 100,
+    minorities = black + native + asian + hawaiian + mix) %>%
+  select(-total) %>%
+  filter(!county %in% c("United States", "New York State")) %>%
+  separate(county, into = c("county", "county1")) %>%
+  select(-county1) %>%
+  mutate(county = toupper(county))
+#combine with obesity data
+combine3 = 
+  left_join(race_df, obesity, by = "county") %>% 
+  pivot_longer(
+    white:mix,
+    names_to = "race",
+    values_to = "percent") %>% 
+  pivot_wider(
+    names_from = "race",
+    values_from = "percent"
+  ) %>% 
+  mutate(minorities = factor(minorities)) %>% 
+  arrange(minorities) %>% 
+  drop_na()
+combine3 %>% 
+  plot_ly(x = ~county, y = ~white, name = 'white', type = 'bar') %>%
+  add_trace(y = ~black, name = 'black', type = 'bar') %>%
+  add_trace(y = ~native, name = 'native', type = 'bar') %>% 
+  add_trace(y = ~asian, name = 'asian', type = 'bar') %>% 
+  add_trace(y = ~hawaiian, name = 'hawaiian', type = 'bar') %>% 
+  add_trace(y = ~mix, name = 'mix', type = 'bar') %>% 
+  add_trace(y = ~percent_overweight_or_obese, name = 'overweight/obese (%)', type = 'scatter', mode = 'markers') %>% 
+  layout(
+    title = "Race vs overweight or obese distribution",
+    xaxis = list(title = "County",
+                 categoryorder = "array",
+                 categoryarray = ~minorities),
+    yaxis = list(title = "Obese and overweigth percent(%)"))
+```
+
+#### Correlation graph
+
+Before proceeding, it is important to assess crude correlation among relevant variables, in case issues of multicollinearity arise during model development. Because our data contains categorical variable, we decided to use `model.matrix` to plot out the correlation graph. 
+
+```{r, eval = TRUE}
+final = 
+  original %>% 
+  filter(sex == "MALE" | sex == "FEMALE") %>%
+  filter(grade_level == "ELEMENTARY" | grade_level == "MIDDLE/HIGH") 
+combine4 = 
+  left_join(final, income, by = "county") %>% 
+  left_join(food_insecurity, by = "county") %>% 
+  left_join(race_df, by = "county") %>% 
+  select(year_reported:black)
+model.matrix(~0+., data=combine4) %>% 
+  cor(use = "pairwise.complete.obs") %>% 
+  ggcorrplot(show.diag = F, type="lower", 
+             lab=TRUE, lab_size=2, 
+             title = "Correlation of parameters of interest")
+```
+
+
+Of relevance to our hypotheses, the following variables were highly correlated and thus may not be accurately interpreted in a model as independent predictors:
+
+  * `white` and `black` (*r*  =  -0.97)
+  * `grade_levelMIDDLE/HIGH` and `grade_levelELEMENTARY` (*r*  =  -1)
+  * `median_income` and `food_insecurity_p` (*r*  =  -0.93)
+
+If only focusing on the correlation values between each predictor and the outcome of interest, we might predict that `grade_levelMIDDLE/HIGH`, `food_insecurity_p`, `sex`, and `white` have positive correlations with `percent_overweight_or_obese`, while `grade_levelELEMENTARY`, `median_income`, and `black` have negative correlations with `percent_overweight_or_obese`.
+
+
+
 
 ### *Regression:*
 
 
-```{r, echo=FALSE, message = FALSE, warning=FALSE}
+```{r, eval = TRUE, echo=FALSE, message = FALSE, warning=FALSE}
 original = tibble(        ## Clean the original weight data
   read.csv("./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv")
 ) %>%
@@ -501,7 +843,7 @@ linear_df3 = left_join(linear_df2, food_insecurity, by = "county") # combine foo
 linear_df4 = left_join(linear_df3, race_df, by = "county")
 ```
 Before fitting the linear regression model, we used two types of transformation to improve model adequacy, a. y' = log(y), b. y'= y^0.5, Q_Q plot showed that the log transformation has improved data's normality.  
-```{r}
+```{r eval = TRUE, fig.align='center', message=FALSE}
 # Normality check
 qqnorm(log(linear_df$percent_overweight_or_obese), col = c("darkorchid3"))
 
@@ -510,11 +852,11 @@ linear_df3 %>%
     fill = "#69b3a2", size = 2) + labs(x = "log (percent overweight and obese)", title = "Histogram of log (percent overweight and obese)") 
 ```
 
-Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is approximetly in a straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
+Above are the Q-Q plot and histogram of overweight/obesity data after log transformation.  Q-Q plot is approximately in a straight line, histogram is normally distributed but a bit skewed to the left.  Overall, the normality assumption is satisfied.  
 <br>
 Based on the transformation above, the model we are going to fit is:
 $$ log(percentage \space overweight \space or \space obese) = \beta_0 + \beta_1grade \space level + \beta_2median \space income + \beta_3 food \space insecurity \space rate + \beta_4 white \space population \space percentage + \space \beta_5 gender + \beta_6 year$$
-We included 6 independent variables, grade level, median income, food insecurity,  gender, and white population percentage.  However the model summary showed there are weak correlation between food insecurity (p-value = 0.925) and median income (p-value = 0.113) and year_reported (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the percentage overweight and obese.
+We included 6 independent variables, `grade level`, `median income`, `food insecurity`,  `gender`, and `white population percentage`.  However the model summary showed there are weak correlation between `food insecurity` (p-value = 0.925) and `median income` (p-value = 0.113) and `year_reported` (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the percentage overweight and obese.
 
 #### *Final Model:*
 $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
@@ -525,24 +867,24 @@ $$ log(y) = 2.584 + 0.147x_1 - 0.002x_2 + 0.011x_3 - 0.038x_4$$
 **x4 = sex (0 = male, 1 = female)**
 
 
-```{r echo=FALSE, warning=FALSE}
+```{r, eval = TRUE, echo=FALSE, warning=FALSE}
 # regression model
 lm_2 = lm(log(percent_overweight_or_obese) ~ grade_level  + median_income + white_percent + sex, data = linear_df4) 
 ```
 #### *Model Summary:*
-```{r}
+```{r eval=TRUE}
 kable(summary(lm_2)$coefficients)
 ```
 
-```{r echo=FALSE, warning=FALSE, fig.align='center'}
+```{r eval = TRUE, warning=FALSE, fig.align='center'}
 par(mfrow = c(2, 2))
 plot(lm_2, col = "darkorchid2", alpha = 0.5)
 ```
 
 #### *Conclusion*
 
-There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid.  Four variables are significant with very small p-value (<0.001).  However, due to the limitation of data, the model's R-squared is equal to 0.2166, which means only 22% of the data is explained by this model.  A possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
+There is no strange pattern about Residual vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid.  Four variables (`grade level`, `median income`, `white population percentage`, `sex`) are significant with very small **p-value (<0.001)**.  However, due to the limitation of data, R-squared is equal to 0.2166, a possible explanation is that other important factors have not been included.  We will make improvement when more data is available. 
 
 ## Discussion
 
-
+Our results showed that factors such as grade level, median income, race and gender all play a part in the overall overweight and obese rate in a region.  Median income has a negative correlation with obese and overweight rate, and female student are less suspicious to obese or overweight than male student.  However, we expected that white population has a lower rate of obesity before this study was done, the result surprisingly showed an opposite trend.  This study has some limitations that need to be mentioned.  First, the data is limited in NY state region, so more data from other regions is needed to make the result more generalizable.  Secondly, the data is in county level, so it does not apply to individual level.  

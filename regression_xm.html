@@ -374,7 +374,7 @@ div.tocify {
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Formal Analyses
+    Statistical Analyses
      
     <span class="caret"></span>
   </a>
@@ -386,6 +386,9 @@ div.tocify {
       <a href="regression_xm.html">Regression</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="Resource.html">Resource</a>
 </li>
 <li>
   <a href="https://github.com/YilinEXu/P8105_final_project.git">
@@ -558,7 +561,7 @@ year_reported
 </tr>
 </tbody>
 </table>
-<p><br> In the beginning we included 6 independent variables, grade level, median income, food insecurity, gender, and white population percentage. However the model summary showed there are weak correlation between food insecurity (p-value = 0.925) and median income (p-value = 0.113) and year_reported (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the percentage overweight and obese.</p>
+<p><br> In the beginning we included 6 independent variables, <code>grade level</code>, <code>median income</code>, <code>food insecurity</code>, <code>gender</code>, and <code>white population percentage</code>. However the model summary showed there are weak correlation between <code>food insecurity</code> (p-value = 0.925) and <code>median income</code> (p-value = 0.113) and <code>year_reported</code> (p-value = 0.215) with response variable y, we further improved the model by using step-wise regression, left 4 variables all significantly influenced the <code>percentage overweight and obese</code>.</p>
 </div>
 <div id="final-model" class="section level1">
 <h1><em>Final Model</em></h1>
@@ -682,7 +685,8 @@ sex
 </div>
 <div id="conclusion" class="section level1">
 <h1><em>Conclusion</em></h1>
-<p>There is no strange pattern about Residuel vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid. Four variables are significant with very small p-value (&lt;0.001). However, due to the limitation of data, the model’s R-squared is equal to 0.2166, which means only 22% of the data is explained by this model. A possible explanation is that other important factors have not been included. We will make improvement when more data is available.</p>
+<p>There is no strange pattern about Residual vs Fitted plot, and Normal Q-Q plot is basically on a straight line, so the constant variance assumption is met, and this model is valid. In the beginning we predicted that <code>food insecurity</code> is positively related to <code>percent overweight or obese</code>, however results showed such correlation is weak, the reason might be that colinearity exist between <code>food insecurity</code> and <code>median income</code>. This was proved in the <a href="raw_regression.html"><strong>Descriptive Graphs</strong></a> part that the correlation coefficient (r) between these two variables is <strong>-0.93</strong>.<br />
+<br> Four variables (<code>grade level</code>, <code>median income</code>, <code>white population percentage</code>, <code>sex</code>) are significant with very small <strong>p-value (&lt;0.001)</strong>. However, due to the limitation of data, R-squared is equal to 0.2166, a possible explanation is that other important factors have not been included. We will make improvement when more data is available.</p>
 </div>
 
 <html>

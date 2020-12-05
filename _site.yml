@@ -14,14 +14,17 @@ navbar:
         href: map_jyz.html
       - text: "Weigth Over Time Map"
         href: https://jiayihelenzhou.shinyapps.io/ds_project/
-    - text: "Formal Analyses"
+    - text: "Statistical Analyses"
       menu:
       - text: "Descriptive Graphs"
         href: raw_regression.html
       - text: "Regression"
         href: regression_xm.html
+    - text: "Resource"
+      href: Resource.html
     - icon: fa-github fa-lg
       href: https://github.com/YilinEXu/P8105_final_project.git
+      
 
 output:
   html_document:

@@ -1,6 +1,9 @@
 ---
 title: "Resource"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 ```{r, include=FALSE,message=FALSE,echo=FALSE}
@@ -25,20 +28,35 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 
-# Interventions on Obesity in Teenagers
+# Interventions on Obesity in Students
 
 
-#### Tips to Help Children Maintain a Healthy Weight
+### Tips to Help Children Maintain a Healthy Weight
+
 
 [CDC Recommendations](https://www.cdc.gov/healthyweight/children/index.html)
+
 [NY Department of Health](https://www.health.ny.gov/prevention/nutrition/resources/obparnts.htm)
 
 <center>
-<img src="image/6-recommendations-obesity.jpg" style = "width:55%">
+<img src="image/6-recommendations-obesity.jpg" style = "width:38%">
 <center>
 
+&nbsp;
+
+### Community Help - ParentCorps Intervention
+
+ParentCorps is a multi-level intervention that promote healthy child behavior in low-income neighborhoods.
+
+[ParentCorps-Blueprints for Healthy Youth Development](https://www.blueprintsprograms.org/programs/1291999999/parentcorps/print/)
+
+[ParentCorps | NYU Langone Health](https://med.nyu.edu/departments-institutes/population-health/divisions-sections-centers/health-behavior/center-early-childhood-health-development/parentcorps)
 
 
+### Improvements in the Built Environments 
 
+[Whole Systems Approach to Obesity](https://echalliance.com/health-matters-whole-systems-approach-to-obesity/)
 
-
+<center>
+<img src="image/enviro.jpg" style = "width:57%">
+<center>

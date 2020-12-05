@@ -1,6 +1,9 @@
 ---
 title: "Descriptive Graphs"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 ```{r, include=FALSE,message=FALSE,echo=FALSE}
@@ -45,7 +48,7 @@ Basic variables that we are interested in:
 - **Grade Level**: Elementary, Middle/High
 - **Weight Status**: Underweight, health weight, overweight or obese based on BMI for age percentile. For this project, we focus on the overweight or obese student percentage which are estimates of based on all reportable grades within the county and/or region and by grade groups. 
 - **Economic Status**: Median income in different counties
-- **Food Access Ability**: Food access ability in different counties
+- **Food Access Ability**: Food insecurity percentage in different counties
 - **Race**: African American and Caucasians 
 
 
@@ -57,8 +60,7 @@ Basic variables that we are interested in:
 
 ## Sex
 
-The graph below shows that more male students are in the overweight or obese category than female students in 2015 to 2016. Overall the ratio difference is not obvious. 
-during datacleaning process find out there are outliers at 100 percent 
+The graph below shows that male student tend to have higher overweight or obese percentage than female students, and their distribution of higher percentage of overweight or obese is slightly more than female students. There might also be an increase in female's overweight or obese percentage and a decrease in male's overweight or obese percentage. However, overall the ratio difference is not obvious. 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 original = 
@@ -86,8 +88,8 @@ sex_df =
   original %>% 
   filter(sex == "MALE" | sex == "FEMALE") %>%
   filter(grade_level == "DISTRICT TOTAL") %>% 
-  select(year_reported, percent_overweight_or_obese, sex) %>% 
-  filter(!percent_overweight_or_obese == 100) # omit the outlier (one y is equal to 100%)
+  select(year_reported, percent_overweight_or_obese, sex) 
+
 
 
 sex_df %>% 
@@ -114,7 +116,6 @@ sex_df %>%
 
 The graph below shows that students in middle/high school grade level tend to have higher percentage than the elementary students in overweight or obese category each year. There also seems to be an increase in the overweight or obese percentage for the middle or high school students while a decrease for the elementary students over years. 
 
-during datacleaning process find out there are outliers at 100 percent
 
 ```{r, echo=FALSE, warning=FALSE}
 grade_df = 
@@ -146,7 +147,7 @@ grade_df %>%
 ## Year
 
 The graph below shows that students in 2015 tend to have higher percentage in overweight or obese category than students in 2016. Overall the median and mean overweight or obese percentage locate around 35%, with 2015 having higher tails above 55% and with 2016 having lower tails below 10%. 
-during data cleaning find outliers
+
 
 ```{r,echo=FALSE,warning=FALSE}
 year_df = 
@@ -174,7 +175,7 @@ year_df %>%
 
 ## Economic Status
 
-From the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher. Three of the most richest county in NY have the least percentage in overweight or obese student, with Schuyler being the exception. 
+From the graph we can see that there is a general trend that if the median income is low, the overweight or obese percent in students are higher.  
 
 
 ```{r,echo=FALSE,warning=FALSE, message=FALSE}
@@ -263,8 +264,7 @@ combine2 %>%
 
 ## Race
 
-
-There might exist a general trend that if the county has high minorities percentage, the the overweight or obese percent in students tend to be higher.
+There might exist a general trend that if the county has high minorities percentage, the the overweight or obese percent in students tend to be lower.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 census_data = read_excel("dataset/census_data.xls",  
