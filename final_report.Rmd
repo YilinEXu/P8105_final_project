@@ -478,6 +478,7 @@ Basic variables that we are interested in:
 - **Sex**: Female and male
 - **Grade Level**: Elementary, Middle/High
 - **Weight Status**: Underweight, health weight, overweight or obese based on BMI for age percentile. For this project, we focus on the overweight or obese student percentage which are estimates of based on all reportable grades within the county and/or region and by grade groups. 
+- **Years**: 2015, 2016
 - **Economic Status**: Median income in different counties
 - **Food Access Ability**: Food insecurity percentage in different counties
 - **Race**: African American and Caucasians 
