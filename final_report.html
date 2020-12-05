@@ -533,17 +533,7 @@ h1.title {
 <div id="mapping" class="section level4">
 <h4><strong>Mapping</strong></h4>
 <p>For the data cleaning in the mapping section, we first imported the student weight status dataset, which includes most of the weight-related variables that we hope to analyze. Since we hope to map the student weight status by county first, the most convenient way to code each county by their unique FIPS code. Therefore, we imported the county FIPS code cross-reference dataset and only selected to retain the <code>county</code> and <code>fips</code> variable in the dataset. By using the <code>distinct</code> function, a clean dataset with 58 NY counties and their corresponding FIPS code was obtained. <br> Next, the student weight status dataset was combined with the FIPS code dataset. The average percentage of overweight or obesity and the average percentage of healthy weight was mapped was calculated, and the result was again combined to the fips code map. To have the desired map colored by the entire county, we then import a NY state counties shapefile and combined it to the previously cleaned dataset with weight status and FIPS code. This resulting dataset was used for the side-by-side choropleth map, which is not sensitive to time but can show the student weight change by county.</p>
-<pre class="r"><code>library(rgdal)
-library(maps)
-library(devtools)
-library(leaflet)
-library(BAMMtools)
-library(spdep)
-library(maptools)
-library(leafsync)
-library(gganimate)
-
-original = tibble(
+<pre class="r"><code>original = tibble(
   read.csv(&quot;./dataset/Student_Weight_Status_Category_Reporting_Results__Beginning_2010.csv&quot;)
 ) %&gt;%
   janitor::clean_names() %&gt;%
@@ -590,6 +580,50 @@ fips_map$percent_oo[is.na(fips_map$percent_oo)] &lt;- 0</code></pre>
 </div>
 <div id="trend-plot" class="section level4">
 <h4><strong>Trend Plot:</strong></h4>
+<p>For different trend graphs, the data cleaning step was changed depends on the variables we want to look at. For example, when we want to look at the overweight and obesity trend for students categorized by gender, we will filter with <code>gender = female &amp; male</code>. Most of the data cleaning process are similar, except for the last two plots which shows <em>the percentage and number of healthy students by county</em> and <em>comparison of overweight or obese percentages in the top 20 counties</em>.</p>
+<p>During the process, we found out some counties have more than one areas in their records. Some of these areas were not monitored every two year and have missing values, so we first drop the records that were not using a two year interval and then dropout the rows having missing values. After cleaning the data, we found out there are still more than fifty counties remained, so we use the mean value of overweight and obese percentage for all counties. Finally, we picked the mean value that are in the top 20 ranking and showed them in the graph.</p>
+<pre class="r"><code>counties &lt;- maindata %&gt;%
+  filter(county != &quot;STATEWIDE (EXCLUDING NYC)&quot;,
+         grade_level == &quot;DISTRICT TOTAL&quot;,
+         sex == &quot;ALL&quot;) %&gt;%
+  select(c(county, year_reported, percent_overweight_or_obese, area_name)) %&gt;%
+  group_by(county) %&gt;%
+  mutate(year_reported = as.factor(year_reported)) %&gt;%
+#  pivot_wider(names_from = county, values_from = percent_overweight_or_obese) %&gt;%
+  separate(year_reported, c(&quot;start_year&quot;,&quot;end_year&quot;), &quot;-&quot;) %&gt;%
+  mutate(start_year = as.numeric(start_year),
+         end_year = as.numeric(end_year),
+         start_year1 = start_year+2) %&gt;%
+  na.omit()
+
+for (i in 1:nrow(counties)) {
+    if (counties$end_year[i] == counties$start_year1[i]) {
+      dt_count &lt;- rbind(dt_count, counties[i,])
+    }
+}
+
+counties = dt_count %&gt;%
+  filter(county != &quot;N/A&quot;) %&gt;%
+  select(-start_year1) %&gt;%
+  mutate(
+    year = paste(start_year, end_year, sep = &quot;-&quot;)
+  ) %&gt;%
+  select(-start_year, -end_year, -area_name) %&gt;%
+  group_by(year)
+
+new_county = counties %&gt;%
+  pivot_wider(names_from = county, values_from = percent_overweight_or_obese)
+
+top20 = new_county %&gt;%
+  ungroup() %&gt;%
+  select(-year)
+
+county20 = rbind(top20, colMeans = colMeans(top20)) %&gt;%
+  mutate(num = c(1,2,3,4,5,6,7,8,&quot;mean&quot;)) %&gt;%
+  filter(num %in% &quot;mean&quot;) %&gt;%
+  pivot_longer(cols = 1:57,names_to = &quot;county&quot;, values_to = &quot;percentage&quot;) %&gt;%
+  select(-num) %&gt;%
+  top_n(20)</code></pre>
 </div>
 <div id="regression-analysis" class="section level4">
 <h4><strong>Regression analysis:</strong></h4>
@@ -694,24 +728,7 @@ healthy_map = leaflet::leaflet(data = fips_map_crs) %&gt;%
 <ol start="2" style="list-style-type: decimal">
 <li>Interactive time map: Since the choropleth maps used the average percentage, the changing trend of student weight by year was neglected. Both the average percent of overweight/obese and healthy students were large for <code>HAMILTON</code>. When analyzing all connties in the New York state, even though students’ weight in some counties may have been relatively stable over the 9 years, it is still necessary to take yearly change into consideration. Therefore, we created a interactive time map<a href="https://jiayihelenzhou.shinyapps.io/ds_project/">Weight Over Time Map</a>. This interactive map aims to explore how weight change in each county over the 9-year-period. We found that not every county has a clear increasing or decreasing trend as Hamilton does. Students who were obese at the beginning of this study may have maintained to be obese in the selected counties. For more changing trending in weight status, please refer to <a href="trend_plot.html">Trend Graphs</a>.</li>
 </ol>
-<pre class="r"><code>library(flexdashboard)
-library(shiny)
-library(readxl)
-library(tidyverse)
-library(plotly)
-library(tidyverse)
-library(readxl)
-library(plotly)
-library(rgdal)
-library(maps)
-library(devtools)
-library(leaflet)
-library(maptools)
-library(BAMMtools)
-library(patchwork)
-library(spdep)
-
-year_reported = ranking_df %&gt;% ungroup() %&gt;% distinct(year_reported) %&gt;% pull()
+<pre class="r"><code>year_reported = ranking_df %&gt;% ungroup() %&gt;% distinct(year_reported) %&gt;% pull()
 
 # selectInput widget
 selectInput(
@@ -820,59 +837,6 @@ subplot(ranking_hw,ranking_oo,
 </div>
 <div id="trend-graphs" class="section level3">
 <h3><em>Trend Graphs:</em></h3>
-<p>For different trend graphs, the data was changed depends on the variables we want to look at. For example, when we want to look at the overweight and obesity trend for students by gender, we will filter with <code>gender = female &amp; male</code>. Most of the data cleaning process are similar, except for the last plot which shows the comparison overweight or obesity percentage through the top 20 counties.</p>
-<p>During the process, we found out some counties have more than one areas in their records. Some of these areas are not recording in every two year periods. Hence, we first drop the records that are not recording in every two-year periods and then dropout the rows having missing values. After cleaning the data, we found out there are still more than fifty counties remained, so we find out the mean value of all counties overweight or obesity percentage. After that, we pick up the mean value that are in top 20 ranking and showed them in the plot.</p>
-<pre class="r"><code>counties &lt;- maindata %&gt;%
-  filter(county != &quot;STATEWIDE (EXCLUDING NYC)&quot;,
-         grade_level == &quot;DISTRICT TOTAL&quot;,
-         sex == &quot;ALL&quot;) %&gt;%
-  select(c(county, year_reported, percent_overweight_or_obese, area_name)) %&gt;%
-  group_by(county) %&gt;%
-  mutate(year_reported = as.factor(year_reported)) %&gt;%
-#  pivot_wider(names_from = county, values_from = percent_overweight_or_obese) %&gt;%
-  separate(year_reported, c(&quot;start_year&quot;,&quot;end_year&quot;), &quot;-&quot;) %&gt;%
-  mutate(start_year = as.numeric(start_year),
-         end_year = as.numeric(end_year),
-         start_year1 = start_year+2) %&gt;%
-  na.omit()
-
-for (i in 1:nrow(counties)) {
-    if (counties$end_year[i] == counties$start_year1[i]) {
-      dt_count &lt;- rbind(dt_count, counties[i,])
-    }
-}
-
-counties = dt_count %&gt;%
-  filter(county != &quot;N/A&quot;) %&gt;%
-  select(-start_year1) %&gt;%
-  mutate(
-    year = paste(start_year, end_year, sep = &quot;-&quot;)
-  ) %&gt;%
-  select(-start_year, -end_year, -area_name) %&gt;%
-  group_by(year)
-
-new_county = counties %&gt;%
-  pivot_wider(names_from = county, values_from = percent_overweight_or_obese)
-
-top20 = new_county %&gt;%
-  ungroup() %&gt;%
-  select(-year)
-
-county20 = rbind(top20, colMeans = colMeans(top20)) %&gt;%
-  mutate(num = c(1,2,3,4,5,6,7,8,&quot;mean&quot;)) %&gt;%
-  filter(num %in% &quot;mean&quot;) %&gt;%
-  pivot_longer(cols = 1:57,names_to = &quot;county&quot;, values_to = &quot;percentage&quot;) %&gt;%
-  select(-num) %&gt;%
-  top_n(20)
-
-county_20 = inner_join(county20,counties) %&gt;%
-  select(-percentage) %&gt;%
-  group_by(year) %&gt;%
-  mutate(percent_overweight_or_obese = percent_overweight_or_obese * 1000,
-        rank = rank(-percent_overweight_or_obese),
-         Value_rel = percent_overweight_or_obese/percent_overweight_or_obese[rank==1],
-         Value_lbl = paste0(&quot; &quot;,round(percent_overweight_or_obese/1e9))) %&gt;%
-  ungroup()</code></pre>
 </div>
 </div>
 <div id="formal-analysis" class="section level2">
@@ -1030,19 +994,20 @@ sex
 <small>
   
 <p style="text-align: center;">
-  Elaine Xu (yx2640), Rio Yan(xy2476), Jiayi Zhou(jz3336), Ximeng Zhao(xz3032)
+  This project works by <a href="https://github.com/YilinEXu">Yilin (Elaine) Xu</a>, <a href="https://github.com/rioyxw">Rio Yan</a>, <a href="https://github.com/JiayiHelenZhou">Jiayi Zhou</a>, and <a href="https://github.com/ximeng0329">Ximeng Zhao</a>
+
 </p>
-
 <p style="text-align: center;">
-Visualizations and analyses performed using <a href="https://www.r-project.org/about.html">R</a> (v3.6.1) and <a href="https://rstudio.com">RStudio</a> (v1.2.1335). <br>
+Visualizations and analyses performed using <a href="https://www.r-project.org/about.html">R</a> (v4.0.2) and <a href="https://rstudio.com">RStudio</a> (v1.3.1073). <br>
 
-Additional interactivity added using <a href="https://plot.ly/">plotly</a> (v4.9.0) and <a href="https://shiny.rstudio.com/">Shiny</a> (v1.3.2). <br>
+
+Additional interactivity added using <a href="https://plot.ly/">plotly</a> and <a href="https://shiny.rstudio.com/">Shiny</a>. <br>
 
 <a href="https://github.com/YilinEXu/P8105_final_project.git">Click here</a> to see details of this project. 
 
 <br>
 
-2020
+2020 | Powered by Github.io
 </p>
 
 </small>
